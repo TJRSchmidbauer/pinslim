@@ -140,12 +140,14 @@ _MACHINE: dict[str, str] = {
     'esp32':                          'esp32-picsimlab',
     'esp32-s3':                       'esp32s3-picsimlab',
     'esp32-c3':                       'esp32c3-picsimlab',
+    'esp32-c6':                       'esp32c3-picsimlab',
     'xiao-esp32-c3':                  'esp32c3-picsimlab',
+    'xiao-esp32-c6':                  'esp32c3-picsimlab',
     'aitewinrobot-esp32c3-supermini': 'esp32c3-picsimlab',
 }
 
 # Board types that require the RISC-V library instead of the Xtensa one
-_RISCV_BOARDS = {'esp32-c3', 'xiao-esp32-c3', 'aitewinrobot-esp32c3-supermini'}
+_RISCV_BOARDS = {'esp32-c3', 'esp32-c6', 'xiao-esp32-c3', 'xiao-esp32-c6', 'aitewinrobot-esp32c3-supermini'}
 
 
 # ── UART buffer ───────────────────────────────────────────────────────────────

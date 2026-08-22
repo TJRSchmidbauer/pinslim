@@ -249,6 +249,7 @@ export const BOARD_COMPONENT_IDS = [
   'arduino-nano-esp32',
   'esp32-c3',
   'xiao-esp32-c3',
+  'xiao-esp32-c6',
   'aitewinrobot-esp32c3-supermini',
   'stm32-bluepill',
   'stm32-blackpill',
@@ -479,7 +480,7 @@ export function boardPinToNumber(boardId: string, pinName: string): number | nul
     return null;
   }
 
-  if (boardId === 'xiao-esp32-c3') {
+  if (boardId === 'xiao-esp32-c3' || boardId === 'xiao-esp32-c6') {
     if (POWER_PAD_RE.test(pinName)) return -1;
     const XIAO_C3_MAP: Record<string, number> = {
       D0: 2,
@@ -494,8 +495,32 @@ export function boardPinToNumber(boardId: string, pinName: string): number | nul
       D9: 9,
       D10: 10,
     };
-    if (pinName in XIAO_C3_MAP) return XIAO_C3_MAP[pinName];
-    const num = parseInt(pinName, 10);
+    const XIAO_C6_MAP: Record<string, number> = {
+      D0: 0,
+      D1: 1,
+      D2: 2,
+      D3: 3,
+      D4: 4,
+      D5: 5,
+      D6: 16,
+      D7: 17,
+      D8: 18,
+      D9: 19,
+      D10: 20,
+      A0: 0,
+      A1: 1,
+      A2: 2,
+      A3: 3,
+      TX: 16,
+      RX: 17,
+      SDA: 4,
+      SCL: 5,
+    };
+    const map = boardId === 'xiao-esp32-c6' ? XIAO_C6_MAP : XIAO_C3_MAP;
+    if (pinName in map) return map[pinName];
+    const cleanPin = pinName.replace(/^GPIO\s*/i, '');
+    if (cleanPin in map) return map[cleanPin];
+    const num = parseInt(cleanPin, 10);
     if (!isNaN(num)) return num;
     return null;
   }

@@ -21,6 +21,7 @@ export type BoardKind =
   | 'arduino-nano-esp32' // Arduino Nano ESP32 (S3), QEMU (esp32-s3)
   | 'esp32-c3' // RISC-V RV32IMC, QEMU backend
   | 'xiao-esp32-c3' // Seeed XIAO ESP32-C3, QEMU backend
+  | 'xiao-esp32-c6' // Seeed XIAO ESP32-C6 (WiFi 6, BLE, Zigbee/802.15.4), RISC-V
   | 'aitewinrobot-esp32c3-supermini' // ESP32-C3 SuperMini, QEMU backend
   | 'stm32-bluepill' // STM32F103C8 (Cortex-M3), QEMU backend (libqemu-arm)
   | 'stm32-blackpill' // STM32F411CE (Cortex-M4), QEMU backend (libqemu-arm)
@@ -72,9 +73,10 @@ export const BOARD_SUPPORTS_MICROPYTHON = new Set<BoardKind>([
   'esp32-s3',
   'xiao-esp32-s3',
   'arduino-nano-esp32',
-  // ESP32-C3 RISC-V (QEMU bridge)
+  // ESP32-C3 / C6 RISC-V (QEMU bridge)
   'esp32-c3',
   'xiao-esp32-c3',
+  'xiao-esp32-c6',
   'aitewinrobot-esp32c3-supermini',
 ]);
 
@@ -92,9 +94,10 @@ export const BOARD_SUPPORTS_ESPIDF = new Set<BoardKind>([
   'esp32-s3',
   'xiao-esp32-s3',
   'arduino-nano-esp32',
-  // ESP32-C3 RISC-V (QEMU bridge)
+  // ESP32-C3 / C6 RISC-V (QEMU bridge)
   'esp32-c3',
   'xiao-esp32-c3',
+  'xiao-esp32-c6',
   'aitewinrobot-esp32c3-supermini',
 ]);
 
@@ -233,6 +236,7 @@ export const BOARD_KIND_LABELS: Record<BoardKind, string> = {
   'arduino-nano-esp32': 'Arduino Nano ESP32',
   'esp32-c3': 'ESP32-C3 DevKit',
   'xiao-esp32-c3': 'XIAO ESP32-C3',
+  'xiao-esp32-c6': 'XIAO ESP32-C6',
   'aitewinrobot-esp32c3-supermini': 'ESP32-C3 SuperMini',
   'stm32-bluepill': 'STM32 Blue Pill',
   'stm32-blackpill': 'STM32 Black Pill',
@@ -273,6 +277,7 @@ export const BOARD_KIND_FQBN: Record<BoardKind, string | null> = {
   'arduino-nano-esp32': 'esp32:esp32:nano_nora',
   'esp32-c3': 'esp32:esp32:esp32c3',
   'xiao-esp32-c3': 'esp32:esp32:XIAO_ESP32C3',
+  'xiao-esp32-c6': 'esp32:esp32:XIAO_ESP32C3',
   'aitewinrobot-esp32c3-supermini': 'esp32:esp32:esp32c3',
   'stm32-bluepill': 'STMicroelectronics:stm32:GenF1:pnum=BLUEPILL_F103C8',
   'stm32-blackpill': 'STMicroelectronics:stm32:GenF4:pnum=BLACKPILL_F411CE',

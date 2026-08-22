@@ -17,20 +17,9 @@
  */
 import { describe, it, expect } from 'vitest';
 import { BOARD_KIND_LABELS, type BoardKind } from '../types/board';
-import { analogExamples } from '../data/examples-analog';
-import { digitalExamples } from '../data/examples-digital';
-import { hundredDaysExamples } from '../data/examples-100-days';
-import { epaperExamples } from '../data/examples-displays-epaper';
-import { circuitExamples } from '../data/examples-circuits';
-import type { ExampleProject } from '../data/examples';
+import { exampleProjects, type ExampleProject } from '../data/examples';
 
-const ALL_EXAMPLES: ExampleProject[] = [
-  ...analogExamples,
-  ...digitalExamples,
-  ...hundredDaysExamples,
-  ...epaperExamples,
-  ...circuitExamples,
-];
+const ALL_EXAMPLES: ExampleProject[] = exampleProjects;
 
 /**
  * Boards that intentionally have no gallery example today.  They
@@ -39,56 +28,14 @@ const ALL_EXAMPLES: ExampleProject[] = [
  * coverage gap visible at code-review time.
  */
 const ACCEPTED_UNCOVERED: ReadonlySet<BoardKind> = new Set([
-  // Pi Zero / 1 / 2 / 3 / 4 / 5 run on the backend (QEMU ARM/ARM64) — no
-  // in-browser canvas example because they boot a full Linux image.
   'raspberry-pi-zero',
   'raspberry-pi-1',
   'raspberry-pi-2',
-  'raspberry-pi-3',
-  'raspberry-pi-4',
-  'raspberry-pi-5',
-
-  // ESP32 Xtensa LX6 variants — all share the same QEMU backend as
-  // the primary `esp32` boardKind (which IS covered).  Adding a
-  // dedicated example per variant adds zero engine coverage; the
-  // canvas just renders a different SVG.
-  'esp32-cam',
   'wemos-lolin32-lite',
-
-  // ESP32-S3 Xtensa LX7 family — share the `esp32-s3` QEMU backend.
-  // No primary `esp32-s3` example today either; the family is
-  // emulator-ready but lacks a demo circuit.  Add one when product
-  // wants S3 in the gallery.
-  'esp32-s3',
   'xiao-esp32-s3',
   'arduino-nano-esp32',
-
-  // ESP32-C3 RISC-V family — share the `esp32-c3` backend.  Same as
-  // above; no primary C3 example exists.
-  'esp32-c3',
   'xiao-esp32-c3',
   'aitewinrobot-esp32c3-supermini',
-
-  // ATtiny85 — fully supported via avr8js but no gallery example
-  // showcases its limited (5 GPIO) form factor.  Add one when
-  // someone proposes a use case.
-  'attiny85',
-
-  // STM32 (Blue Pill / Black Pill) — Pro feature emulated on the backend
-  // via the licensed libqemu-arm QEMU lib (no in-browser canvas engine,
-  // same as the Raspberry Pis above).  Gallery examples are intentionally
-  // not shipped to the free tier, so these are accepted as uncovered.
-  'stm32-bluepill',
-  'stm32-blackpill',
-  // Additional STM32 variants (pin-compatible Pills + Discovery / Olimex /
-  // Netduino dev boards) — same libqemu-arm backend, no in-browser canvas
-  // example shipped.
-  'stm32-bluepill-f103cb',
-  'stm32-blackpill-f401',
-  'stm32-f4-discovery',
-  'stm32-olimex-h405',
-  'stm32-netduino-plus2',
-  'stm32-netduino2',
 ]);
 
 interface Coverage {

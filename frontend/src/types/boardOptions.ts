@@ -79,6 +79,10 @@ const ESP32_C3_KINDS: ReadonlySet<BoardKind> = new Set([
   'aitewinrobot-esp32c3-supermini',
 ]);
 
+const ESP32_C6_KINDS: ReadonlySet<BoardKind> = new Set([
+  'xiao-esp32-c6',
+]);
+
 const ESP32_XTENSA_KINDS: ReadonlySet<BoardKind> = new Set([
   'esp32',
   'esp32-devkit-c-v4',
@@ -101,6 +105,7 @@ export function isEsp32Family(kind: BoardKind): boolean {
     ESP32_XTENSA_KINDS.has(kind) ||
     ESP32_S3_KINDS.has(kind) ||
     ESP32_C3_KINDS.has(kind) ||
+    ESP32_C6_KINDS.has(kind) ||
     proEsp32Family(kind) !== null
   );
 }
@@ -108,7 +113,7 @@ export function isEsp32Family(kind: BoardKind): boolean {
 // PSRAM availability by family:
 //   - Classic ESP32: optional, "enabled" only
 //   - ESP32-S3: optional, "enabled" or "opi" (octal)
-//   - ESP32-C3: no PSRAM support at all — section hidden in UI
+//   - ESP32-C3 / C6: no PSRAM support at all — section hidden in UI
 export function boardSupportsPsram(kind: BoardKind): boolean {
   const pro = proEsp32Family(kind);
   if (pro) return pro !== 'esp32-c3' && pro !== 'esp32-c6';

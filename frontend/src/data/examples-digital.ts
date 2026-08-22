@@ -2817,5 +2817,7 @@ export const digitalExamples: ExampleProject[] = [
       wires,
       ['counter', 'sequential', 'flip-flop', 't-ff', 'ripple', 'digital-engine'],
     );
-  })(),
+  })()
 ];
+
+

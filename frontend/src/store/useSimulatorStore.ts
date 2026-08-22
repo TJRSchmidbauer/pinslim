@@ -281,6 +281,10 @@ class Esp32BridgeShim {
     if (kind === 'esp32-c3' || kind === 'xiao-esp32-c3' || kind === 'aitewinrobot-esp32c3-supermini') {
       return pin >= 0 && pin <= 5 ? pin : -1;
     }
+    // C6: ADC1 = GPIO0-6 -> CH0-6 (the C6 has no ADC2).
+    if (kind === 'esp32-c6' || kind === 'xiao-esp32-c6') {
+      return pin >= 0 && pin <= 6 ? pin : -1;
+    }
     if (pin >= 36 && pin <= 39) return pin - 36; // GPIO 36→CH0 .. 39→CH3
     if (pin >= 32 && pin <= 35) return pin - 28; // GPIO 32→CH4 .. 35→CH7
     return -1;
@@ -979,6 +983,7 @@ const ESP32_KINDS = new Set<BoardKind>([
 const ESP32_RISCV_KINDS = new Set<BoardKind>([
   'esp32-c3',
   'xiao-esp32-c3',
+  'xiao-esp32-c6',
   'aitewinrobot-esp32c3-supermini',
 ]);
 
