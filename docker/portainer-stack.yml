@@ -43,7 +43,7 @@ services:
       - "traefik.docker.network=web_net"
       
       # Routing (Domain anpassen)
-      - "traefik.http.routers.pinslim.rule=Host(`pinslim.schmidbauer.jetzt`)"
+      - "traefik.http.routers.pinslim.rule=Host(`pinslim.YourDomain.COM`)"
       - "traefik.http.routers.pinslim.entrypoints=websecure"
       - "traefik.http.routers.pinslim.tls.certresolver=myresolver"
       
