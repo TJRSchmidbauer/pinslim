@@ -1,27 +1,27 @@
-# 🛡️ Pinslim Security & Hardening Guide
+# 🛡️ Pinslim Security & Server Hardening Guide
 
-Dieses Dokument beschreibt die Sicherheitsarchitektur, Best Practices und Maßnahmen zur Absicherung von **Pinslim** bei der Bereitstellung auf eigenen Servern oder in Docker-Umgebungen.
-
----
-
-## ❓ Antwort: Ändern diese Sicherheitsmaßnahmen die Bedienung von Pinslim?
-
-**Nein, absolut nicht!** 
-Sämtliche Sicherheitskonfigurationen wirken ausschließlich **unter der Haube auf Server- und Container-Ebene** (Prozessisolierung, Systemrechte, Speicher- & CPU-Limits). 
-
-Für den Benutzer im Browser bleibt die Bedienung (Schaltpläne zeichnen, Code schreiben, Mikrocontroller simulieren, flashen, Stücklisten und Diagramme exportieren) **zu 100 % identisch, schnell und intuitiv**.
+This document outlines the security architecture, best practices, and hardening recommendations for deploying **Pinslim** in self-hosted Docker environments.
 
 ---
 
-## 🔒 Die 10 zentralen Sicherheitsmaßnahmen
+## ❓ FAQ: Do these security measures alter the Pinslim user experience?
 
-### 1. Ausführung als unprivilegierter Benutzer (`USER pinslim`)
-- **Ziel**: Schutz vor Root-Escapes auf das Host-Betriebssystem.
-- **Konstruktion**: Im Docker-Container laufen Prozesse als dedizierter System-User (`pinslim`, UID 1000). Selbst wenn ein Angreifer RCE (Remote Code Execution) im Container erzielt, besitzt er keine `root`-Rechte auf dem Host.
+**No, absolutely not!** 
+All security configurations operate strictly **under the hood at the server and container level** (process isolation, privilege dropping, memory & CPU constraints). 
 
-### 2. Striktes Droppen von Linux-Capabilities (`--cap-drop=ALL`)
-- **Ziel**: Reduzierung der Angriffsfläche für Kernel-Exploits.
-- **Konstruktion**: In `docker-compose.yml` werden alle erweiterten Linux-Capabilities gedroppt. Es werden nur die minimal erforderlichen Rechte zugewiesen.
+For users interacting with Pinslim through the browser (drawing schematics, writing code, simulating microcontrollers, flashing hardware, exporting BOM and diagrams), the user experience remains **100% identical, fast, and responsive**.
+
+---
+
+## 🔒 10 Core Security Recommendations
+
+### 1. Execution as Non-Root User (`USER pinslim`)
+- **Objective**: Prevent container root escapes to the host operating system.
+- **Implementation**: The container runs under a dedicated unprivileged user (`pinslim`, UID 1000). Even if remote code execution (RCE) occurs inside the container, the attacker gains no `root` privileges on the host system.
+
+### 2. Capabilities Dropping (`--cap-drop=ALL`)
+- **Objective**: Minimize attack surface against host kernel vulnerabilities.
+- **Implementation**: All default Linux capabilities are dropped in `docker-compose.yml`, explicitly whitelisting only the minimal required set:
 ```yaml
 cap_drop:
   - ALL
@@ -32,15 +32,15 @@ cap_add:
   - DAC_OVERRIDE
 ```
 
-### 3. Keine Einbindung des Docker-Sockets (`/var/run/docker.sock`)
-- **Ziel**: Schutz vor kompletter Übernahme des Host-Systems.
-- **Konstruktion**: Der Host-Docker-Socket darf **niemals** in den Container gemountet werden. Pinslim kompiliert und emuliert innerhalb eigener isolierter Subprozesse und benötigt keinen Zugriff auf die Docker-Engine.
+### 3. Isolation from Docker Socket (`/var/run/docker.sock`)
+- **Objective**: Prevent host system compromise.
+- **Implementation**: The host Docker socket is **never** mounted inside the container. Pinslim compiles and emulates code inside isolated sub-processes and does not require access to the Docker engine daemon.
 
-### 4. CPU-, Arbeitsspeicher- und Prozess-Limits (Anti-DoS & Fork-Bomb Protection)
-- **Ziel**: Verhindern, dass bösartiger/fehlerhafter Code den Server oder benachbarte Container lahmlegt.
-- **Konstruktion**: Begrenzung von PIDs (max. 200 Prozesse), Arbeitsspeicher und CPU-Zyklen.
+### 4. CPU, Memory & Process Limits (Anti-DoS & Fork-Bomb Protection)
+- **Objective**: Prevent malicious or malformed code from overloading the host server or crashing adjacent containers.
+- **Implementation**: Strict caps on PID creation (max. 200–250 processes), total RAM, and CPU core utilization:
 ```yaml
-pids_limit: 200
+pids_limit: 250
 deploy:
   resources:
     limits:
@@ -48,49 +48,49 @@ deploy:
       memory: 4096M
 ```
 
-### 5. Sandboxing & Timeout-Garantien für Compilations (`arduino-cli` & ESP-IDF)
-- **Ziel**: Verhindern von endlos laufenden Subprozessen oder Hängern beim Kompilieren.
-- **Konstruktion**: Das FastAPI-Backend erzwingt strikte Timeouts für jeden `arduino-cli`- und `ninja`/ESP-IDF-Aufruf (max. 60–120 Sekunden). Nicht reagierende Prozesse werden automatisch beendet.
+### 5. Compilation Sub-process Sandboxing & Timeouts (`arduino-cli` & ESP-IDF)
+- **Objective**: Prevent infinite compilation loops or stuck background workers.
+- **Implementation**: The FastAPI backend enforces rigid execution timeouts for all `arduino-cli` and `ninja`/ESP-IDF invocations (max 60–120 seconds). Non-responsive worker processes are automatically killed.
 
-### 6. Isolierung von Systemrechten (`no-new-privileges:true`)
-- **Ziel**: Verhindern von Rechteausweitung über `setuid`/`setgid`-Binaries.
-- **Konstruktion**:
+### 6. No New Privileges Escapes (`no-new-privileges:true`)
+- **Objective**: Prevent privilege escalation via `setuid`/`setgid` binaries inside the container.
+- **Implementation**:
 ```yaml
 security_opt:
   - no-new-privileges:true
 ```
 
-### 7. CORS & Host Header Hardening im FastAPI Backend
-- **Ziel**: Schutz vor Cross-Site Request Forgery (CSRF) und Malicious Origin Calls.
-- **Konstruktion**: Die API erlaubt in der Produktion nur Anfragen der eigenen Host-Domain (`ALLOWED_ORIGINS`).
+### 7. CORS & Host Header Hardening
+- **Objective**: Mitigate Cross-Site Request Forgery (CSRF) and unauthorized cross-origin API calls.
+- **Implementation**: In production environments, the FastAPI backend restricts API origins via `ALLOWED_ORIGINS` to trusted domains.
 
-### 8. Web-Sicherheitsheader via Nginx Proxy
-- **Ziel**: Schutz der Nutzer vor Clickjacking, XSS und Content Sniffing.
-- **Konstruktion**: Nginx setzt für alle HTTP-Antworten folgende Sicherheits-Header:
+### 8. Web Security Headers via Nginx Reverse Proxy
+- **Objective**: Protect client web browsers from Clickjacking, XSS, and MIME-type sniffing.
+- **Implementation**: Nginx enforces security headers across all responses:
   - `X-Frame-Options: SAMEORIGIN`
   - `X-Content-Type-Options: nosniff`
   - `X-XSS-Protection: 1; mode=block`
   - `Referrer-Policy: strict-origin-when-cross-origin`
 
-### 9. Empfohlen: Isolation via User Namespaces (`userns-remap`)
-- **Ziel**: Container-`root` entspricht einem unprivilegierten Benutzer auf dem Host.
-- **Empfehlung**: Aktivieren Sie `userns-remap` in der `/etc/docker/daemon.json` Ihres Servers:
+### 9. Recommended: Host User Namespaces Remapping (`userns-remap`)
+- **Objective**: Map container `root` to an unprivileged host UID.
+- **Recommendation**: Enable `userns-remap` in the host server's `/etc/docker/daemon.json`:
 ```json
 {
   "userns-remap": "default"
 }
 ```
 
-### 10. Automatische Sicherheits-Scans (Trivy / Grype)
-- **Ziel**: Erkennung bekannter Sicherheitslücken in System-Abhängigkeiten.
-- **Empfehlung**: Scannen Sie gebaute Docker-Images vor dem Deployment:
+### 10. Automated Vulnerability Scanning (Trivy / Grype)
+- **Objective**: Detect known vulnerabilities (CVEs) in base images and packages.
+- **Recommendation**: Run container vulnerability scans prior to production deployments:
 ```bash
 trivy image pinslim-app:latest
 ```
 
 ---
 
-## 🚀 Empfohlene `docker-compose.yml` für die Produktion
+## 🚀 Recommended Production `docker-compose.yml`
 
 ```yaml
 services:
@@ -101,7 +101,7 @@ services:
     container_name: pinslim-app
     restart: unless-stopped
     ports:
-      - "127.0.0.1:3082:80"  # Nur lokal binden, dahinter Nginx/Traefik Reverse Proxy
+      - "127.0.0.1:3082:80"  # Bind locally behind reverse proxy (Nginx / Traefik)
     security_opt:
       - no-new-privileges:true
     cap_drop:
@@ -111,7 +111,7 @@ services:
       - SETUID
       - SETGID
       - DAC_OVERRIDE
-    pids_limit: 200
+    pids_limit: 250
     deploy:
       resources:
         limits:
@@ -138,4 +138,4 @@ volumes:
 ```
 
 ---
-*Dokumentation erstellt für Pinslim Server Deployments.*
+*Documentation for Pinslim Server Deployments.*

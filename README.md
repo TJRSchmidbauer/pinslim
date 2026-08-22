@@ -36,20 +36,20 @@ For details on deploying Pinslim securely on your own server (process isolation,
 
 ---
 
-## 📜 Legal, AI Development & Trademark Disclaimers / Rechtliche Hinweise
+## 📜 Legal, AI Development & Trademark Disclaimers
 
-### 1. Herkunft & Basis (Origin Notice)
+### 1. Origin Notice
 Pinslim is an independent open-source fork based on **Velxio**, created by **David Montero Crespo**.
 - Original Repository: [github.com/davidmonterocrespo24/velxio](https://github.com/davidmonterocrespo24/velxio)
 
-### 2. KI-gestützte Entwicklung (Antigravity AI Notice)
-Sämtliche Anpassungen, Refactorings, UI/UX-Optimierungen, Stücklisten- & PNG-Export-Erweiterungen sowie Sicherheitshärtungen an dieser Codebasis wurden in kooperativer Entwicklung unter Einsatz des KI-Assistenten **Antigravity** (Google DeepMind) umgesetzt.
+### 2. AI-Assisted Development Notice (Antigravity)
+All modifications, code refactorings, UI/UX optimizations, Bill of Materials (BOM) & PNG export capabilities, Web Serial flasher integration, and Docker security hardening were developed in pair-programming collaboration with the AI coding assistant **Antigravity** (Google DeepMind).
 
-### 3. Trademark Disclaimer (Markenhinweis)
+### 3. Trademark Disclaimer
 All product names, trademarks, logos, and brands mentioned in this project (such as *Arduino, ESP32, Espressif, Raspberry Pi, MicroPython, SAMD, RP2040, etc.*) are the property of their respective trademark owners. Pinslim is an independent open-source community project and is **not affiliated with, sponsored by, or endorsed by** any of these trademark holders.
 
-### 4. Partners & Sponsors Disclaimer (Hinweis zu Partnern)
+### 4. Partners & Sponsors Disclaimer
 Any partners, sponsors, or commercial hardware suppliers referenced in connection with the original Velxio project belong solely to Velxio and David Montero Crespo. They are **not partners or sponsors of Pinslim**.
 
-### 5. License & Warranty Disclaimer (Lizenz & Haftungsausschluss)
+### 5. License & Warranty Disclaimer
 Pinslim is licensed under the **GNU Affero General Public License v3.0 (AGPLv3)**. The software is provided "AS IS", without warranty of any kind, express or implied.
