@@ -286,17 +286,7 @@ class Esp32BridgeShim {
     return true;
   }
 
-  /** GPIO -> ADC channel. The mapping is CHIP-specific, so ask the bridge
-   *  when it knows its chip (S3: GPIO1..10 -> ADC1 ch0..9; C-family differs);
-   *  fall back to the classic ESP32 map, which was the only one this shim
-   *  handled before and silently returned false for every S3 pin. */
-  private adcChannelForPin(pin: number): number {
-    const b = this.bridge as unknown as { adcChannelForGpio?: (gpio: number) => number };
-    if (typeof b.adcChannelForGpio === 'function') return b.adcChannelForGpio(pin);
-    if (pin >= 36 && pin <= 39) return pin - 36; // GPIO 36→CH0 .. 39→CH3
-    if (pin >= 32 && pin <= 35) return pin - 28; // GPIO 32→CH4 .. 35→CH7
-    return -1;
-  }
+
 
   /**
    * Push a 12-bit waveform LUT to QEMU for per-read ADC interpolation.
