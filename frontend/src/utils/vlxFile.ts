@@ -137,12 +137,12 @@ export function buildVlxBlob(opts: { name?: string } = {}): Blob {
 
 /** Sanitise a filename: keep letters, digits, dashes, dots, underscores. */
 function safeFilename(name?: string): string {
-  const base = (name ?? 'velxio-project').trim() || 'velxio-project';
+  const base = (name ?? 'pinslim-project').trim() || 'pinslim-project';
   const cleaned = base
     .replace(/[^a-zA-Z0-9._-]+/g, '-')
     .replace(/^-+|-+$/g, '')
     .slice(0, 80);
-  return `${cleaned || 'velxio-project'}.vlx`;
+  return `${cleaned || 'pinslim-project'}.vlx`;
 }
 
 /**

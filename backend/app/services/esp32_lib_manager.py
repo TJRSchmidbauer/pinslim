@@ -101,6 +101,17 @@ def _resolve_lib(env_var: str, lib_name: str, default_path: str) -> str:
             return candidate
     if os.path.isfile(default_path):
         return default_path
+
+    candidate_dirs = [
+        pathlib.Path("/run/media/tobias/Media1/velxio/bin/qemu/install/lib"),
+        pathlib.Path("/run/media/tobias/Media1/pinslim/bin/qemu/install/lib"),
+        pathlib.Path.home() / ".local" / "lib",
+    ]
+    for c_dir in candidate_dirs:
+        cand = c_dir / lib_name
+        if cand.is_file():
+            return str(cand)
+
     return ''
 
 
@@ -264,12 +275,26 @@ class EspLibManager:
         except Exception as exc:
             logger.warning('start_instance %s: booting event delivery failed: %s', client_id, exc)
 
+        proc_env = dict(os.environ)
+        ld_dirs = [
+            '/run/media/tobias/Media1/velxio/bin/qemu/lcgamboa-qemu/build',
+            '/run/media/tobias/Media1/velxio/bin/qemu/glib-install/lib/x86_64-linux-gnu',
+            '/run/media/tobias/Media1/velxio/bin/qemu/libgcrypt-install/lib',
+            '/run/media/tobias/Media1/velxio/bin/qemu/libgpg-error-install/lib',
+            str(pathlib.Path(lib_path).parent) if lib_path else '',
+        ]
+        existing_ld = proc_env.get('LD_LIBRARY_PATH', '')
+        extra_ld = ':'.join([d for d in ld_dirs if d and os.path.exists(d)])
+        if extra_ld:
+            proc_env['LD_LIBRARY_PATH'] = f"{extra_ld}:{existing_ld}" if existing_ld else extra_ld
+
         try:
             proc = subprocess.Popen(
                 [sys.executable, str(_WORKER_SCRIPT)],
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
+                env=proc_env,
             )
         except Exception as exc:
             logger.error('Failed to launch esp32_worker for %s: %r', client_id, exc, exc_info=True)

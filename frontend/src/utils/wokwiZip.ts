@@ -368,7 +368,7 @@ export async function exportToWokwiZip(
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `${(projectName || 'velxio-project').replace(/[^a-z0-9_-]/gi, '-')}.zip`;
+  a.download = `${(projectName || 'pinslim-project').replace(/[^a-z0-9_-]/gi, '-')}.zip`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);

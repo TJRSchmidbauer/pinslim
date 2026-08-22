@@ -33,6 +33,8 @@ import {
   getEditorCommandsVersion,
   type EditorCommandId,
 } from '../../lib/editorCommands';
+import { AboutPinslimModal } from './AboutPinslimModal';
+import { ExamplesModal } from './ExamplesModal';
 import './EditorMenuBar.css';
 
 type Item =
@@ -67,6 +69,8 @@ const SITE = import.meta.env.VITE_PRO_BUILD ? '' : 'https://velxio.dev';
 export const EditorMenuBar: React.FC = () => {
   const { t } = useTranslation();
   const [open, setOpen] = useState<'file' | 'edit' | 'view' | 'account' | 'help' | null>(null);
+  const [showAboutModal, setShowAboutModal] = useState(false);
+  const [showExamplesModal, setShowExamplesModal] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
   // Re-render when owners (un)register their commands.
@@ -86,6 +90,18 @@ export const EditorMenuBar: React.FC = () => {
   const toggleExplorer = useEditorStore((s) => s.toggleExplorer);
   const viewMode = useEditorStore((s) => s.viewMode);
   const setViewMode = useEditorStore((s) => s.setViewMode);
+  const theme = useEditorStore((s) => s.theme);
+  const setTheme = useEditorStore((s) => s.setTheme);
+
+  useEffect(() => {
+    if (theme === 'light') {
+      document.body.classList.add('light-theme');
+      document.documentElement.setAttribute('data-theme', 'light');
+    } else {
+      document.body.classList.remove('light-theme');
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  }, [theme]);
   const undo = useSimulatorStore((s) => s.undo);
   const redo = useSimulatorStore((s) => s.redo);
   const history = useSimulatorStore((s) => s.history);
@@ -130,20 +146,10 @@ export const EditorMenuBar: React.FC = () => {
     { kind: 'separator' },
     { kind: 'command', id: 'project.import', label: t('editor.toolbar.importLabel', 'Import project') },
     { kind: 'command', id: 'project.export', label: t('editor.toolbar.exportLabel', 'Export project (.zip)') },
-    { kind: 'command', id: 'project.exportBom', label: t('editor.toolbar.exportBomLabel', 'Bill of Materials (CSV)'), pro: true },
-    {
-      kind: 'command',
-      id: 'project.exportScreenshot',
-      label: t('editor.toolbar.exportScreenshotLabel', 'Schematic image (PNG)'),
-      pro: true,
-    },
+    { kind: 'command', id: 'project.exportBom', label: t('editor.toolbar.exportBomLabel', 'Stückliste (CSV)') },
     { kind: 'separator' },
-    // The toolbar's "..." menu folded in here — same actions, same PRO
-    // pills, one button fewer in the strip.
     { kind: 'command', id: 'project.share', label: t('editor.toolbar.shareLabel', 'Share / Embed') },
-    { kind: 'command', id: 'project.githubSync', label: t('editor.toolbar.githubSyncLabel', 'Sync to GitHub'), pro: true },
     { kind: 'command', id: 'firmware.upload', label: t('editor.toolbar.uploadFirmwareLabel', 'Upload firmware') },
-    { kind: 'command', id: 'sim.record', label: t('editor.toolbar.recordLabel', 'Record simulation'), pro: true },
   ];
 
   // Sign in / My projects for the Account menu. The bottom-left account
@@ -316,6 +322,32 @@ export const EditorMenuBar: React.FC = () => {
                 </button>
               ))}
               <div className="emb-separator" />
+              <div className="emb-section-label">{t('editor.shell.theme', 'Theme')}</div>
+              <button
+                role="menuitemradio"
+                aria-checked={theme === 'vs-dark'}
+                className="emb-item"
+                onClick={() => {
+                  setOpen(null);
+                  setTheme('vs-dark');
+                }}
+              >
+                <span>Dunkler Modus (Dark)</span>
+                <span className="emb-shortcut">{theme === 'vs-dark' ? '✓' : ''}</span>
+              </button>
+              <button
+                role="menuitemradio"
+                aria-checked={theme === 'light'}
+                className="emb-item"
+                onClick={() => {
+                  setOpen(null);
+                  setTheme('light');
+                }}
+              >
+                <span>Heller Modus (Light)</span>
+                <span className="emb-shortcut">{theme === 'light' ? '✓' : ''}</span>
+              </button>
+              <div className="emb-separator" />
             </>
           )}
           {which === 'account' && (
@@ -397,6 +429,52 @@ export const EditorMenuBar: React.FC = () => {
               </button>
             </>
           )}
+          {which === 'help' && (
+            <>
+              <a
+                role="menuitem"
+                className="emb-item"
+                href="https://velxio.dev/docs/"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setOpen(null)}
+              >
+                <span>{t('header.nav.documentation', 'Documentation')}</span>
+              </a>
+              <button
+                role="menuitem"
+                className="emb-item"
+                onClick={() => {
+                  setOpen(null);
+                  setShowExamplesModal(true);
+                }}
+              >
+                <span>{t('header.nav.examples', 'Examples')}</span>
+              </button>
+              <div className="emb-separator" />
+              <button
+                role="menuitem"
+                className="emb-item"
+                onClick={() => {
+                  setOpen(null);
+                  setShowAboutModal(true);
+                }}
+              >
+                <span>About Pinslim</span>
+              </button>
+              <div className="emb-separator" />
+              <a
+                role="menuitem"
+                className="emb-item"
+                href={GITHUB_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setOpen(null)}
+              >
+                <span>GitHub Repository</span>
+              </a>
+            </>
+          )}
           {items
             .filter(
               (item) =>
@@ -417,12 +495,16 @@ export const EditorMenuBar: React.FC = () => {
   );
 
   return (
-    <div className="editor-menubar" ref={rootRef}>
-      {menu('file', t('editor.menu.file', 'File'), fileItems)}
-      {menu('edit', t('editor.menu.edit', 'Edit'), editItems)}
-      {menu('view', t('editor.menu.view', 'View'), viewItems)}
-      {menu('account', t('editor.menu.account', 'Account'), [])}
-      {menu('help', t('editor.menu.help', 'Help'), helpItems)}
-    </div>
+    <>
+      <div className="editor-menubar" ref={rootRef}>
+        {menu('file', t('editor.menu.file', 'File'), fileItems)}
+        {menu('edit', t('editor.menu.edit', 'Edit'), editItems)}
+        {menu('view', t('editor.menu.view', 'View'), viewItems)}
+        {menu('account', t('editor.menu.account', 'Account'), [])}
+        {menu('help', t('editor.menu.help', 'Help'), [])}
+      </div>
+      {showAboutModal && <AboutPinslimModal onClose={() => setShowAboutModal(false)} />}
+      {showExamplesModal && <ExamplesModal onClose={() => setShowExamplesModal(false)} />}
+    </>
   );
 };

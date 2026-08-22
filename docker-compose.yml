@@ -1,24 +1,40 @@
-# Development Docker Compose — same image as production for full parity.
+# Development & Production Docker Compose for Pinslim.
 # Usage: docker compose up --build
-# Access: http://localhost:3080
+# Access: http://localhost:3082
 #
 # backend/.env is OPTIONAL. If missing, the entrypoint generates a random
 # SECRET_KEY so the app boots out-of-the-box. Create backend/.env (copy
 # backend/.env.example) only when you need OAuth or want a fixed SECRET_KEY.
 services:
-  velxio:
+  pinslim:
     build:
       context: .
       dockerfile: Dockerfile.standalone
-    container_name: velxio-dev
+    container_name: pinslim-app-3082
     restart: unless-stopped
     ports:
-      - "3080:80"
+      - "3082:80"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETUID
+      - SETGID
+      - DAC_OVERRIDE
+      - FOWNER
+    pids_limit: 250
+    deploy:
+      resources:
+        limits:
+          cpus: '4.0'
+          memory: 4096M
     env_file:
       - path: ./backend/.env
         required: false
     environment:
-      - DATABASE_URL=sqlite+aiosqlite:////app/data/velxio.db
+      - DATABASE_URL=sqlite+aiosqlite:////app/data/pinslim.db
       - DATA_DIR=/app/data
       - IDF_PATH=/opt/esp-idf
       - IDF_TOOLS_PATH=/root/.espressif
@@ -30,9 +46,7 @@ services:
       - CCACHE_DIR=/var/cache/ccache
       # Persistent ESP-IDF build dir (one per board target). Lets ninja's
       # incremental cache + ccache hits combine across compiles, taking warm
-      # builds from ~5-7 min to ~5-30s. Set VELXIO_PERSISTENT_BUILD_DIR=0
-      # to disable without rebuilding the image (fallback to per-compile
-      # tempfile.TemporaryDirectory behaviour).
+      # builds from ~5-7 min to ~5-30s.
       - VELXIO_PERSISTENT_BUILD_DIR=1
     volumes:
       - ./data:/app/data

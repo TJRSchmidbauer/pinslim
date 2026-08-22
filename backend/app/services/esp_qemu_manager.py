@@ -33,9 +33,48 @@ from app.services.wifi_status_parser import parse_serial_text
 
 logger = logging.getLogger(__name__)
 
-# ── QEMU binary paths (configurable via env) ──────────────────────────────────
-QEMU_XTENSA   = os.environ.get('QEMU_ESP32_BINARY',  'qemu-system-xtensa')
-QEMU_RISCV32  = os.environ.get('QEMU_RISCV32_BINARY', 'qemu-system-riscv32')
+import shutil
+from pathlib import Path
+
+def _resolve_qemu_binary(env_var: str, default_name: str) -> str:
+    env_val = os.environ.get(env_var)
+    if env_val:
+        return env_val
+    which_path = shutil.which(default_name)
+    if which_path:
+        return which_path
+    candidate_dirs = [
+        Path("/run/media/tobias/Media1/velxio/bin/qemu/install/bin"),
+        Path("/run/media/tobias/Media1/pinslim/bin/qemu/install/bin"),
+        Path.home() / ".local" / "bin",
+    ]
+    for c_dir in candidate_dirs:
+        cand = c_dir / default_name
+        if cand.is_file() and os.access(cand, os.X_OK):
+            return str(cand)
+    return default_name
+
+def _resolve_qemu_rom_dir(env_var: str) -> str:
+    env_val = os.environ.get(env_var)
+    if env_val and os.path.isdir(env_val):
+        return env_val
+    candidate_dirs = [
+        Path("/run/media/tobias/Media1/velxio/bin/qemu/install/lib"),
+        Path("/run/media/tobias/Media1/pinslim/bin/qemu/install/lib"),
+        Path.home() / ".local" / "lib",
+    ]
+    for c_dir in candidate_dirs:
+        if c_dir.is_dir() and (c_dir / "esp32c3-rom.bin").is_file():
+            return str(c_dir)
+    return "/run/media/tobias/Media1/velxio/bin/qemu/install/lib"
+
+# ── QEMU binary paths (configurable via env or auto-detected) ──────────
+QEMU_XTENSA   = _resolve_qemu_binary('QEMU_ESP32_BINARY',  'qemu-system-xtensa')
+QEMU_RISCV32  = _resolve_qemu_binary('QEMU_RISCV32_BINARY', 'qemu-system-riscv32')
+
+# ── ROM/BIOS paths (configurable via env or auto-detected) ────────────
+QEMU_ESP32_ROM_DIR   = _resolve_qemu_rom_dir('QEMU_ESP32_ROM_DIR')
+QEMU_RISCV32_ROM_DIR = _resolve_qemu_rom_dir('QEMU_RISCV32_ROM_DIR')
 
 # ── Machine names per board type ──────────────────────────────────────────────
 _MACHINE: dict[str, tuple[str, str]] = {
@@ -193,6 +232,12 @@ class EspQemuManager:
         # Allocate TCP port for UART0 serial
         inst.serial_port = _find_free_port()
 
+        # ROM directory for BIOS files (esp32c3-rom.bin, etc.)
+        if 'c3' in machine:
+            rom_dir = QEMU_RISCV32_ROM_DIR
+        else:
+            rom_dir = QEMU_ESP32_ROM_DIR
+
         # Build QEMU command
         # Note: Espressif QEMU v9.x uses server=on,wait=off syntax
         # GPIO chardev (lcgamboa fork) is not available in the Espressif pre-built binary;
@@ -201,6 +246,7 @@ class EspQemuManager:
             qemu_bin,
             '-nographic',
             '-machine', machine,
+            '-L', rom_dir,
             # UART0 → TCP (serial I/O)
             '-serial', f'tcp:127.0.0.1:{inst.serial_port},server=on,wait=off',
         ]
@@ -216,7 +262,28 @@ class EspQemuManager:
                 nic_arg += f',hostfwd=tcp::{wifi_hostfwd_port}-192.168.4.15:80'
             cmd += ['-nic', nic_arg]
 
+        # Deterministic instruction counting for stable timers (required for ESP32-C3 boot)
+        if 'c3' in machine:
+            cmd += ['-icount', '3']
+
         logger.info('Launching ESP32 QEMU for %s: %s', inst.client_id, ' '.join(cmd))
+
+        proc_env = dict(os.environ)
+        qemu_bin_dir = str(Path(qemu_bin).parent)
+        if qemu_bin_dir and qemu_bin_dir != '.':
+            curr_path = proc_env.get('PATH', '')
+            proc_env['PATH'] = f"{qemu_bin_dir}:{curr_path}" if curr_path else qemu_bin_dir
+
+        ld_dirs = [
+            '/run/media/tobias/Media1/velxio/bin/qemu/lcgamboa-qemu/build',
+            '/run/media/tobias/Media1/velxio/bin/qemu/glib-install/lib/x86_64-linux-gnu',
+            '/run/media/tobias/Media1/velxio/bin/qemu/libgcrypt-install/lib',
+            '/run/media/tobias/Media1/velxio/bin/qemu/libgpg-error-install/lib',
+        ]
+        existing_ld = proc_env.get('LD_LIBRARY_PATH', '')
+        extra_ld = ':'.join([d for d in ld_dirs if os.path.exists(d)])
+        if extra_ld:
+            proc_env['LD_LIBRARY_PATH'] = f"{extra_ld}:{existing_ld}" if existing_ld else extra_ld
 
         try:
             inst.process = await asyncio.create_subprocess_exec(
@@ -224,6 +291,7 @@ class EspQemuManager:
                 stdout=asyncio.subprocess.DEVNULL,
                 stderr=asyncio.subprocess.PIPE,
                 stdin=asyncio.subprocess.DEVNULL,
+                env=proc_env,
             )
         except FileNotFoundError:
             await inst.emit('error', {'message': f'{qemu_bin} not found in PATH'})

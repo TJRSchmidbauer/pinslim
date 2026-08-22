@@ -69,7 +69,7 @@ const resizeHandleStyle: React.CSSProperties = {
 export const EditorPage: React.FC = () => {
   const { t } = useTranslation();
   useSEO({
-    title: 'Multi-Board Simulator Editor — Arduino, ESP32, RP2040, RISC-V | Velxio',
+    title: 'Pinslim',
     description:
       'Write, compile and simulate Arduino, ESP32, Raspberry Pi Pico, ESP32-C3, and Raspberry Pi 3 code in your browser. 19 boards, 5 CPU architectures, 48+ components. Free and open-source.',
     url: 'https://velxio.dev/editor',
@@ -138,9 +138,10 @@ export const EditorPage: React.FC = () => {
   useEffect(() => {
     if (starterDialogShownThisLoad) return;
     const locale = getLocaleFromPath(window.location.pathname);
-    // /editor is prerendered, so a fresh load arrives as /editor/ (nginx
-    // adds the slash); client-side navigation lands on /editor. Both count.
-    if (window.location.pathname.replace(/\/+$/, '') !== localizedPath('/editor', locale)) return;
+    const currentPath = window.location.pathname.replace(/\/+$/, '');
+    const edPath = localizedPath('/editor', locale);
+    const rootPath = localizedPath('/', locale);
+    if (currentPath !== edPath && currentPath !== rootPath && currentPath !== '') return;
     if (window.location.search) return;
     if (useProjectStore.getState().currentProject) return;
     const sim = useSimulatorStore.getState();

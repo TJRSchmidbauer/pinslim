@@ -3,6 +3,8 @@ import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import type { BoardKind } from '../../types/board';
 import { BOARD_KIND_LABELS } from '../../types/board';
+import { isProBoardKind } from '../../lib/proBoardGate';
+import { VelxioDevExklusivBadge } from '../common/VelxioDevExklusivBadge';
 
 /** Neutral chip glyph for overlay-registered boards without a bespoke icon. */
 const PRO_FALLBACK_ICON = (
@@ -134,8 +136,11 @@ export const BoardPickerModal = ({ isOpen, onClose, onSelectBoard }: BoardPicker
               >
                 {BOARD_ICON[kind] ?? PRO_FALLBACK_ICON}
               </span>
-              <div>
-                <div style={{ fontWeight: 600, fontSize: 14 }}>{BOARD_KIND_LABELS[kind]}</div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontWeight: 600, fontSize: 14, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span>{BOARD_KIND_LABELS[kind]}</span>
+                  {isProBoardKind(kind) && <VelxioDevExklusivBadge style={{ position: 'static' }} />}
+                </div>
                 <div style={{ fontSize: 11, color: '#888', marginTop: 2 }}>
                   {BOARD_DESCRIPTIONS[kind]}
                 </div>

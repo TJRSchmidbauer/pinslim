@@ -209,7 +209,8 @@ def wifi_nic_arg(machine: str, wifi_enabled: bool,
     server to the host and so belongs to a sketch that actually serves.
     """
     if 'c3' in machine:
-        model = 'esp32c3_wifi'
+        # riscv32 machine is compiled with --disable-slirp (no network model)
+        return None
     elif machine in _WIFI_MACHINES:
         model = 'esp32_wifi'
     else:

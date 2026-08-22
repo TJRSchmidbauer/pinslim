@@ -665,3 +665,186 @@ body {
 .flash-indeterminate {
   animation: flash-indeterminate 1.4s ease-in-out infinite;
 }
+
+/* ── Light Mode System ─────────────────────────────────── */
+body.light-theme {
+  background-color: #f8f9fa;
+  color: #111827;
+}
+
+body.light-theme .app-header {
+  background-color: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+body.light-theme .header-title {
+  color: #111827;
+}
+
+/* Editor Menu Bar triggers and dropdowns */
+body.light-theme .emb-trigger {
+  color: #1f2937 !important;
+  font-weight: 500;
+}
+
+body.light-theme .emb-trigger:hover,
+body.light-theme .emb-trigger-open {
+  background: #e5e7eb !important;
+  color: #111827 !important;
+}
+
+body.light-theme .emb-menu {
+  background: #ffffff !important;
+  border: 1px solid #d1d5db !important;
+  color: #111827 !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12) !important;
+}
+
+body.light-theme .emb-item {
+  color: #1f2937 !important;
+  font-weight: 500;
+}
+
+body.light-theme .emb-item:hover:not(:disabled) {
+  background: #0071e3 !important;
+  color: #ffffff !important;
+}
+
+body.light-theme .emb-shortcut {
+  color: #6b7280 !important;
+}
+
+body.light-theme .emb-item:hover:not(:disabled) .emb-shortcut {
+  color: #e0f2fe !important;
+}
+
+body.light-theme .emb-separator {
+  background: #e5e7eb !important;
+}
+
+/* Editor Toolbar in light mode */
+body.light-theme .editor-toolbar {
+  background: #f3f4f6 !important;
+  border-bottom: 1px solid #e5e7eb !important;
+}
+
+body.light-theme .tb-divider {
+  background: #d1d5db !important;
+}
+
+body.light-theme .tb-btn {
+  color: #374151 !important;
+}
+
+body.light-theme .tb-btn:hover:not(:disabled) {
+  background: #e5e7eb !important;
+  color: #111827 !important;
+}
+
+body.light-theme .tb-btn-output {
+  color: #374151 !important;
+}
+
+body.light-theme .tb-btn-output:hover {
+  background: #e5e7eb !important;
+  color: #111827 !important;
+}
+
+body.light-theme .tb-board-pill {
+  background: #ffffff !important;
+  border-color: #d1d5db !important;
+  color: #111827 !important;
+}
+
+/* File Explorer in light mode */
+body.light-theme .file-explorer {
+  background: #ffffff !important;
+  color: #111827 !important;
+  border-right: 1px solid #e5e7eb !important;
+}
+
+body.light-theme .file-explorer-header {
+  color: #374151 !important;
+  border-bottom: 1px solid #e5e7eb !important;
+}
+
+body.light-theme .file-explorer-new-btn,
+body.light-theme .file-explorer-save-btn {
+  color: #4b5563 !important;
+}
+
+body.light-theme .file-explorer-new-btn:hover,
+body.light-theme .file-explorer-save-btn:hover {
+  background: #f3f4f6 !important;
+  color: #111827 !important;
+}
+
+body.light-theme .file-explorer-item {
+  color: #1f2937 !important;
+}
+
+body.light-theme .file-explorer-item:hover {
+  background: #f3f4f6 !important;
+}
+
+body.light-theme .file-explorer-item-active {
+  background: #e0f2fe !important;
+  color: #0369a1 !important;
+  font-weight: 600;
+}
+
+body.light-theme .fe-board-header {
+  color: #374151 !important;
+}
+
+body.light-theme .fe-board-header:hover {
+  background: #f3f4f6 !important;
+  color: #111827 !important;
+}
+
+body.light-theme .fe-board-header-active {
+  background: #e5e7eb !important;
+  color: #111827 !important;
+}
+
+body.light-theme .explorer-account-footer {
+  background: #f9fafb !important;
+  border-top: 1px solid #e5e7eb !important;
+  color: #374151 !important;
+}
+
+body.light-theme .unified-toolbar {
+  background: #f3f4f6;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+body.light-theme .unified-toolbar-canvas {
+  border-left: 1px solid #e5e7eb;
+}
+
+body.light-theme .explorer-toggle-btn {
+  background: #f3f4f6;
+  color: #374151;
+  border-right: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+body.light-theme .explorer-toggle-btn:hover {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+body.light-theme .explorer-resize-handle,
+body.light-theme .resize-handle {
+  background: #e5e7eb;
+}
+
+body.light-theme .mobile-tab-bar {
+  background: #ffffff;
+  border-bottom: 2px solid #00E5FF;
+}
+
+body.light-theme .mobile-tab-btn {
+  color: #4b5563;
+}
+

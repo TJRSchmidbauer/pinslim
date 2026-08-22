@@ -37,9 +37,9 @@ import { useProjectStore } from '../../store/useProjectStore';
 import { useEditorStore } from '../../store/useEditorStore';
 import { getLocaleFromPath, localizedPath } from '../../i18n/path';
 import { loadExample } from '../../utils/loadExample';
-import type { ExampleProject } from '../../data/examples';
 import { ExampleThumbnail } from '../examples/ExampleThumbnail';
 import { trackSelectBoard } from '../../utils/analytics';
+import { VelxioDevExklusivBadge } from '../common/VelxioDevExklusivBadge';
 import './NewProjectDialog.css';
 
 interface NewProjectDialogProps {
@@ -269,11 +269,7 @@ export function buildStarterSections(defs: ProBoardDef[]): StarterSection[] {
   ];
 }
 
-const ProPill: React.FC = () => (
-  <span className="new-project-pro" title="Pro feature — paid plan or Velxio Desktop">
-    PRO
-  </span>
-);
+const ProPill: React.FC = () => <VelxioDevExklusivBadge style={{ top: 8, right: 8 }} />;
 
 export const NewProjectDialog: React.FC<NewProjectDialogProps> = ({ isOpen, onClose }) => {
   const { t } = useTranslation();

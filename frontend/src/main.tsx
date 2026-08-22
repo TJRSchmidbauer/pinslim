@@ -7,6 +7,8 @@ import './index.css';
 import './i18n';
 import { markProExamplesSettled } from './data/examples';
 import { markProRoutesSettled } from './lib/proRoutes';
+import { installWebFlashImpl } from './lib/proWebFlash';
+import { openWebFlashImpl } from './lib/openWebFlashImpl';
 
 /** The overlay import has settled (either way): registries are final. */
 const markProOverlaySettled = (): void => {
@@ -81,6 +83,9 @@ if (import.meta.env.VITE_PRO_BUILD) {
   // No overlay is coming: what the registries have now is all there will be.
   markProOverlaySettled();
 }
+
+// Install open-source Web Serial flasher for ESP32 and Arduino
+installWebFlashImpl(openWebFlashImpl);
 
 // Desktop-only hooks (ESP32 QEMU prompt now, welcome screen in Phase 3).
 // Dynamic import so the OSS bundle never pulls this in.

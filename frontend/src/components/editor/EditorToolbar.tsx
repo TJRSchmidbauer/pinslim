@@ -40,6 +40,8 @@ import {
   trackResetSimulation,
   trackOpenLibraryManager,
 } from '../../utils/analytics';
+import { exportSchematicPng } from '../../utils/exportSchematicPng';
+import { BomModal } from './BomModal';
 import './EditorToolbar.css';
 
 /**
@@ -257,6 +259,7 @@ export const EditorToolbar = ({
   const [libManagerOpen, setLibManagerOpen] = useState(false);
   const [pendingLibraries, setPendingLibraries] = useState<string[]>([]);
   const [installModalOpen, setInstallModalOpen] = useState(false);
+  const [bomModalOpen, setBomModalOpen] = useState(false);
   const importInputRef = useRef<HTMLInputElement>(null);
   const firmwareInputRef = useRef<HTMLInputElement>(null);
   const toolbarRef = useRef<HTMLDivElement>(null);
@@ -1235,7 +1238,7 @@ export const EditorToolbar = ({
       // and the canvas id off one object means they cannot disagree (#268).
       const board = boards.find((b) => b.id === activeBoardId) ?? boards[0];
       const projectName =
-        files.find((f) => f.name.endsWith('.ino'))?.name.replace('.ino', '') || 'velxio-project';
+        files.find((f) => f.name.endsWith('.ino'))?.name.replace('.ino', '') || 'pinslim-project';
       // The other boards cannot travel: the format stores one. Their wires are
       // left out rather than written against this board's part id, which used
       // to re-attach their components to this chip on import — same pins, wrong
@@ -1276,100 +1279,17 @@ export const EditorToolbar = ({
   // /pricing. The server-side headless chromium renders the canvas and
   // returns a PNG, which we trigger a download for.
   const handleExportScreenshot = async () => {
-    const projectId = currentProject?.id;
-    if (!projectId) {
-      setMessage({ type: 'error', text: 'Save the project before exporting an image.' });
-      return;
-    }
-    setMessage({ type: 'info', text: 'Rendering screenshot — may take 5-10 seconds…' });
     try {
-      const resp = await fetch(`/api/pro/projects/${projectId}/screenshot.png`, {
-        credentials: 'include',
-      });
-      if (resp.status === 402) {
-        // Fire the in-place upgrade modal instead of bouncing to /pricing —
-        // keeps the user in the editor with full context. The pro overlay's
-        // UpgradeGate listens for this event and opens UpgradePromptModal.
-        window.dispatchEvent(new CustomEvent('velxio-pro-upgrade-prompt', {
-          detail: { componentName: 'Schematic screenshot export' },
-        }));
-        return;
-      }
-      if (resp.status === 401) {
-        window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`;
-        return;
-      }
-      if (resp.status === 422) {
-        setMessage({ type: 'error', text: 'Add at least one component to export an image.' });
-        return;
-      }
-      if (!resp.ok) {
-        setMessage({ type: 'error', text: 'Screenshot export failed.' });
-        return;
-      }
-      const blob = await resp.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      const cd = resp.headers.get('Content-Disposition') || '';
-      const m = /filename="?([^"]+)"?/.exec(cd);
-      a.download = m ? m[1] : `velxio-${projectId}.png`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-      setMessage({ type: 'success', text: 'Screenshot downloaded.' });
-    } catch {
-      setMessage({ type: 'error', text: 'Screenshot export failed.' });
+      setMessage({ type: 'info', text: 'Rendering PNG schematic image…' });
+      await exportSchematicPng();
+      setMessage({ type: 'success', text: 'Schaltplanbild heruntergeladen.' });
+    } catch (err: any) {
+      setMessage({ type: 'error', text: err?.message || 'Screenshot export failed.' });
     }
   };
 
-  // Phase 3 D3.1 — BOM export. Pro-tier-gated by the backend (402 if not pro).
-  // We let everyone click; the 402 response feeds the upgrade prompt below
-  // so free/maker users hit the funnel naturally instead of an obviously-
-  // locked button (which they'd just dismiss).
-  const handleExportBom = async () => {
-    const projectId = currentProject?.id;
-    if (!projectId) {
-      setMessage({ type: 'error', text: 'Save the project before exporting a BOM.' });
-      return;
-    }
-    try {
-      const resp = await fetch(`/api/pro/projects/${projectId}/bom.csv`, {
-        credentials: 'include',
-      });
-      if (resp.status === 402) {
-        // Fire the in-place upgrade modal instead of bouncing to /pricing —
-        // keeps the user in the editor with full context. The pro overlay's
-        // UpgradeGate listens for this event and opens UpgradePromptModal.
-        window.dispatchEvent(new CustomEvent('velxio-pro-upgrade-prompt', {
-          detail: { componentName: 'BOM export' },
-        }));
-        return;
-      }
-      if (resp.status === 401) {
-        window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`;
-        return;
-      }
-      if (!resp.ok) {
-        setMessage({ type: 'error', text: 'BOM export failed.' });
-        return;
-      }
-      const blob = await resp.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      // Filename comes from Content-Disposition; pick a fallback.
-      const cd = resp.headers.get('Content-Disposition') || '';
-      const m = /filename="?([^"]+)"?/.exec(cd);
-      a.download = m ? m[1] : `bom-${projectId}.csv`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-    } catch {
-      setMessage({ type: 'error', text: 'BOM export failed.' });
-    }
+  const handleExportBom = () => {
+    setBomModalOpen(true);
   };
 
   const handleFirmwareUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1974,6 +1894,7 @@ export const EditorToolbar = ({
       )}
 
       <LibraryManagerModal isOpen={libManagerOpen} onClose={() => setLibManagerOpen(false)} />
+      <BomModal isOpen={bomModalOpen} onClose={() => setBomModalOpen(false)} />
       <InstallLibrariesModal
         isOpen={installModalOpen}
         onClose={() => setInstallModalOpen(false)}

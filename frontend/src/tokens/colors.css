@@ -100,3 +100,38 @@
   --text-muted:   var(--color-fg-muted);
   --text-dim:     var(--color-fg-subtle);
 }
+
+body.light-theme,
+[data-theme='light'] {
+  --color-bg-canvas:    #f8f9fa;
+  --color-bg-surface-1: #ffffff;
+  --color-bg-surface-2: #f1f3f5;
+  --color-bg-surface-3: #e9ecef;
+  --color-bg-input:     #ffffff;
+  --color-bg-overlay:   rgba(0, 0, 0, 0.4);
+
+  --color-fg-default: #111827;
+  --color-fg-muted:   #374151;
+  --color-fg-subtle:  #4b5563;
+  --color-fg-on-action: #ffffff;
+
+  --color-border-default: #d1d5db;
+  --color-border-strong:  #9ca3af;
+
+  --color-action-primary:       #0071e3;
+  --color-action-primary-hover: #0058b3;
+  --color-action-secondary:     #e5e7eb;
+  --color-action-secondary-hover: #d1d5db;
+
+  --accent:       var(--color-action-primary);
+  --accent-hover: var(--color-action-primary-hover);
+  --bg:           var(--color-bg-canvas);
+  --bg-card:      var(--color-bg-surface-1);
+  --bg-elevated:  var(--color-bg-surface-3);
+  --bg-input:     var(--color-bg-input);
+  --border:       var(--color-border-default);
+  --border-hi:    var(--color-border-strong);
+  --text:         var(--color-fg-default);
+  --text-muted:   var(--color-fg-muted);
+  --text-dim:     var(--color-fg-subtle);
+}

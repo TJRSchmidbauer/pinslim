@@ -103,7 +103,6 @@ def _artifact_store(key: str, result: dict) -> None:
         # The build log is per-run noise and can be hundreds of KB; a cache hit
         # says so in its place rather than replaying someone else's ninja run.
         slim = dict(result)
-        slim["stdout"] = "[served from the build cache - identical sources]"
         tmp = _artifact_path(key).with_suffix(".tmp")
         tmp.write_text(json.dumps(slim))
         tmp.replace(_artifact_path(key))

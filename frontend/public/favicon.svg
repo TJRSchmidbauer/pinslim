@@ -1,20 +1,21 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <!-- Background -->
-  <rect width="32" height="32" rx="6" fill="#0d0d0f"/>
-  <!-- IC body (filled, high contrast) -->
-  <rect x="8" y="8" width="16" height="16" rx="2" fill="#007acc"/>
-  <!-- Die (darker inset) -->
-  <rect x="11" y="11" width="10" height="10" rx="1" fill="#005fa3"/>
-  <!-- Top pins -->
-  <rect x="12" y="3" width="3" height="5" rx="1" fill="#007acc"/>
-  <rect x="17" y="3" width="3" height="5" rx="1" fill="#007acc"/>
-  <!-- Bottom pins -->
-  <rect x="12" y="24" width="3" height="5" rx="1" fill="#007acc"/>
-  <rect x="17" y="24" width="3" height="5" rx="1" fill="#007acc"/>
-  <!-- Left pins -->
-  <rect x="3" y="12" width="5" height="3" rx="1" fill="#007acc"/>
-  <rect x="3" y="17" width="5" height="3" rx="1" fill="#007acc"/>
-  <!-- Right pins -->
-  <rect x="24" y="12" width="5" height="3" rx="1" fill="#007acc"/>
-  <rect x="24" y="17" width="5" height="3" rx="1" fill="#007acc"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <defs>
+    <linearGradient id="pinslimGrad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#00E5FF"/>
+      <stop offset="1" stop-color="#0077FF"/>
+    </linearGradient>
+    <linearGradient id="pinslimChip" x1="6" y1="6" x2="26" y2="26" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1E293B"/>
+      <stop offset="1" stop-color="#0F172A"/>
+    </linearGradient>
+  </defs>
+
+  <path d="M10 2V6M16 2V6M22 2V6" stroke="url(#pinslimGrad)" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M10 26V30M16 26V30M22 26V30" stroke="url(#pinslimGrad)" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M2 10H6M2 16H6M2 22H6" stroke="url(#pinslimGrad)" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M26 10H30M26 16H30M26 22H30" stroke="url(#pinslimGrad)" stroke-width="1.5" stroke-linecap="round"/>
+
+  <rect x="5" y="5" width="22" height="22" rx="4" fill="url(#pinslimChip)" stroke="url(#pinslimGrad)" stroke-width="1.5"/>
+  <rect x="10" y="10" width="12" height="12" rx="2" fill="#00E5FF" fill-opacity="0.15" stroke="#00E5FF" stroke-width="1" stroke-dasharray="3 1"/>
+  <circle cx="16" cy="16" r="2.5" fill="#00E5FF"/>
 </svg>

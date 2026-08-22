@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { ComponentRegistry } from '../services/ComponentRegistry';
 import type { ComponentMetadata, ComponentCategory } from '../types/component-metadata';
 import { ComponentInfoPanel, HOVER_DELAY, type HoverTarget, type PanelData } from './ComponentInfoPanel';
+import { VelxioDevExklusivBadge } from './common/VelxioDevExklusivBadge';
 
 // Grace period after the pointer leaves a card before the datasheet popover
 // hides — long enough to cross the gap onto the (interactive) panel. Must be
@@ -604,27 +605,7 @@ const PI_BOARD_ART: Record<string, string> = {
 };
 
 /** Gold PRO pill shown on cards for paid-gated boards (Pi Linux + STM32). */
-const ProBadge: React.FC = () => (
-  <span
-    title="Pro feature — paid plan or Velxio Desktop"
-    style={{
-      position: 'absolute',
-      top: 8,
-      right: 8,
-      zIndex: 1,
-      padding: '3px 10px',
-      borderRadius: 999,
-      fontSize: 11,
-      fontWeight: 700,
-      letterSpacing: 0.6,
-      color: '#1a1205',
-      background: 'linear-gradient(180deg,#ffd566,#f5a623)',
-      boxShadow: '0 1px 4px rgba(0,0,0,0.35)',
-    }}
-  >
-    PRO
-  </span>
-);
+const ProBadge: React.FC = () => <VelxioDevExklusivBadge />;
 
 const ComponentCard: React.FC<ComponentCardProps> = ({ component, onSelect, hoverApi }) => {
   const thumbnailRef = React.useRef<HTMLDivElement>(null);
@@ -881,27 +862,7 @@ const visibleBoardAds = () =>
   );
 
 /** Teal "ONLINE" pill: the board runs (free) in the hosted editor. */
-const OnlineBadge: React.FC = () => (
-  <span
-    title="Free in the online editor — velxio.com"
-    style={{
-      position: 'absolute',
-      top: 8,
-      right: 8,
-      zIndex: 1,
-      padding: '3px 10px',
-      borderRadius: 999,
-      fontSize: 11,
-      fontWeight: 700,
-      letterSpacing: 0.6,
-      color: '#04211c',
-      background: 'linear-gradient(180deg,#5eead4,#14b8a6)',
-      boxShadow: '0 1px 4px rgba(0,0,0,0.35)',
-    }}
-  >
-    ONLINE
-  </span>
-);
+const OnlineBadge: React.FC = () => <VelxioDevExklusivBadge />;
 
 /** Advertisement card for a component only available in the hosted editor. */
 const OnlineOnlyComponentCard: React.FC<{ ad: OnlineOnlyComponentAd }> = ({ ad }) => (

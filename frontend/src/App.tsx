@@ -33,13 +33,8 @@ import './App.css';
  * 300ms away from registering would be a race, and the prerendered SEO
  * fallback covers the blank moment for crawlers.
  */
-function RootRoute(): ReactElement | null {
-  const proRoutes = useProRoutes();
-  const settled = useProRoutesSettled();
-  const proHome = proRoutes.find((r) => r.index);
-  if (proHome) return proHome.element;
-  if (import.meta.env.VITE_PRO_BUILD && !settled) return null;
-  return <Navigate to="/editor" replace />;
+function RootRoute(): ReactElement {
+  return <EditorPage />;
 }
 
 const ROOT_ELEMENT: ReactElement = <RootRoute />;

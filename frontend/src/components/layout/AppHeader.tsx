@@ -7,6 +7,7 @@ import { LanguageSwitcher } from './LanguageSwitcher';
 import { useLocalizedHref, useCurrentLocale } from '../../i18n/useLocalizedNavigate';
 import { blogUrlFor } from '../../i18n/path';
 import { trackVisitGitHub, trackVisitDiscord } from '../../utils/analytics';
+import { PinslimLogo } from './PinslimLogo';
 import { applyStripLayout, STRIP_BELOW_CLASS } from './headerStripFit';
 import './LanguageSwitcher.css';
 
@@ -117,22 +118,8 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ editorMenu, editorToolbar 
         <div className="header-left">
           {/* Brand */}
           <div className="header-brand">
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#0071e3"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <rect x="5" y="5" width="14" height="14" rx="2" />
-              <rect x="9" y="9" width="6" height="6" />
-              <path d="M9 1v4M15 1v4M9 19v4M15 19v4M1 9h4M1 15h4M19 9h4M19 15h4" />
-            </svg>
             <Link to={localize('/')} style={{ textDecoration: 'none', color: 'inherit' }}>
-              <span className="header-title">Velxio</span>
+              <PinslimLogo size={22} showText={true} />
             </Link>
           </div>
 

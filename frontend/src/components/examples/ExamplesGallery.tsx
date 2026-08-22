@@ -13,8 +13,10 @@ import {
   type ExampleProject,
 } from '../../data/examples';
 import { subscribeProBoards, getProBoardsVersion } from '../../lib/proBoardRegistry';
+import { isProBoardKind } from '../../lib/proBoardGate';
 import { BOARD_KIND_LABELS } from '../../types/board';
 import { ExampleThumbnail } from './ExampleThumbnail';
+import { VelxioDevExklusivBadge } from '../common/VelxioDevExklusivBadge';
 import './ExamplesGallery.css';
 
 interface ExamplesGalleryProps {
@@ -431,7 +433,10 @@ export const ExamplesGallery: React.FC<ExamplesGalleryProps> = ({ onLoadExample 
           const boardBadge = getBoardBadge(example);
           return (
             <div key={example.id} className="example-card" onClick={() => onLoadExample(example)}>
-              <div className="example-thumbnail">
+              <div className="example-thumbnail" style={{ position: 'relative' }}>
+                {(isProBoardKind(getBoardFilter(example)) || (example as any).isPro || (example as any).isOnline) && (
+                  <VelxioDevExklusivBadge style={{ top: 8, right: 8 }} />
+                )}
                 <ExampleThumbnail
                   example={example}
                   width={300}
