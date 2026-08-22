@@ -128,7 +128,12 @@ export const BOARD_PIN_GROUPS: Record<AllBoardKinds, BoardPinGroup> = {
     vcc_pins: ['3V3', '3V3.1', '3V3.2'],
     aux: { volts: 5, pins: ['VIN', '5V'] },
   },
-  'xiao-esp32-s3': { vcc: 3.3, gnd: ['GND'], vcc_pins: ['3V3'], aux: { volts: 5, pins: ['5V'] } },
+  'xiao-esp32-s3': {
+    vcc: 3.3,
+    gnd: ['GND', 'GND.1', 'GND.2'],
+    vcc_pins: ['3V3', '3V3.1'],
+    aux: { volts: 5, pins: ['5V', 'VBUS', 'VIN'] },
+  },
   'arduino-nano-esp32': {
     vcc: 3.3,
     gnd: ['GND'],
@@ -138,16 +143,21 @@ export const BOARD_PIN_GROUPS: Record<AllBoardKinds, BoardPinGroup> = {
   'esp32-c3': {
     vcc: 3.3,
     gnd: ['GND', 'GND.1', 'GND.2'],
-    // The ESP32-C3-DevKitM-1 exposes its supply as two 3V3 and two 5V pins
-    // (3V3.1/3V3.2, 5V.1/5V.2) — there is no bare "3V3"/"5V" pin. GND pins are
-    // caught by GROUND_PIN_RE's numeric-suffix branch, but VCC_PIN_RE has no
-    // such branch (a dual motor-supply pin like L293D VCC2 must NOT collapse
-    // onto the shared rail), so the numbered supply pins must be listed here
-    // explicitly or they float at 0 V and any switch pulled up to 3V3 reads LOW.
     vcc_pins: ['3V3', '3V3.1', '3V3.2'],
     aux: { volts: 5, pins: ['VIN', '5V', '5V.1', '5V.2'] },
   },
-  'xiao-esp32-c3': { vcc: 3.3, gnd: ['GND'], vcc_pins: ['3V3'], aux: { volts: 5, pins: ['5V'] } },
+  'xiao-esp32-c3': {
+    vcc: 3.3,
+    gnd: ['GND', 'GND.1', 'GND.2'],
+    vcc_pins: ['3V3', '3V3.1'],
+    aux: { volts: 5, pins: ['5V', 'VBUS', 'VIN'] },
+  },
+  'xiao-esp32-c6': {
+    vcc: 3.3,
+    gnd: ['GND', 'GND.1', 'GND.2'],
+    vcc_pins: ['3V3', '3V3.1'],
+    aux: { volts: 5, pins: ['5V', 'VBUS', 'VIN'] },
+  },
   'aitewinrobot-esp32c3-supermini': {
     vcc: 3.3,
     gnd: ['GND'],

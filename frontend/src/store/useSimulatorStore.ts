@@ -267,8 +267,8 @@ class Esp32BridgeShim {
       if (pin >= 11 && pin <= 20) return 10 + (pin - 11);
       return -1;
     }
-    if (kind === 'esp32-c3' || kind === 'xiao-esp32-c3' || kind === 'aitewinrobot-esp32c3-supermini') {
-      // C3: ADC1 = GPIO0-4 -> CH0-4, GPIO5 (ADC2_CH0) -> index 5.
+    if (kind === 'esp32-c3' || kind === 'xiao-esp32-c3' || kind === 'xiao-esp32-c6' || kind === 'aitewinrobot-esp32c3-supermini') {
+      // C3/C6: ADC1 = GPIO0-4 -> CH0-4, GPIO5 (ADC2_CH0) -> index 5.
       // Verified against the qemu SARADC: esp32_adc_set{channel:3} is what
       // analogRead(3) returns (emulation-gaps harness, 2026-07-31).
       return pin >= 0 && pin <= 5 ? pin : -1;
@@ -975,6 +975,7 @@ const ESP32_KINDS = new Set<BoardKind>([
 const ESP32_RISCV_KINDS = new Set<BoardKind>([
   'esp32-c3',
   'xiao-esp32-c3',
+  'xiao-esp32-c6',
   'aitewinrobot-esp32c3-supermini',
 ]);
 

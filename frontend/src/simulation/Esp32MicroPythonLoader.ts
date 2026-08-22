@@ -31,16 +31,27 @@ const FIRMWARE_MAP: Record<string, FirmwareConfig> = {
     cacheKey: 'micropython-esp32c3-v1.28.0',
     fallback: '/firmware/micropython-esp32c3.bin',
   },
+  'esp32-c6': {
+    remote: 'https://micropython.org/resources/firmware/ESP32_GENERIC_C6-20260406-v1.28.0.bin',
+    cacheKey: 'micropython-esp32c6-v1.28.0',
+    fallback: '/firmware/micropython-esp32c6.bin',
+  },
 };
 
 /** Map any ESP32-family board kind to firmware variant key */
-export function toFirmwareVariant(boardKind: BoardKind): 'esp32' | 'esp32-s3' | 'esp32-c3' {
+export function toFirmwareVariant(boardKind: BoardKind): 'esp32' | 'esp32-s3' | 'esp32-c3' | 'esp32-c6' {
   if (
     boardKind === 'esp32-s3' ||
     boardKind === 'xiao-esp32-s3' ||
     boardKind === 'arduino-nano-esp32'
   ) {
     return 'esp32-s3';
+  }
+  if (
+    boardKind === 'esp32-c6' ||
+    boardKind === 'xiao-esp32-c6'
+  ) {
+    return 'esp32-c6';
   }
   if (
     boardKind === 'esp32-c3' ||

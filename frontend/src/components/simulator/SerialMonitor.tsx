@@ -31,6 +31,7 @@ const BOARD_SHORT_LABEL: Partial<Record<string, string>> = {
   'arduino-nano-esp32': 'Nano ESP32',
   'esp32-c3': 'ESP32-C3',
   'xiao-esp32-c3': 'XIAO-C3',
+  'xiao-esp32-c6': 'XIAO-C6',
   'aitewinrobot-esp32c3-supermini': 'C3 Mini',
   attiny85: 'ATtiny85',
 };
@@ -53,6 +54,7 @@ const BOARD_ICON: Partial<Record<string, string>> = {
   'arduino-nano-esp32': '⬡',
   'esp32-c3': '⬡',
   'xiao-esp32-c3': '⬡',
+  'xiao-esp32-c6': '⬡',
   'aitewinrobot-esp32c3-supermini': '⬡',
   attiny85: '▪',
 };
@@ -75,6 +77,7 @@ const BOARD_COLOR: Partial<Record<string, string>> = {
   'arduino-nano-esp32': '#a5d6a7',
   'esp32-c3': '#a5d6a7',
   'xiao-esp32-c3': '#a5d6a7',
+  'xiao-esp32-c6': '#a5d6a7',
   'aitewinrobot-esp32c3-supermini': '#a5d6a7',
   attiny85: '#ffcc80',
 };

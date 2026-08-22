@@ -58,6 +58,8 @@ export function toQemuBoardType(kind: BoardKind): 'esp32' | 'esp32-s3' | 'esp32-
   if (proFam) return proFam;
   if (kind === 'esp32-s3' || kind === 'xiao-esp32-s3' || kind === 'arduino-nano-esp32')
     return 'esp32-s3';
+  if (kind === 'esp32-c6' || kind === 'xiao-esp32-c6')
+    return 'esp32-c6';
   if (kind === 'esp32-c3' || kind === 'xiao-esp32-c3' || kind === 'aitewinrobot-esp32c3-supermini')
     return 'esp32-c3';
   return 'esp32'; // esp32, esp32-devkit-c-v4, esp32-cam, wemos-lolin32-lite
@@ -262,7 +264,8 @@ export class Esp32Bridge {
       case 'arduino-nano-esp32':
         return 43;
       case 'esp32-c6':
-        return 16; // U0TXD default on the C6 (silkscreen TX on the DevKitC-1)
+      case 'xiao-esp32-c6':
+        return 16; // U0TXD default on the C6 (silkscreen TX on the DevKitC-1 / D6 on XIAO C6)
       case 'esp32-c3':
       case 'xiao-esp32-c3':
       case 'aitewinrobot-esp32c3-supermini':

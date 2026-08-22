@@ -154,6 +154,7 @@ function isEsp32Kind(kind: BoardKind): boolean {
     kind.startsWith('esp32') ||
     kind === 'xiao-esp32-s3' ||
     kind === 'xiao-esp32-c3' ||
+    kind === 'xiao-esp32-c6' ||
     kind === 'arduino-nano-esp32' ||
     kind === 'aitewinrobot-esp32c3-supermini' ||
     kind === 'esp32-cam' ||
@@ -595,9 +596,7 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
         b.boardKind === 'raspberry-pi-3' ||
         b.boardKind === 'raspberry-pi-4' ||
         b.boardKind === 'raspberry-pi-5' ||
-        b.boardKind === 'esp32' ||
-        b.boardKind === 'esp32-s3' ||
-        b.boardKind === 'esp32-c3',
+        isEsp32Kind(b.boardKind),
     );
     remoteBoards.forEach((b) => {
       if (running && !b.running) startBoard(b.id);

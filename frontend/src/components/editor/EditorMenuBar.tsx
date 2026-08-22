@@ -452,6 +452,17 @@ export const EditorMenuBar: React.FC = () => {
                 <span>{t('header.nav.examples', 'Examples')}</span>
               </button>
               <div className="emb-separator" />
+              <a
+                role="menuitem"
+                className="emb-item"
+                href="https://randomnerdtutorials.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setOpen(null)}
+              >
+                <span>Random Nerd Tutorials 🎓</span>
+              </a>
+              <div className="emb-separator" />
               <button
                 role="menuitem"
                 className="emb-item"

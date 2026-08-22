@@ -93,6 +93,7 @@ function isQemuBoardKind(kind: BoardKind | undefined): boolean {
     kind === 'xiao-esp32-s3' ||
     kind === 'arduino-nano-esp32' ||
     kind === 'xiao-esp32-c3' ||
+    kind === 'xiao-esp32-c6' ||
     kind === 'aitewinrobot-esp32c3-supermini'
   );
 }

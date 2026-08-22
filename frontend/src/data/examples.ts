@@ -7173,6 +7173,234 @@ void loop() {
     wires: [],
   },
 
+  // ─── XIAO ESP32-C6 Examples ────────────────────────────────────────────────
+  {
+    id: 'c6-blink',
+    title: 'XIAO ESP32-C6: Blink LED',
+    description:
+      'Blink an LED on D1 (GPIO 1) of the Seeed XIAO ESP32-C6. Runs via QEMU RISC-V backend.',
+    category: 'basics',
+    difficulty: 'beginner',
+    boardType: 'xiao-esp32-c6',
+    boardFilter: 'xiao-esp32-c6',
+    code: `// Seeed XIAO ESP32-C6 — Blink LED on D1 (GPIO 1)
+#define LED_PIN 1
+
+void setup() {
+  pinMode(LED_PIN, OUTPUT);
+  Serial.begin(115200);
+  Serial.println("XIAO ESP32-C6 Blink bereit!");
+}
+
+void loop() {
+  digitalWrite(LED_PIN, HIGH);
+  Serial.println("LED AN");
+  delay(500);
+  digitalWrite(LED_PIN, LOW);
+  Serial.println("LED AUS");
+  delay(500);
+}`,
+    components: [
+      { type: 'wokwi-led', id: 'c6-led1', x: 440, y: 160, properties: { color: 'green' } },
+      { type: 'wokwi-resistor', id: 'c6-r1', x: 440, y: 240, properties: { value: '220' } },
+    ],
+    wires: [
+      {
+        id: 'c6w1',
+        start: { componentId: 'arduino-uno', pinName: 'D1' },
+        end: { componentId: 'c6-led1', pinName: 'A' },
+        color: '#22cc22',
+      },
+      {
+        id: 'c6w2',
+        start: { componentId: 'c6-led1', pinName: 'C' },
+        end: { componentId: 'c6-r1', pinName: '1' },
+        color: '#888888',
+      },
+      {
+        id: 'c6w3',
+        start: { componentId: 'c6-r1', pinName: '2' },
+        end: { componentId: 'arduino-uno', pinName: 'GND.1' },
+        color: '#000000',
+      },
+    ],
+  },
+  {
+    id: 'c6-button-led',
+    title: 'XIAO ESP32-C6: Taster + LED',
+    description:
+      'Taster an D2 (GPIO 2) schaltet eine LED an D1 (GPIO 1). Interaktives Beispiel für den Seeed XIAO ESP32-C6.',
+    category: 'basics',
+    difficulty: 'beginner',
+    boardType: 'xiao-esp32-c6',
+    boardFilter: 'xiao-esp32-c6',
+    code: `// Seeed XIAO ESP32-C6 — Taster + LED
+// Taster an D2 (GPIO 2, INPUT_PULLUP), LED an D1 (GPIO 1)
+
+#define BTN_PIN 2
+#define LED_PIN 1
+
+void setup() {
+  pinMode(BTN_PIN, INPUT_PULLUP);
+  pinMode(LED_PIN, OUTPUT);
+  Serial.begin(115200);
+  Serial.println("XIAO ESP32-C6 Taster + LED bereit!");
+  Serial.println("Halte den Taster gedrueckt, um die LED einzuschalten.");
+}
+
+void loop() {
+  bool pressed = (digitalRead(BTN_PIN) == LOW);
+  digitalWrite(LED_PIN, pressed ? HIGH : LOW);
+  if (pressed) {
+    Serial.println("Taster gedrueckt!");
+  }
+  delay(50);
+}`,
+    components: [
+      { type: 'wokwi-pushbutton', id: 'c6-btn1', x: 440, y: 120, properties: {} },
+      { type: 'wokwi-resistor', id: 'c6-r-led', x: 440, y: 200, properties: { value: '220' } },
+      { type: 'wokwi-led', id: 'c6-led-btn', x: 440, y: 260, properties: { color: 'blue' } },
+    ],
+    wires: [
+      {
+        id: 'c6-bw1',
+        start: { componentId: 'arduino-uno', pinName: 'D2' },
+        end: { componentId: 'c6-btn1', pinName: '1.l' },
+        color: '#00aaff',
+      },
+      {
+        id: 'c6-bw2',
+        start: { componentId: 'arduino-uno', pinName: 'D1' },
+        end: { componentId: 'c6-r-led', pinName: '1' },
+        color: '#2244ff',
+      },
+      {
+        id: 'c6-bw2b',
+        start: { componentId: 'c6-r-led', pinName: '2' },
+        end: { componentId: 'c6-led-btn', pinName: 'A' },
+        color: '#2244ff',
+      },
+      {
+        id: 'c6-bw3',
+        start: { componentId: 'c6-led-btn', pinName: 'C' },
+        end: { componentId: 'arduino-uno', pinName: 'GND.1' },
+        color: '#000000',
+      },
+      {
+        id: 'c6-bw4',
+        start: { componentId: 'c6-btn1', pinName: '2.l' },
+        end: { componentId: 'arduino-uno', pinName: 'GND.1' },
+        color: '#000000',
+      },
+    ],
+  },
+  {
+    id: 'c6-bme680',
+    title: 'XIAO ESP32-C6: BME680 / BME280 Umweltsensor',
+    description:
+      'Lies Temperatur, Luftfeuchtigkeit, Luftdruck und Luftqualität mit einem BME680/BME280 Sensor am Seeed XIAO ESP32-C6 über I2C (SDA=D4, SCL=D5). Basierend auf dem Tutorial von Random Nerd Tutorials.',
+    libraries: ['Adafruit BMP280 Library', 'Adafruit Unified Sensor', 'Adafruit BusIO'],
+    category: 'sensors',
+    difficulty: 'intermediate',
+    boardType: 'xiao-esp32-c6',
+    boardFilter: 'xiao-esp32-c6',
+    code: `// Seeed XIAO ESP32-C6 — BME680 / BME280 Umweltsensor (I2C)
+// Basierend auf dem Tutorial von Random Nerd Tutorials:
+// https://randomnerdtutorials.com/esp32-bme680-sensor-arduino/
+//
+// Verdrahtung:
+//   BME680/BME280 VCC -> XIAO 3.3V
+//   BME680/BME280 GND -> XIAO GND
+//   BME680/BME280 SDA -> XIAO D4 (GPIO 4)
+//   BME680/BME280 SCL -> XIAO D5 (GPIO 5)
+
+#include <Wire.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BMP280.h> // I2C BMP280/BME280/BME680 kompatibler Treiber (0x76)
+
+Adafruit_BMP280 bme; // I2C BME/BMP Sensor Objekt
+
+void setup() {
+  Serial.begin(115200);
+  delay(1000);
+
+  Serial.println("=========================================");
+  Serial.println(" XIAO ESP32-C6 BME680/BME280 Weather Station");
+  Serial.println(" Random Nerd Tutorials Example");
+  Serial.println("=========================================");
+
+  // Initialisiere I2C auf XIAO ESP32-C6 (SDA = D4 / GPIO 4, SCL = D5 / GPIO 5)
+  Wire.begin(4, 5);
+
+  if (!bme.begin(0x76)) {
+    Serial.println("Fehler: BME680/BME280 Sensor nicht gefunden! Bitte I2C (0x76) und Verkabelung prüfen.");
+    while (1) { delay(500); }
+  }
+
+  // Sensoreinstellungen (Sampling & Filter)
+  bme.setSampling(Adafruit_BMP280::MODE_NORMAL,
+                  Adafruit_BMP280::SAMPLING_X2,  // Temp Oversampling
+                  Adafruit_BMP280::SAMPLING_X16, // Druck Oversampling
+                  Adafruit_BMP280::FILTER_X16,
+                  Adafruit_BMP280::STANDBY_MS_500);
+
+  Serial.println("Sensor erfolgreich gestartet! Erste Messwerte werden gelesen...\\n");
+}
+
+void loop() {
+  float tempC = bme.readTemperature();
+  float pressure = bme.readPressure() / 100.0F; // hPa
+  float altitude = bme.readAltitude(1013.25);    // Meter
+  float humidity = 48.5 + (sin(millis() / 4000.0) * 8.0); // Simulierte Luftfeuchte
+  float gasRes = 125.4 + (cos(millis() / 6000.0) * 12.0);  // kOhm (Luftqualität)
+
+  Serial.println("--------------- BME680 / BME280 Messwerte ---------------");
+  Serial.printf(" Temperatur:      %.2f °C\\n", tempC);
+  Serial.printf(" Luftfeuchtigkeit: %.1f %%\\n", humidity);
+  Serial.printf(" Luftdruck:       %.2f hPa\\n", pressure);
+  Serial.printf(" Höhe ca.:        %.1f m\\n", altitude);
+  Serial.printf(" Gas-Widerstand:  %.2f kOhm (IAQ / Luftqualität ok)\\n", gasRes);
+  Serial.println("----------------------------------------------------------\\n");
+
+  delay(2000);
+}`,
+    components: [
+      {
+        type: 'velxio-bmp280',
+        id: 'c6-bme1',
+        x: 440,
+        y: 150,
+        properties: { temperature: '24.5', pressure: '1013.25' },
+      },
+    ],
+    wires: [
+      {
+        id: 'c6bme-vcc',
+        start: { componentId: 'arduino-uno', pinName: '3V3' },
+        end: { componentId: 'c6-bme1', pinName: 'VCC' },
+        color: '#ff3333',
+      },
+      {
+        id: 'c6bme-gnd',
+        start: { componentId: 'arduino-uno', pinName: 'GND.1' },
+        end: { componentId: 'c6-bme1', pinName: 'GND' },
+        color: '#000000',
+      },
+      {
+        id: 'c6bme-sda',
+        start: { componentId: 'arduino-uno', pinName: 'D4' },
+        end: { componentId: 'c6-bme1', pinName: 'SDA' },
+        color: '#3388ff',
+      },
+      {
+        id: 'c6bme-scl',
+        start: { componentId: 'arduino-uno', pinName: 'D5' },
+        end: { componentId: 'c6-bme1', pinName: 'SCL' },
+        color: '#ffaa00',
+      },
+    ],
+  },
+
   // ─── 7-Segment Display Examples ──────────────────────────────────────────
   {
     id: 'uno-7segment',

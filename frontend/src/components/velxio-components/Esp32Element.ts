@@ -22,6 +22,7 @@ const wemosLolin32SvgUrl = '/boards/wemos-lolin32-lite.svg';
 const xiaoEsp32S3SvgUrl = '/boards/xiao-esp32-s3.svg';
 const arduinoNanoEsp32SvgUrl = '/boards/arduino-nano-esp32.svg';
 const xiaoEsp32C3SvgUrl = '/boards/xiao-esp32-c3.svg';
+const xiaoEsp32C6SvgUrl = '/boards/xiao-esp32-c6.svg';
 const aitewinC3SvgUrl = '/boards/esp32c3-supermini.svg';
 
 // ─── Pin positions (mm × 5 px/mm, from board.json) ───────────────────────────
@@ -303,6 +304,7 @@ const PINS_ARDUINO_NANO_ESP32 = [
 
 // Seeed XIAO ESP32-C3: 18.1 mm × 23.4 mm → 91 × 117 px (same form as XIAO ESP32-S3)
 const PINS_XIAO_ESP32_C3 = PINS_XIAO_ESP32_S3;
+const PINS_XIAO_ESP32_C6 = PINS_XIAO_ESP32_S3;
 
 // Aitewinrobot ESP32-C3 SuperMini: 18.0 mm × 24.576 mm → 90 × 123 px
 // Left col: x = 1.46 mm → 7 px  |  Right col: x = 16.70 mm → 84 px
@@ -418,6 +420,7 @@ const BOARD_CONFIGS: Record<string, BoardConfig> = {
     pins: PINS_ARDUINO_NANO_ESP32,
   },
   'xiao-esp32-c3': { svgUrl: xiaoEsp32C3SvgUrl, w: 91, h: 117, pins: PINS_XIAO_ESP32_C3 },
+  'xiao-esp32-c6': { svgUrl: xiaoEsp32C6SvgUrl, w: 91, h: 117, pins: PINS_XIAO_ESP32_C6 },
   'aitewinrobot-esp32c3-supermini': {
     svgUrl: aitewinC3SvgUrl,
     w: 90,

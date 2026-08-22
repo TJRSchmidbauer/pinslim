@@ -81,6 +81,7 @@ _MACHINE: dict[str, tuple[str, str]] = {
     'esp32':    (QEMU_XTENSA,  'esp32'),
     'esp32-s3': (QEMU_XTENSA,  'esp32s3'),
     'esp32-c3': (QEMU_RISCV32, 'esp32c3'),
+    'esp32-c6': (QEMU_RISCV32, 'esp32c3'),
 }
 
 EventCallback = Callable[[str, dict], Awaitable[None]]

@@ -187,7 +187,7 @@ class ArduinoCLIService:
             # Ensure config file exists (arduino-cli requires it for config add)
             result = subprocess.run(
                 [self.cli_path, "config", "dump", "--format", "json"],
-                capture_output=True, text=True
+                capture_output=True, text=True, stdin=subprocess.DEVNULL
             )
             import json
             try:
@@ -201,13 +201,13 @@ class ArduinoCLIService:
                 print("[arduino-cli] Initializing config file...")
                 subprocess.run(
                     [self.cli_path, "config", "init", "--overwrite"],
-                    capture_output=True, text=True
+                    capture_output=True, text=True, stdin=subprocess.DEVNULL
                 )
 
             # Re-read after init
             result = subprocess.run(
                 [self.cli_path, "config", "dump", "--format", "json"],
-                capture_output=True, text=True
+                capture_output=True, text=True, stdin=subprocess.DEVNULL
             )
             try:
                 cfg = json.loads(result.stdout)
@@ -229,14 +229,14 @@ class ArduinoCLIService:
                     print(f"[arduino-cli] Adding board manager URL: {url}")
                     subprocess.run(
                         [self.cli_path, "config", "add", "board_manager.additional_urls", url],
-                        capture_output=True, text=True
+                        capture_output=True, text=True, stdin=subprocess.DEVNULL
                     )
 
             # Refresh index so new cores are discoverable
             print("[arduino-cli] Updating core index...")
             subprocess.run(
                 [self.cli_path, "core", "update-index"],
-                capture_output=True, text=True
+                capture_output=True, text=True, stdin=subprocess.DEVNULL
             )
         except Exception as e:
             print(f"Warning: Could not configure board URLs: {e}")
@@ -250,7 +250,8 @@ class ArduinoCLIService:
             result = subprocess.run(
                 [self.cli_path, "core", "list"],
                 capture_output=True,
-                text=True
+                text=True,
+                stdin=subprocess.DEVNULL
             )
 
             for core_id in self.REQUIRED_CORES:
@@ -258,7 +259,8 @@ class ArduinoCLIService:
                     print(f"[arduino-cli] Core {core_id} not installed. Installing...")
                     subprocess.run(
                         [self.cli_path, "core", "install", core_id],
-                        check=True
+                        check=True,
+                        stdin=subprocess.DEVNULL
                     )
                     print(f"[arduino-cli] Core {core_id} installed successfully")
         except Exception as e:
@@ -285,7 +287,7 @@ class ArduinoCLIService:
             try:
                 result = subprocess.run(
                     [self.cli_path, "core", "list"],
-                    capture_output=True, text=True, timeout=60,
+                    capture_output=True, text=True, timeout=60, stdin=subprocess.DEVNULL
                 )
                 self._installed_cores = result.stdout
             except (subprocess.SubprocessError, OSError):
@@ -315,7 +317,7 @@ class ArduinoCLIService:
         def _install():
             return subprocess.run(
                 [self.cli_path, "core", "install", install_spec],
-                capture_output=True, text=True
+                capture_output=True, text=True, stdin=subprocess.DEVNULL
             )
 
         result = await asyncio.to_thread(_install)
@@ -333,13 +335,13 @@ class ArduinoCLIService:
         try:
             version_result = subprocess.run(
                 [self.cli_path, "version"],
-                capture_output=True, text=True
+                capture_output=True, text=True, stdin=subprocess.DEVNULL
             )
             version = version_result.stdout.strip() if version_result.returncode == 0 else "unknown"
 
             list_result = subprocess.run(
                 [self.cli_path, "core", "list"],
-                capture_output=True, text=True
+                capture_output=True, text=True, stdin=subprocess.DEVNULL
             )
             cores_raw = list_result.stdout.strip()
         except FileNotFoundError:
@@ -387,12 +389,13 @@ class ArduinoCLIService:
         return fqbn.startswith("STMicroelectronics:stm32")
 
     def _is_esp32c3_board(self, fqbn: str) -> bool:
-        """Return True if the FQBN targets an ESP32-C3 (RISC-V) board.
+        """Return True if the FQBN targets an ESP32-C3 or ESP32-C6 (RISC-V) board.
 
-        ESP32-C3 places the bootloader at flash offset 0x0000, unlike Xtensa
+        ESP32-C3 and ESP32-C6 place the bootloader at flash offset 0x0000, unlike Xtensa
         boards (ESP32, ESP32-S3) which use 0x1000.
         """
-        return "esp32c3" in fqbn or "xiao-esp32-c3" in fqbn or "aitewinrobot-esp32c3-supermini" in fqbn
+        low = fqbn.lower()
+        return "esp32c3" in low or "esp32c6" in low or "esp32-c3" in low or "esp32-c6" in low or "supermini" in low
 
     async def compile(
         self,
@@ -548,6 +551,7 @@ class ArduinoCLIService:
                         capture_output=True,
                         text=True,
                         env=compile_env,
+                        stdin=subprocess.DEVNULL,
                     )
 
                 result = await asyncio.to_thread(run_compile)
@@ -781,7 +785,8 @@ class ArduinoCLIService:
             def _run():
                 return subprocess.run(
                     [self.cli_path, "lib", "search", query, "--format", "json"],
-                    capture_output=True, text=True, encoding='utf-8', errors='replace'
+                    capture_output=True, text=True, encoding='utf-8', errors='replace',
+                    stdin=subprocess.DEVNULL
                 )
 
             result = await asyncio.to_thread(_run)
@@ -873,7 +878,8 @@ class ArduinoCLIService:
             def _run():
                 return subprocess.run(
                     [self.cli_path, "lib", "install", lib_spec],
-                    capture_output=True, text=True, encoding='utf-8', errors='replace'
+                    capture_output=True, text=True, encoding='utf-8', errors='replace',
+                    stdin=subprocess.DEVNULL
                 )
 
             result = await asyncio.to_thread(_run)
@@ -892,7 +898,8 @@ class ArduinoCLIService:
                     def _run_plain():
                         return subprocess.run(
                             [self.cli_path, "lib", "install", plain_name],
-                            capture_output=True, text=True, encoding='utf-8', errors='replace'
+                            capture_output=True, text=True, encoding='utf-8', errors='replace',
+                            stdin=subprocess.DEVNULL
                         )
                     result = await asyncio.to_thread(_run_plain)
                     if result.returncode == 0:
@@ -947,7 +954,8 @@ class ArduinoCLIService:
             def _get_config():
                 return subprocess.run(
                     [self.cli_path, "config", "dump", "--format", "json"],
-                    capture_output=True, text=True, encoding='utf-8', errors='replace'
+                    capture_output=True, text=True, encoding='utf-8', errors='replace',
+                    stdin=subprocess.DEVNULL
                 )
             cfg_result = await asyncio.to_thread(_get_config)
             cfg = _json.loads(cfg_result.stdout)
@@ -1047,6 +1055,7 @@ class ArduinoCLIService:
                     [self.cli_path, "lib", "list", "--format", "json"],
                     capture_output=True, text=True, encoding='utf-8', errors='replace',
                     env=list_env,
+                    stdin=subprocess.DEVNULL
                 )
 
             result = await asyncio.to_thread(_run)
@@ -1094,7 +1103,8 @@ class ArduinoCLIService:
             def _run():
                 return subprocess.run(
                     [self.cli_path, "lib", "uninstall", library_name],
-                    capture_output=True, text=True, encoding='utf-8', errors='replace'
+                    capture_output=True, text=True, encoding='utf-8', errors='replace',
+                    stdin=subprocess.DEVNULL
                 )
 
             result = await asyncio.to_thread(_run)

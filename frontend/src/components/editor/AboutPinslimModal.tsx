@@ -102,6 +102,32 @@ export const AboutPinslimModal: React.FC<AboutPinslimModalProps> = ({ onClose })
             </div>
           </div>
 
+          {/* Random Nerd Tutorials Recommendation Notice */}
+          <div
+            style={{
+              backgroundColor: 'rgba(234, 179, 8, 0.1)',
+              borderLeft: '4px solid #eab308',
+              padding: '12px 14px',
+              borderRadius: '4px',
+              marginBottom: '14px',
+            }}
+          >
+            <div style={{ fontWeight: 600, color: '#facc15', marginBottom: '4px' }}>
+              🎓 Empfohlene Lern-Ressource: Random Nerd Tutorials
+            </div>
+            Ausgezeichnete kostenlose Tutorials, Anleitungen und Praxisprojekte für ESP32, ESP8266, Sensorik und IoT von Sara & Rui Santos:
+            <div style={{ marginTop: '6px' }}>
+              <a
+                href="https://randomnerdtutorials.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: '#facc15', textDecoration: 'underline', fontWeight: 600 }}
+              >
+                Random Nerd Tutorials besuchen (https://randomnerdtutorials.com/) &rarr;
+              </a>
+            </div>
+          </div>
+
           {/* Antigravity AI Assistant Notice */}
           <div
             style={{

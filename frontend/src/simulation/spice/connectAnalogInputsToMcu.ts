@@ -88,6 +88,7 @@ const ADC_PIN_MAP: Partial<Record<BoardKind, Array<{ pinName: string; channel: n
   'arduino-nano-esp32': adcRange('A', 0, 8),
   'esp32-c3': adcRange('', 0, 6),
   'xiao-esp32-c3': adcRange('D', 0, 4),
+  'xiao-esp32-c6': adcRange('D', 0, 4),
   'aitewinrobot-esp32c3-supermini': adcRange('', 0, 6),
 };
 
@@ -117,6 +118,7 @@ const ADC_PIN_TO_GPIO: Partial<Record<BoardKind, (pinName: string, channel: numb
   'arduino-nano-esp32': avrPinFromName,
   'esp32-c3': gpioPinFromName,
   'xiao-esp32-c3': gpioPinFromName,
+  'xiao-esp32-c6': gpioPinFromName,
   'aitewinrobot-esp32c3-supermini': gpioPinFromName,
 };
 
