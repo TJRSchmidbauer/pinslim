@@ -1,0 +1,72 @@
+# Portainer & Traefik Stack Deployment Configuration for Pinslim
+# Repository: https://github.com/TJRSchmidbauer/pinslim.git
+# Branch: master
+# Dockerfile: Dockerfile.standalone
+
+version: '3.8'
+
+networks:
+  web:
+    external: true
+    name: web_net
+
+services:
+  pinslim:
+    # Build direkt aus dem GitHub-Repository (Branch 'master' + 'Dockerfile.standalone')
+    build:
+      context: https://github.com/TJRSchmidbauer/pinslim.git#master
+      dockerfile: Dockerfile.standalone
+    
+    # Alternativ: Fertiges Image aus Container Registry nutzen (falls vorhanden)
+    # image: ghcr.io/tjrschmidbauer/pinslim:latest
+
+    container_name: pinslim_app
+    restart: unless-stopped
+    
+    # --- Security Hardening ---
+    security_opt:
+      - no-new-privileges:true
+    
+    # Optional: Persistente Daten für SQLite DB, Arduino-Libs & Ccache
+    volumes:
+      - pinslim_data:/app/data
+      - pinslim_arduino_libs:/root/.arduino15
+      - pinslim_ccache:/var/cache/ccache
+      - pinslim_build:/var/lib/velxio-build
+
+    networks:
+      - web
+
+    # --- Traefik Routing & Security Headers ---
+    labels:
+      - "traefik.enable=true"
+      
+      # Routing (Domain anpassen)
+      - "traefik.http.routers.pinslim.rule=Host(`pinslim.schmidbauer.jetzt`)"
+      - "traefik.http.routers.pinslim.entrypoints=websecure"
+      - "traefik.http.routers.pinslim.tls.certresolver=myresolver"
+      
+      # Interner App-Port (Container Nginx lauscht intern auf Port 80)
+      - "traefik.http.services.pinslim.loadbalancer.server.port=80"
+      
+      # Security Middlewares
+      - "traefik.http.routers.pinslim.middlewares=pinslim-headers,pinslim-ratelimit"
+      
+      # HTTP Security Headers (HSTS, Anti-Clickjacking, Sniff-Protection)
+      - "traefik.http.middlewares.pinslim-headers.headers.stsSeconds=31536000"
+      - "traefik.http.middlewares.pinslim-headers.headers.stsIncludeSubdomains=true"
+      - "traefik.http.middlewares.pinslim-headers.headers.stsPreload=true"
+      - "traefik.http.middlewares.pinslim-headers.headers.framedeny=true"
+      - "traefik.http.middlewares.pinslim-headers.headers.contentTypeNosniff=true"
+      - "traefik.http.middlewares.pinslim-headers.headers.browserXssFilter=true"
+      - "traefik.http.middlewares.pinslim-headers.headers.referrerPolicy=strict-origin-when-cross-origin"
+      
+      # Rate Limiting gegen Brute-Force / DoS
+      - "traefik.http.middlewares.pinslim-ratelimit.ratelimit.average=100"
+      - "traefik.http.middlewares.pinslim-ratelimit.ratelimit.burst=50"
+
+volumes:
+  pinslim_data:
+  pinslim_arduino_libs:
+  pinslim_ccache:
+  pinslim_build:

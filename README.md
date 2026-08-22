@@ -24,7 +24,9 @@ Write Arduino C++, MicroPython, or Python code, compile it, simulate real CPU ex
 
 ---
 
-## 🐳 Quick Start (Docker)
+## 🐳 Quick Start (Docker & Portainer)
+
+### Local Docker Compose
 
 To run Pinslim locally or on your server with Docker:
 
@@ -33,6 +35,16 @@ docker compose up -d --build
 ```
 
 Then open **<http://localhost:3082>** in your browser.
+
+### Portainer & Traefik Deployment
+
+When deploying Pinslim as a Stack in **Portainer** directly from the Git repository:
+
+* **Repository Branch**: Use `master` (e.g., `https://github.com/TJRSchmidbauer/pinslim.git#master`).
+* **Dockerfile Name**: Specify `Dockerfile.standalone` under `build.dockerfile`.
+* **Internal Port**: Set Traefik server loadbalancer port to `80` (internal Nginx port).
+
+A ready-to-use Stack template is available in [`docker/portainer-stack.yml`](docker/portainer-stack.yml).
 
 ---
 

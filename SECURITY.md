@@ -137,5 +137,17 @@ volumes:
   velxio-build:
 ```
 
+
+---
+
+## 🐋 Portainer & Traefik Stack Deployment
+
+Für Deployments über **Portainer** steht eine einsatzbereite Konfigurationsdatei unter [`docker/portainer-stack.yml`](docker/portainer-stack.yml) zur Verfügung.
+
+Wichtige Punkte für Portainer Stacks aus Git:
+- **Repository Branch**: `#master` verwenden (nicht `main`).
+- **Dockerfile**: `dockerfile: Dockerfile.standalone` angeben.
+- **Port-Routing**: Traefik-Loadbalancer auf Port `80` richten (`traefik.http.services.pinslim.loadbalancer.server.port=80`).
+
 ---
 *Dokumentation erstellt für Pinslim Server Deployments.*
