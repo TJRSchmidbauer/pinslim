@@ -40,6 +40,7 @@ services:
     # --- Traefik Routing & Security Headers ---
     labels:
       - "traefik.enable=true"
+      - "traefik.docker.network=web_net"
       
       # Routing (Domain anpassen)
       - "traefik.http.routers.pinslim.rule=Host(`pinslim.schmidbauer.jetzt`)"
