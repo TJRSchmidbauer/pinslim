@@ -44,20 +44,20 @@ For details on deploying Pinslim securely on your own server (process isolation,
 
 ## 📜 Legal, AI Development & Trademark Disclaimers / Rechtliche Hinweise
 
-### 1. Herkunft & Basis (Origin Notice & Gratitude)
+### 1. Origin Notice & Gratitude
 Pinslim is an independent open-source fork based on **Velxio**, created by **David Montero Crespo**.
 - Original Repository: [github.com/davidmonterocrespo24/velxio](https://github.com/davidmonterocrespo24/velxio)
 - Official Platform: [velxio.dev](https://velxio.dev)
 
 Special thanks to **David Montero Crespo** for architecting the original simulator engine.
 
-### 2. KI-gestützte Entwicklung (Antigravity AI Notice)
+### 2. Antigravity AI Notice
 Sämtliche Anpassungen, Refactorings, UI/UX-Optimierungen, Stücklisten- & PNG-Export-Erweiterungen, Web-Serial-Flasher-Integration sowie Sicherheitshärtungen an dieser Codebasis wurden in kooperativer Entwicklung unter Einsatz des KI-Assistenten **Antigravity** (Google DeepMind) umgesetzt.
 
-### 3. Trademark Disclaimer (Markenhinweis)
+### 3. Trademark Disclaimer
 All product names, trademarks, logos, and brands mentioned in this project (such as *Arduino, ESP32, Espressif, Raspberry Pi, MicroPython, SAMD, RP2040, etc.*) are the property of their respective trademark owners. Pinslim is an independent open-source community project and is **not affiliated with, sponsored by, or endorsed by** any of these trademark holders.
 
-### 4. Commercial Licensing & Partner Disclaimer (Hinweise zu Partnern & Lizenzen)
+### 4. Commercial Licensing & Partner Disclaimer 
 - Commercial licenses or Pro subscriptions are sold exclusively by David Montero Crespo via [velxio.dev](https://velxio.dev). Pinslim does not sell commercial licenses or process payments.
 - Any partners, sponsors, or commercial hardware suppliers referenced in connection with the original Velxio project belong solely to Velxio and David Montero Crespo. They are **not partners or sponsors of Pinslim**.
 
