@@ -16,6 +16,7 @@ import { i18n, loadLocale } from "./index";
 import { LOCALE_META, DEFAULT_LOCALE, type Locale } from "./config";
 import { getLocaleFromPath, switchLocale } from "./path";
 import { writeLocaleCookie } from "./cookie";
+import { rememberLocale } from "./startLocale";
 
 type Props = { children: ReactNode };
 
@@ -49,6 +50,7 @@ export function LocaleSync({ children }: Props) {
         await i18n.changeLanguage(target);
       }
       writeLocaleCookie(target);
+      rememberLocale(target);
       const meta = LOCALE_META[target] ?? LOCALE_META[DEFAULT_LOCALE];
       document.documentElement.lang = meta.htmlLang;
       document.documentElement.dir = meta.dir;

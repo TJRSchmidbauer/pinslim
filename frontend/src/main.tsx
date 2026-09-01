@@ -5,6 +5,7 @@ import './index.css';
 // useTranslation() always resolves against a live instance. Must come
 // before App.
 import './i18n';
+import { applyStartLocale } from './i18n/startLocale';
 // Side-effect-free on the DOM (index.html already painted the theme) —
 // this only subscribes to the OS preference and to sibling velxio.dev tabs.
 import { initTheme } from './lib/theme';
@@ -43,6 +44,10 @@ loader.config({ paths: { vs: monacoVsPath } });
 // elsewhere (the OS, another tab, the docs portal). index.html already put the
 // right theme on <html> before the first paint; this keeps it there.
 initTheme();
+
+// Before the router reads the URL: unprefixed (English) paths go to German
+// unless the user picked another language last time.
+applyStartLocale();
 
 createRoot(document.getElementById('root')!).render(<App />);
 

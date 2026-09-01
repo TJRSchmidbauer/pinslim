@@ -6,6 +6,7 @@
 import { useSimulatorStore } from '../store/useSimulatorStore';
 import { ComponentRegistry } from '../services/ComponentRegistry';
 import { BOARD_KIND_LABELS } from '../types/board';
+import { getResolvedTheme } from '../lib/theme';
 
 export async function exportSchematicPng(): Promise<void> {
   const simStore = useSimulatorStore.getState();
@@ -61,7 +62,7 @@ export async function exportSchematicPng(): Promise<void> {
 
   ctx.scale(scale, scale);
 
-  const isLight = document.body.classList.contains('light-theme');
+  const isLight = getResolvedTheme() === 'light';
 
   // Background Fill
   ctx.fillStyle = isLight ? '#f8fafc' : '#141619';

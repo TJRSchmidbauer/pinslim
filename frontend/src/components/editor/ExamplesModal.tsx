@@ -33,7 +33,7 @@ export const ExamplesModal: React.FC<ExamplesModalProps> = ({ onClose }) => {
       style={{
         position: 'fixed',
         inset: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.75)',
+        backgroundColor: 'var(--color-bg-overlay)',
         backdropFilter: 'blur(6px)',
         zIndex: 9000,
         display: 'flex',
@@ -48,12 +48,12 @@ export const ExamplesModal: React.FC<ExamplesModalProps> = ({ onClose }) => {
           width: 'min(1180px, 94vw)',
           height: '86vh',
           maxHeight: '900px',
-          backgroundColor: '#1e1e1e',
-          color: '#f0f4f8',
-          border: '1px solid #3d3d3d',
+          backgroundColor: 'var(--wb-2)',
+          color: 'var(--wb-13)',
+          border: '1px solid var(--wb-7)',
           borderRadius: '14px',
           padding: '24px',
-          boxShadow: '0 24px 60px rgba(0,0,0,0.7)',
+          boxShadow: 'var(--shadow-4)',
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
@@ -65,7 +65,7 @@ export const ExamplesModal: React.FC<ExamplesModalProps> = ({ onClose }) => {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span style={{ fontSize: '20px' }}>📂</span>
-            <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 600, color: '#f0f4f8' }}>
+            <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 600, color: 'var(--wb-13)' }}>
               Pinslim Beispiel-Projekte
             </h2>
           </div>
@@ -74,7 +74,7 @@ export const ExamplesModal: React.FC<ExamplesModalProps> = ({ onClose }) => {
             style={{
               background: 'transparent',
               border: 'none',
-              color: '#a0aec0',
+              color: 'var(--wb-11)',
               fontSize: '26px',
               cursor: 'pointer',
               lineHeight: 1,
