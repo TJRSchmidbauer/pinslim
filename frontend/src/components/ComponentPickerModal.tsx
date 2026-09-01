@@ -441,7 +441,7 @@ export const ComponentPickerModal: React.FC<ComponentPickerModalProps> = ({
               {selectedCategory === 'all' && onSelectBoard && (
                 <div
                   className="components-grid components-grid--inline"
-                  style={{ borderBottom: '1px solid #333', paddingBottom: 8, marginBottom: 4 }}
+                  style={{ borderBottom: '1px solid var(--wb-6)', paddingBottom: 8, marginBottom: 4 }}
                 >
                   {allBoards.filter(
                     (k) =>

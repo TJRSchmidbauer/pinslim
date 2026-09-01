@@ -314,16 +314,16 @@ const overlayStyle: React.CSSProperties = {
 };
 const dialogStyle: React.CSSProperties = {
   width: '90vw', height: '85vh', maxWidth: 1280,
-  background: '#1f1f1f', color: '#e0e0e0', borderRadius: 6,
+  background: 'var(--wb-2)', color: 'var(--wb-13)', borderRadius: 6,
   display: 'flex', flexDirection: 'column',
   boxShadow: '0 12px 36px rgba(0,0,0,0.5)',
 };
 const headerStyle: React.CSSProperties = {
   display: 'flex', alignItems: 'center', padding: '10px 14px',
-  borderBottom: '1px solid #333', background: '#252526',
+  borderBottom: '1px solid var(--wb-6)', background: 'var(--wb-3)',
 };
 const closeBtn: React.CSSProperties = {
-  background: 'transparent', border: 'none', color: '#999',
+  background: 'transparent', border: 'none', color: 'var(--wb-11)',
   fontSize: 18, cursor: 'pointer', padding: '2px 8px',
 };
 const tabsRowStyle: React.CSSProperties = {
@@ -353,14 +353,14 @@ const errorPreStyle: React.CSSProperties = {
 };
 const footerStyle: React.CSSProperties = {
   display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px',
-  borderTop: '1px solid #333', background: '#252526',
+  borderTop: '1px solid var(--wb-6)', background: 'var(--wb-3)',
 };
 const compileBtn: React.CSSProperties = {
   padding: '6px 14px', background: '#007acc', color: 'white',
   border: 'none', borderRadius: 3, cursor: 'pointer', fontSize: 13,
 };
 const cancelBtn: React.CSSProperties = {
-  padding: '6px 14px', background: '#3a3a3a', color: '#e0e0e0',
+  padding: '6px 14px', background: 'var(--wb-7)', color: 'var(--wb-13)',
   border: 'none', borderRadius: 3, cursor: 'pointer', fontSize: 13,
 };
 const saveBtn: React.CSSProperties = {
@@ -369,29 +369,29 @@ const saveBtn: React.CSSProperties = {
 };
 const saveBtnDisabled: React.CSSProperties = { ...saveBtn, background: '#3a3a3a', cursor: 'not-allowed' };
 const blankBtn: React.CSSProperties = {
-  padding: '8px 14px', background: '#2d2d30', color: '#e0e0e0',
-  border: '1px dashed #555', borderRadius: 4, cursor: 'pointer',
+  padding: '8px 14px', background: 'var(--wb-5)', color: 'var(--wb-13)',
+  border: '1px dashed var(--wb-8)', borderRadius: 4, cursor: 'pointer',
   width: '100%', textAlign: 'left', fontSize: 13,
 };
 const categoryStyle: React.CSSProperties = {
-  fontSize: 10, color: '#888', letterSpacing: 1, marginBottom: 6,
+  fontSize: 10, color: 'var(--wb-10)', letterSpacing: 1, marginBottom: 6,
 };
 const gridStyle: React.CSSProperties = {
   display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 8,
 };
 const cardBtn: React.CSSProperties = {
-  padding: '10px 12px', background: '#2d2d30', color: '#e0e0e0',
-  border: '1px solid #3a3a3a', borderRadius: 4, cursor: 'pointer',
+  padding: '10px 12px', background: 'var(--wb-5)', color: 'var(--wb-13)',
+  border: '1px solid var(--wb-7)', borderRadius: 4, cursor: 'pointer',
   textAlign: 'left',
 };
 const cardName: React.CSSProperties = { fontSize: 13, fontWeight: 'bold', marginBottom: 4 };
-const cardDesc: React.CSSProperties = { fontSize: 11, color: '#999', lineHeight: 1.4 };
+const cardDesc: React.CSSProperties = { fontSize: 11, color: 'var(--wb-11)', lineHeight: 1.4 };
 const attrPanelStyle: React.CSSProperties = {
-  marginTop: 8, padding: '8px 10px', background: '#252526',
+  marginTop: 8, padding: '8px 10px', background: 'var(--wb-3)',
   borderRadius: 4, maxHeight: 220, overflow: 'auto',
 };
 const attrPanelHeader: React.CSSProperties = {
-  fontSize: 10, color: '#888', letterSpacing: 1, marginBottom: 6, textTransform: 'uppercase',
+  fontSize: 10, color: 'var(--wb-10)', letterSpacing: 1, marginBottom: 6, textTransform: 'uppercase',
 };
 
 function AttrRow({
@@ -411,7 +411,7 @@ function AttrRow({
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-      <label style={{ flex: '0 0 96px', fontSize: 11, color: '#bbb' }}>{def.label || def.name}</label>
+      <label style={{ flex: '0 0 96px', fontSize: 11, color: 'var(--wb-12)' }}>{def.label || def.name}</label>
       {showSlider && (
         <input
           type="range"
@@ -439,8 +439,8 @@ function AttrRow({
         }}
         style={{
           width: 76, padding: '2px 4px', fontSize: 11,
-          background: '#1f1f1f', color: '#e0e0e0',
-          border: '1px solid #444', borderRadius: 2,
+          background: 'var(--wb-2)', color: 'var(--wb-12)',
+          border: '1px solid var(--wb-7)', borderRadius: 2,
         }}
       />
     </div>

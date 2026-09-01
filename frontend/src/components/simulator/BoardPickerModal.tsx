@@ -10,7 +10,7 @@ import { VelxioDevExklusivBadge } from '../common/VelxioDevExklusivBadge';
 const PRO_FALLBACK_ICON = (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
     <rect x="3" y="3" width="10" height="10" rx="2" fill="#8b5cf6" />
-    <rect x="5.5" y="5.5" width="5" height="5" rx="1" fill="#1e1b2e" />
+    <rect x="5.5" y="5.5" width="5" height="5" rx="1" fill="var(--color-accent-soft)" />
   </svg>
 );
 
@@ -88,8 +88,8 @@ export const BoardPickerModal = ({ isOpen, onClose, onSelectBoard }: BoardPicker
     >
       <div
         style={{
-          background: '#1e1e1e',
-          border: '1px solid #444',
+          background: 'var(--wb-2)',
+          border: '1px solid var(--wb-7)',
           borderRadius: 8,
           padding: 24,
           minWidth: 380,
@@ -97,7 +97,7 @@ export const BoardPickerModal = ({ isOpen, onClose, onSelectBoard }: BoardPicker
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        <h3 style={{ color: '#ccc', margin: '0 0 16px 0', fontSize: 16 }}>{t('editor.boardPicker.title')}</h3>
+        <h3 style={{ color: 'var(--wb-12)', margin: '0 0 16px 0', fontSize: 16 }}>{t('editor.boardPicker.title')}</h3>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {BOARDS.map((kind) => (
@@ -112,15 +112,15 @@ export const BoardPickerModal = ({ isOpen, onClose, onSelectBoard }: BoardPicker
                 alignItems: 'center',
                 gap: 12,
                 padding: '10px 14px',
-                background: '#2d2d2d',
-                border: '1px solid #555',
+                background: 'var(--wb-5)',
+                border: '1px solid var(--wb-8)',
                 borderRadius: 6,
                 cursor: 'pointer',
-                color: '#ddd',
+                color: 'var(--wb-12)',
                 textAlign: 'left',
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = '#3a3a3a')}
-              onMouseLeave={(e) => (e.currentTarget.style.background = '#2d2d2d')}
+              onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--wb-7)')}
+              onMouseLeave={(e) => (e.currentTarget.style.background = 'var(--wb-5)')}
             >
               <span
                 style={{
@@ -141,7 +141,7 @@ export const BoardPickerModal = ({ isOpen, onClose, onSelectBoard }: BoardPicker
                   <span>{BOARD_KIND_LABELS[kind]}</span>
                   {isProBoardKind(kind) && <VelxioDevExklusivBadge style={{ position: 'static' }} />}
                 </div>
-                <div style={{ fontSize: 11, color: '#888', marginTop: 2 }}>
+                <div style={{ fontSize: 11, color: 'var(--wb-10)', marginTop: 2 }}>
                   {BOARD_DESCRIPTIONS[kind]}
                 </div>
               </div>
@@ -155,9 +155,9 @@ export const BoardPickerModal = ({ isOpen, onClose, onSelectBoard }: BoardPicker
             marginTop: 16,
             padding: '6px 14px',
             background: 'transparent',
-            border: '1px solid #555',
+            border: '1px solid var(--wb-8)',
             borderRadius: 4,
-            color: '#888',
+            color: 'var(--wb-10)',
             cursor: 'pointer',
             fontSize: 12,
           }}

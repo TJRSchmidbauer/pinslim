@@ -23,7 +23,7 @@ import './FileExplorer.css';
 const PRO_FALLBACK_ICON = (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
     <rect x="3" y="3" width="10" height="10" rx="2" fill="#8b5cf6" />
-    <rect x="5.5" y="5.5" width="5" height="5" rx="1" fill="#1e1b2e" />
+    <rect x="5.5" y="5.5" width="5" height="5" rx="1" fill="var(--color-accent-soft)" />
   </svg>
 );
 
@@ -290,16 +290,16 @@ const BOARD_COLOR: Record<BoardKind, string> = {
   'arduino-nano': '#4fc3f7',
   'arduino-mega': '#4fc3f7',
   'raspberry-pi-pico': '#ce93d8',
-  'raspberry-pi-3': '#ef9a9a',
-  esp32: '#a5d6a7',
-  'esp32-s3': '#a5d6a7',
-  'esp32-c3': '#a5d6a7',
-  'stm32-bluepill': '#80cbc4',
-  'stm32-blackpill': '#b0bec5',
-  'stm32-bluepill-f103cb': '#80cbc4',
-  'stm32-blackpill-f401': '#b0bec5',
-  'stm32-f4-discovery': '#90caf9',
-  'stm32-olimex-h405': '#a5d6a7',
+  'raspberry-pi-3': 'var(--color-feedback-error)',
+  esp32: 'var(--color-feedback-success)',
+  'esp32-s3': 'var(--color-feedback-success)',
+  'esp32-c3': 'var(--color-feedback-success)',
+  'stm32-bluepill': 'var(--color-accent-fg)',
+  'stm32-blackpill': 'var(--wb-12)',
+  'stm32-bluepill-f103cb': 'var(--color-accent-fg)',
+  'stm32-blackpill-f401': 'var(--wb-12)',
+  'stm32-f4-discovery': 'var(--color-accent-fg)',
+  'stm32-olimex-h405': 'var(--color-feedback-success)',
   'stm32-netduino-plus2': '#ce93d8',
   'stm32-netduino2': '#ce93d8',
 };
@@ -1239,7 +1239,7 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ onSaveClick, onNewCl
                     <IcoChevron open={isOpen} />
                   </button>
 
-                  <span className="fe-board-icon" style={{ color: '#c4b5fd' }}>
+                  <span className="fe-board-icon" style={{ color: 'var(--color-accent-fg)' }}>
                     <IcoChip />
                   </span>
 
