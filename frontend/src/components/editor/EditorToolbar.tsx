@@ -43,6 +43,7 @@ import {
 import { exportSchematicPng } from '../../utils/exportSchematicPng';
 import { BomModal } from './BomModal';
 import './EditorToolbar.css';
+import { ThemeToggle } from '../layout/ThemeToggle';
 
 /**
  * Output-console group for circuit pre-flight + runtime faults. Routing these
@@ -1496,9 +1497,9 @@ export const EditorToolbar = ({
               }}
               title={t('editor.toolbar.languageMode')}
               style={{
-                background: '#2d2d2d',
-                color: '#ccc',
-                border: '1px solid #444',
+                background: 'var(--wb-5)',
+                color: 'var(--wb-12)',
+                border: '1px solid var(--wb-7)',
                 borderRadius: 4,
                 height: 28,
                 alignSelf: 'center',
@@ -1845,6 +1846,7 @@ export const EditorToolbar = ({
                 <line x1="12" y1="19" x2="20" y2="19" />
               </svg>
             </button>
+            <ThemeToggle />
             {rightSlot}
           </div>
         </div>

@@ -2689,8 +2689,8 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
             left: '50%',
             transform: 'translateX(-50%)',
             zIndex: 1000,
-            background: '#c0392b',
-            color: '#fff',
+            background: 'var(--color-feedback-error)',
+            color: 'var(--color-fg-on-action)',
             padding: '8px 16px',
             borderRadius: 6,
             display: 'flex',
@@ -2709,7 +2709,7 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
             style={{
               background: 'transparent',
               border: '1px solid rgba(255,255,255,0.6)',
-              color: '#fff',
+              color: 'var(--color-fg-on-action)',
               borderRadius: 4,
               padding: '2px 8px',
               cursor: 'pointer',
@@ -3695,8 +3695,8 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
                   position: 'fixed',
                   left: wireContextMenu.x,
                   top: wireContextMenu.y,
-                  background: '#252526',
-                  border: '1px solid #3c3c3c',
+                  background: 'var(--wb-3)',
+                  border: '1px solid var(--wb-7)',
                   borderRadius: 6,
                   padding: 8,
                   zIndex: 9999,
@@ -3705,7 +3705,7 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
                   fontSize: 13,
                 }}
               >
-                <div style={{ padding: '2px 4px 8px', color: '#888', fontSize: 11 }}>
+                <div style={{ padding: '2px 4px 8px', color: 'var(--wb-10)', fontSize: 11 }}>
                   {t('editor.selectionBar.changeColor')}
                 </div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
@@ -3725,8 +3725,8 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
                         backgroundColor: color,
                         border:
                           color.toLowerCase() === wire.color?.toLowerCase()
-                            ? '2px solid #fff'
-                            : '1px solid rgba(255,255,255,0.2)',
+                            ? '2px solid var(--wb-13)'
+                            : '1px solid var(--color-border-strong)',
                         cursor: 'pointer',
                         padding: 0,
                         flexShrink: 0,
@@ -3750,14 +3750,14 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
                     padding: '7px 6px',
                     background: 'none',
                     border: 'none',
-                    borderTop: '1px solid #3c3c3c',
-                    color: '#e06c75',
+                    borderTop: '1px solid var(--wb-7)',
+                    color: 'var(--color-feedback-error)',
                     cursor: 'pointer',
                     fontSize: 13,
                     textAlign: 'left',
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.background = '#2a2d2e';
+                    e.currentTarget.style.background = 'var(--wb-4)';
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.background = 'none';
@@ -3834,18 +3834,18 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
             >
               <div
                 style={{
-                  background: '#1e1e1e',
-                  border: '1px solid #3c3c3c',
+                  background: 'var(--wb-2)',
+                  border: '1px solid var(--wb-7)',
                   borderRadius: 8,
                   padding: '20px 24px',
                   maxWidth: 380,
                   boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
                 }}
               >
-                <h3 style={{ margin: '0 0 10px', color: '#e0e0e0', fontSize: 15 }}>
+                <h3 style={{ margin: '0 0 10px', color: 'var(--wb-13)', fontSize: 15 }}>
                   {t('editor.canvas.removeConfirm.title', { label })}
                 </h3>
-                <p style={{ margin: '0 0 16px', color: '#999', fontSize: 13, lineHeight: 1.5 }}>
+                <p style={{ margin: '0 0 16px', color: 'var(--wb-10)', fontSize: 13, lineHeight: 1.5 }}>
                   {connectedWires > 0
                     ? t('editor.canvas.removeConfirm.bodyWithWires', { count: connectedWires })
                     : t('editor.canvas.removeConfirm.body')}
@@ -3855,10 +3855,10 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
                     onClick={() => setBoardToRemove(null)}
                     style={{
                       padding: '6px 16px',
-                      background: '#333',
-                      border: '1px solid #555',
+                      background: 'var(--wb-6)',
+                      border: '1px solid var(--wb-8)',
                       borderRadius: 4,
-                      color: '#ccc',
+                      color: 'var(--wb-12)',
                       cursor: 'pointer',
                       fontSize: 13,
                     }}
@@ -3872,10 +3872,10 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
                     }}
                     style={{
                       padding: '6px 16px',
-                      background: '#e06c75',
+                      background: 'var(--color-feedback-error)',
                       border: 'none',
                       borderRadius: 4,
-                      color: '#fff',
+                      color: 'var(--color-fg-on-action)',
                       cursor: 'pointer',
                       fontSize: 13,
                     }}

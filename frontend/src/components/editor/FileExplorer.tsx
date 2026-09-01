@@ -858,10 +858,10 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ onSaveClick, onNewCl
 
           // Status dot color
           const statusColor = board.running
-            ? '#22c55e'
+            ? 'var(--color-feedback-success)'
             : board.compiledProgram
-              ? '#f59e0b'
-              : '#6b7280';
+              ? 'var(--color-feedback-warning)'
+              : 'var(--wb-9)';
 
           return (
             <div key={board.id} className="fe-board-section">
@@ -1166,8 +1166,8 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ onSaveClick, onNewCl
                         marginLeft: 'auto',
                         fontSize: 9,
                         lineHeight: '14px',
-                        color: '#9d9d9d',
-                        background: '#2d2d2d',
+                        color: 'var(--wb-11)',
+                        background: 'var(--wb-5)',
                         borderRadius: 7,
                         padding: '0 5px',
                       }}
@@ -1300,7 +1300,7 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ onSaveClick, onNewCl
 
         {/* Fallback: nothing on the canvas yet */}
         {boards.length === 0 && programmableChips.length === 0 && (
-          <div style={{ color: '#666', fontSize: 11, padding: '12px 12px', lineHeight: 1.5 }}>
+          <div style={{ color: 'var(--wb-9)', fontSize: 11, padding: '12px 12px', lineHeight: 1.5 }}>
             {t('editor.fileExplorer.emptyState')}
           </div>
         )}

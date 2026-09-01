@@ -24,6 +24,8 @@ import { useSimulatorStore } from '../../store/useSimulatorStore';
 import { buildWireNetMap } from '../../simulation/spice/NetlistBuilder';
 import { BOARD_PIN_GROUPS } from '../../simulation/spice/boardPinGroups';
 import { rms, isAC } from '../../simulation/spice/waveformStats';
+import { cssVar } from '../../lib/theme';
+import { useResolvedTheme } from '../../hooks/useTheme';
 
 function formatV(v: number): string {
   const abs = Math.abs(v);
@@ -126,7 +128,22 @@ export function ElectricalOverlay({
   }, [labels, hoveredWireId, hoveredComponentId, hoveredBoardId]);
 
   const modeBadge = analysisMode === 'tran' ? 'AC' : 'DC';
-  const badgeColor = analysisMode === 'tran' ? '#4dd0e1' : '#ffa500';
+  // SVG attributes cannot take a CSS custom property, so the overlay resolves
+  // its tokens here. `theme` is read purely to re-resolve them when the user
+  // switches appearance — cssVar caches per theme.
+  const theme = useResolvedTheme();
+  const probe = useMemo(
+    () => ({
+      labelBg: cssVar('--color-canvas-label-bg'),
+      dc: cssVar('--color-probe-dc'),
+      dcDim: cssVar('--color-probe-dc-dim'),
+      ac: cssVar('--color-probe-ac'),
+      error: cssVar('--color-probe-error'),
+      errorDim: cssVar('--color-probe-error-dim'),
+    }),
+    [theme],
+  );
+  const badgeColor = analysisMode === 'tran' ? probe.ac : probe.dcDim;
 
   const summaryLines: string[] = [];
   if (error) summaryLines.push(`Warning: ${error}`);
@@ -157,8 +174,8 @@ export function ElectricalOverlay({
           ry={4}
           width={250}
           height={24}
-          fill="rgba(26, 26, 26, 0.85)"
-          stroke={error ? '#ff6666' : badgeColor}
+          fill={probe.labelBg}
+          stroke={error ? probe.errorDim : badgeColor}
         />
         <rect
           x={4}
@@ -186,7 +203,7 @@ export function ElectricalOverlay({
           x={32}
           y={17}
           fontSize={11}
-          fill={error ? '#ff9999' : '#ffa500'}
+          fill={error ? probe.error : probe.dcDim}
           fontFamily="monospace"
         >
           SPICE {summaryLines.join(' ')}
@@ -203,8 +220,8 @@ export function ElectricalOverlay({
             ry={3}
             width={44}
             height={16}
-            fill="rgba(0, 0, 0, 0.75)"
-            stroke={l.ac ? '#4dd0e1' : 'none'}
+            fill={probe.labelBg}
+            stroke={l.ac ? probe.ac : 'none'}
             strokeWidth={l.ac ? 0.5 : 0}
           />
           <text
@@ -213,7 +230,7 @@ export function ElectricalOverlay({
             textAnchor="middle"
             fontSize={10}
             fontFamily="monospace"
-            fill={l.ac ? '#4dd0e1' : '#ffd700'}
+            fill={l.ac ? probe.ac : probe.dc}
           >
             {l.ac ? `~${formatV(l.v!)}` : formatV(l.v!)}
           </text>

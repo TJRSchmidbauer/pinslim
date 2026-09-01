@@ -3,6 +3,8 @@ import { useEditorStore } from '../../store/useEditorStore';
 import { useSimulatorStore } from '../../store/useSimulatorStore';
 import { registerRetroAsm, LANGUAGE_ID as RETRO_ASM_ID } from './retroAsmLanguage';
 import { attachIntellisenseMonaco } from '../../lib/intellisenseRegistry';
+import { defineVelxioThemes, monacoThemeFor } from './monacoThemes';
+import { useResolvedTheme } from '../../hooks/useTheme';
 
 function getLanguage(filename: string): string {
   const ext = filename.split('.').pop()?.toLowerCase() ?? '';
@@ -16,9 +18,12 @@ function getLanguage(filename: string): string {
 }
 
 export const CodeEditor = () => {
-  const { files, activeFileId, setFileContent, theme, fontSize, manifestViewBoardId } =
+  const { files, activeFileId, setFileContent, fontSize, manifestViewBoardId } =
     useEditorStore();
   const boards = useSimulatorStore((s) => s.boards);
+  // App-wide light/dark, not an editor-only setting: the editor sits flush
+  // against the canvas and the panels, so it follows the same switch.
+  const theme = monacoThemeFor(useResolvedTheme());
   const activeFile = files.find((f) => f.id === activeFileId);
 
   // READ-ONLY libraries.json view (the file explorer's libraries.json entry).
@@ -35,6 +40,7 @@ export const CodeEditor = () => {
           height="100%"
           language="json"
           theme={theme}
+          beforeMount={defineVelxioThemes}
           value={content}
           options={{
             readOnly: true,
@@ -60,6 +66,9 @@ export const CodeEditor = () => {
         theme={theme}
         value={activeFile?.content ?? ''}
         beforeMount={(monaco) => {
+          // Both velxio themes have to exist before Monaco is asked to use
+          // one, or it silently falls back to stock vs-dark.
+          defineVelxioThemes(monaco);
           // Register the 8080/Z80 assembly language once so Monaco knows how
           // to tokenize .s / .asm files when they're opened.
           registerRetroAsm(monaco);
