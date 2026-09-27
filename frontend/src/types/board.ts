@@ -277,7 +277,7 @@ export const BOARD_KIND_FQBN: Record<BoardKind, string | null> = {
   'arduino-nano-esp32': 'esp32:esp32:nano_nora',
   'esp32-c3': 'esp32:esp32:esp32c3',
   'xiao-esp32-c3': 'esp32:esp32:XIAO_ESP32C3',
-  'xiao-esp32-c6': 'esp32:esp32:XIAO_ESP32C3',
+  'xiao-esp32-c6': 'esp32:esp32:XIAO_ESP32C6',
   'aitewinrobot-esp32c3-supermini': 'esp32:esp32:esp32c3',
   'stm32-bluepill': 'STMicroelectronics:stm32:GenF1:pnum=BLUEPILL_F103C8',
   'stm32-blackpill': 'STMicroelectronics:stm32:GenF4:pnum=BLACKPILL_F411CE',
