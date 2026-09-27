@@ -495,26 +495,28 @@ export function boardPinToNumber(boardId: string, pinName: string): number | nul
       D9: 9,
       D10: 10,
     };
+    // Per arduino-esp32 variants/XIAO_ESP32C6/pins_arduino.h:
+    //   LED_BUILTIN=15, TX=16, RX=17, SDA=22, SCL=23, SS=21,
+    //   MOSI=18, MISO=20, SCK=19, A0=0, A1=1, A2=2
     const XIAO_C6_MAP: Record<string, number> = {
       D0: 0,
       D1: 1,
       D2: 2,
-      D3: 3,
-      D4: 4,
-      D5: 5,
-      D6: 16,
-      D7: 17,
-      D8: 18,
-      D9: 19,
-      D10: 20,
+      D3: 21, // SS
+      D4: 22, // SDA
+      D5: 23, // SCL
+      D6: 16, // TX
+      D7: 17, // RX
+      D8: 19, // SCK
+      D9: 20, // MISO
+      D10: 18, // MOSI
       A0: 0,
       A1: 1,
       A2: 2,
-      A3: 3,
       TX: 16,
       RX: 17,
-      SDA: 4,
-      SCL: 5,
+      SDA: 22,
+      SCL: 23,
     };
     const map = boardId === 'xiao-esp32-c6' ? XIAO_C6_MAP : XIAO_C3_MAP;
     if (pinName in map) return map[pinName];

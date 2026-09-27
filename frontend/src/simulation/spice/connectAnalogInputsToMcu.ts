@@ -88,7 +88,9 @@ const ADC_PIN_MAP: Partial<Record<BoardKind, Array<{ pinName: string; channel: n
   'arduino-nano-esp32': adcRange('A', 0, 8),
   'esp32-c3': adcRange('', 0, 6),
   'xiao-esp32-c3': adcRange('D', 0, 4),
-  'xiao-esp32-c6': adcRange('D', 0, 4),
+  // XIAO ESP32-C6: only D0-D2 (GPIO0-2 → ADC1 CH0-2) reach the ADC —
+  // D3-D5 are SS/SDA/SCL (GPIO21/22/23) per variants/XIAO_ESP32C6.
+  'xiao-esp32-c6': adcRange('D', 0, 3),
   'aitewinrobot-esp32c3-supermini': adcRange('', 0, 6),
 };
 

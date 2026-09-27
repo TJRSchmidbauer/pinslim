@@ -7311,8 +7311,8 @@ void loop() {
 // Verdrahtung:
 //   BME680/BME280 VCC -> XIAO 3.3V
 //   BME680/BME280 GND -> XIAO GND
-//   BME680/BME280 SDA -> XIAO D4 (GPIO 4)
-//   BME680/BME280 SCL -> XIAO D5 (GPIO 5)
+//   BME680/BME280 SDA -> XIAO D4 (GPIO 22)
+//   BME680/BME280 SCL -> XIAO D5 (GPIO 23)
 
 #include <Wire.h>
 #include <Adafruit_Sensor.h>
@@ -7329,8 +7329,8 @@ void setup() {
   Serial.println(" Random Nerd Tutorials Example");
   Serial.println("=========================================");
 
-  // Initialisiere I2C auf XIAO ESP32-C6 (SDA = D4 / GPIO 4, SCL = D5 / GPIO 5)
-  Wire.begin(4, 5);
+  // Initialisiere I2C auf XIAO ESP32-C6 (SDA = D4 / GPIO 22, SCL = D5 / GPIO 23)
+  Wire.begin(); // XIAO-Defaults: SDA = D4 (GPIO 22), SCL = D5 (GPIO 23)
 
   if (!bme.begin(0x76)) {
     Serial.println("Fehler: BME680/BME280 Sensor nicht gefunden! Bitte I2C (0x76) und Verkabelung prüfen.");
