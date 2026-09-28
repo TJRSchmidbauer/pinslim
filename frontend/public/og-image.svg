@@ -81,25 +81,40 @@
   <rect x="481" y="141" width="238" height="32" rx="16" fill="#007acc" opacity="0.1"/>
   <text x="600" y="163" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="600" fill="#007acc" letter-spacing="2">OPEN SOURCE · FREE · LOCAL</text>
 
-  <!-- Main logo chip icon -->
-  <g transform="translate(548, 192)" stroke="#007acc" stroke-width="3" fill="none" stroke-linecap="round">
-    <rect x="0" y="0" width="44" height="44" rx="6"/>
-    <rect x="10" y="10" width="24" height="24" rx="3"/>
-    <line x1="14" y1="-10" x2="14" y2="0"/>
-    <line x1="30" y1="-10" x2="30" y2="0"/>
-    <line x1="14" y1="44" x2="14" y2="54"/>
-    <line x1="30" y1="44" x2="30" y2="54"/>
-    <line x1="-10" y1="14" x2="0" y2="14"/>
-    <line x1="-10" y1="30" x2="0" y2="30"/>
-    <line x1="44" y1="14" x2="54" y2="14"/>
-    <line x1="44" y1="30" x2="54" y2="30"/>
+  <!-- Main logo: pin header strip -->
+  <g transform="translate(520, 192)">
+    <defs>
+      <linearGradient id="ogPinGrad" x1="520" y1="0" x2="680" y2="0" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#00E5FF" offset="0%"/>
+        <stop stop-color="#0077FF" offset="100%"/>
+      </linearGradient>
+    </defs>
+    <!-- Track -->
+    <rect x="10" y="32" width="140" height="16" rx="8" fill="url(#ogPinGrad)" fill-opacity="0.2" stroke="url(#ogPinGrad)" stroke-width="1.5"/>
+    <!-- 7 pins -->
+    <g filter="url(#glow)">
+      <circle cx="22" cy="40" r="10" fill="#0F172A" stroke="url(#ogPinGrad)" stroke-width="1.5"/>
+      <circle cx="22" cy="40" r="6" fill="url(#ogPinGrad)"/>
+      <circle cx="47" cy="40" r="10" fill="#0F172A" stroke="url(#ogPinGrad)" stroke-width="1.5"/>
+      <circle cx="47" cy="40" r="6" fill="url(#ogPinGrad)"/>
+      <circle cx="72" cy="40" r="10" fill="#0F172A" stroke="url(#ogPinGrad)" stroke-width="1.5"/>
+      <circle cx="72" cy="40" r="6" fill="url(#ogPinGrad)"/>
+      <circle cx="97" cy="40" r="10" fill="#0F172A" stroke="url(#ogPinGrad)" stroke-width="1.5"/>
+      <circle cx="97" cy="40" r="6" fill="url(#ogPinGrad)"/>
+      <circle cx="122" cy="40" r="10" fill="#0F172A" stroke="url(#ogPinGrad)" stroke-width="1.5"/>
+      <circle cx="122" cy="40" r="6" fill="url(#ogPinGrad)"/>
+      <circle cx="147" cy="40" r="10" fill="#0F172A" stroke="url(#ogPinGrad)" stroke-width="1.5"/>
+      <circle cx="147" cy="40" r="6" fill="url(#ogPinGrad)"/>
+      <circle cx="172" cy="40" r="10" fill="#0F172A" stroke="url(#ogPinGrad)" stroke-width="1.5"/>
+      <circle cx="172" cy="40" r="6" fill="url(#ogPinGrad)"/>
+    </g>
   </g>
 
-  <!-- Title: VELXIO -->
+  <!-- Title: PINSLIM -->
   <text x="600" y="340" text-anchor="middle"
         font-family="system-ui, -apple-system, 'Segoe UI', sans-serif"
         font-size="96" font-weight="900" letter-spacing="-3"
-        fill="url(#title-grad)">VELXIO</text>
+        fill="url(#title-grad)">PINSLIM</text>
 
   <!-- Subtitle -->
   <text x="600" y="400" text-anchor="middle"
@@ -137,6 +152,6 @@
   <text x="600" y="608" text-anchor="middle"
         font-family="system-ui, -apple-system, sans-serif"
         font-size="16" fill="#444" letter-spacing="0.5">
-    github.com/davidmonterocrespo24/velxio
+    github.com/TJRSchmidbauer/pinslim
   </text>
 </svg>

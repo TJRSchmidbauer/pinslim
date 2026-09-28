@@ -4,61 +4,143 @@ interface PinslimLogoProps {
   size?: number;
   showText?: boolean;
   className?: string;
+  variant?: 'default' | 'icon-only' | 'text-only';
 }
 
 export const PinslimLogo: React.FC<PinslimLogoProps> = ({
   size = 24,
   showText = true,
   className = '',
+  variant = 'default',
 }) => {
+  const pinCount = 7;
+  const pinRadius = size * 0.085;
+  const pinGap = size * 0.06;
+  const trackHeight = size * 0.12;
+  const trackWidth = pinCount * (pinRadius * 2 + pinGap) - pinGap;
+  const trackY = size / 2;
+  const startX = (size - trackWidth) / 2;
+
   return (
     <div
       className={`pinslim-logo-container ${className}`}
-      style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', userSelect: 'none' }}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: showText && variant !== 'icon-only' ? '8px' : 0,
+        userSelect: 'none',
+        flexDirection: variant === 'text-only' ? 'column' : 'row',
+      }}
     >
-      <svg
-        width={size}
-        height={size}
-        viewBox="0 0 32 32"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        style={{ flexShrink: 0 }}
-      >
-        <defs>
-          <linearGradient id="pinslimGrad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#00E5FF" />
-            <stop offset="1" stopColor="#0077FF" />
-          </linearGradient>
-          <linearGradient id="pinslimChip" x1="6" y1="6" x2="26" y2="26" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#1E293B" />
-            <stop offset="1" stopColor="#0F172A" />
-          </linearGradient>
-        </defs>
+      {variant !== 'text-only' && (
+        <svg
+          width={size}
+          height={size}
+          viewBox={`0 0 ${size} ${size}`}
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          style={{ flexShrink: 0 }}
+          role="img"
+          aria-label="Pinslim"
+        >
+          <defs>
+            {/* Main brand gradient: Cyan → Blue */}
+            <linearGradient id="pinslimPinGrad" x1="0" y1="0" x2={size} y2="0" gradientUnits="userSpaceOnUse">
+              <stop stopColor="#00E5FF" offset="0%" />
+              <stop stopColor="#0077FF" offset="100%" />
+            </linearGradient>
+            {/* Track gradient */}
+            <linearGradient id="pinslimTrackGrad" x1="0" y1="0" x2={size} y2="0" gradientUnits="userSpaceOnUse">
+              <stop stopColor="#00E5FF" offset="0%" stopOpacity="0.25" />
+              <stop stopColor="#0077FF" offset="50%" stopOpacity="0.4" />
+              <stop stopColor="#00E5FF" offset="100%" stopOpacity="0.25" />
+            </linearGradient>
+            {/* Glow filter for pins */}
+            <filter id="pinGlow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="1.5" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
 
-        {/* Outer pins */}
-        <path d="M10 2V6M16 2V6M22 2V6" stroke="url(#pinslimGrad)" strokeWidth="1.5" strokeLinecap="round" />
-        <path d="M10 26V30M16 26V30M22 26V30" stroke="url(#pinslimGrad)" strokeWidth="1.5" strokeLinecap="round" />
-        <path d="M2 10H6M2 16H6M2 22H6" stroke="url(#pinslimGrad)" strokeWidth="1.5" strokeLinecap="round" />
-        <path d="M26 10H30M26 16H30M26 22H30" stroke="url(#pinslimGrad)" strokeWidth="1.5" strokeLinecap="round" />
+          {/* Connecting track - the "slim" bridge between pins */}
+          <rect
+            x={startX}
+            y={trackY - trackHeight / 2}
+            width={trackWidth}
+            height={trackHeight}
+            rx={trackHeight / 2}
+            fill="url(#pinslimTrackGrad)"
+            stroke="url(#pinslimPinGrad)"
+            strokeWidth={Math.max(1, size * 0.025)}
+          />
 
-        {/* Chip Body */}
-        <rect x="5" y="5" width="22" height="22" rx="4" fill="url(#pinslimChip)" stroke="url(#pinslimGrad)" strokeWidth="1.5" />
+          {/* Pin circles - the "pins" in Pinslim */}
+          {Array.from({ length: pinCount }, (_, i) => {
+            const cx = startX + i * (pinRadius * 2 + pinGap) + pinRadius;
+            // Subtle stagger for visual rhythm
+            const cy = trackY + (i % 2 === 0 ? -size * 0.015 : size * 0.015);
+            return (
+              <g key={i} filter="url(#pinGlow)">
+                {/* Pin base */}
+                <circle
+                  cx={cx}
+                  cy={cy}
+                  r={pinRadius * 1.15}
+                  fill="#0F172A"
+                  stroke="url(#pinslimPinGrad)"
+                  strokeWidth={Math.max(1, size * 0.02)}
+                />
+                {/* Pin highlight - the conductive tip */}
+                <circle
+                  cx={cx}
+                  cy={cy}
+                  r={pinRadius * 0.65}
+                  fill="url(#pinslimPinGrad)"
+                />
+                {/* Inner specular */}
+                <circle
+                  cx={cx - pinRadius * 0.2}
+                  cy={cy - pinRadius * 0.2}
+                  r={pinRadius * 0.25}
+                  fill="#FFFFFF"
+                  fillOpacity="0.6"
+                />
+              </g>
+            );
+          })}
 
-        {/* Inner Trace / Pin Pattern */}
-        <rect x="10" y="10" width="12" height="12" rx="2" fill="#00E5FF" fillOpacity="0.15" stroke="#00E5FF" strokeWidth="1" strokeDasharray="3 1" />
-        
-        {/* Center Node */}
-        <circle cx="16" cy="16" r="2.5" fill="#00E5FF" />
-      </svg>
-      {showText && (
+          {/* Subtle signal wave hint - 3 small dots suggesting data flow */}
+          {size >= 28 && Array.from({ length: 3 }, (_, i) => (
+            <circle
+              key={i}
+              cx={startX + trackWidth * (0.25 + i * 0.25)}
+              cy={trackY + trackHeight * 1.8}
+              r={Math.max(1.2, size * 0.035)}
+              fill="url(#pinslimPinGrad)"
+              fillOpacity={0.5 - i * 0.1}
+              className="pinslim-pulse-dot"
+              style={{ animationDelay: `${i * 0.15}s` }}
+            />
+          ))}
+        </svg>
+      )}
+
+      {showText && variant !== 'icon-only' && (
         <span
           style={{
             fontWeight: 700,
-            fontSize: `${Math.max(14, size * 0.75)}px`,
-            letterSpacing: '-0.02em',
-            background: 'linear-gradient(135deg, #FFFFFF 30%, #00E5FF 100%)',
+            fontSize: `${Math.max(13, size * 0.7)}px`,
+            letterSpacing: '-0.015em',
+            lineHeight: 1,
+            fontFamily: '"Inter var", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+            background: 'linear-gradient(135deg, #111827 20%, #00E5FF 100%)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            color: '#111827', /* fallback */
           }}
         >
           Pinslim
@@ -67,3 +149,10 @@ export const PinslimLogo: React.FC<PinslimLogoProps> = ({
     </div>
   );
 };
+
+// Convenience exports for common use cases
+export const PinslimIcon = (props: Omit<PinslimLogoProps, 'showText' | 'variant'>) =>
+  <PinslimLogo {...props} variant="icon-only" showText={false} />;
+
+export const PinslimWordmark = (props: Omit<PinslimLogoProps, 'showText' | 'variant'>) =>
+  <PinslimLogo {...props} variant="text-only" showText={true} size={props.size ?? 28} />;
