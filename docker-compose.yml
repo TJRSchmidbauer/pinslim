@@ -1,0 +1,66 @@
+# Development & Production Docker Compose for Pinslim.
+# Usage: docker compose up --build
+# Access: http://localhost:3082
+#
+# backend/.env is OPTIONAL. If missing, the entrypoint generates a random
+# SECRET_KEY so the app boots out-of-the-box. Create backend/.env (copy
+# backend/.env.example) only when you need OAuth or want a fixed SECRET_KEY.
+services:
+  pinslim:
+    build:
+      context: .
+      dockerfile: Dockerfile.standalone
+    container_name: pinslim-app-3082
+    restart: unless-stopped
+    ports:
+      - "3082:80"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETUID
+      - SETGID
+      - DAC_OVERRIDE
+      - FOWNER
+    pids_limit: 250
+    deploy:
+      resources:
+        limits:
+          cpus: '4.0'
+          memory: 4096M
+    env_file:
+      - path: ./backend/.env
+        required: false
+    environment:
+      - DATABASE_URL=sqlite+aiosqlite:////app/data/pinslim.db
+      - DATA_DIR=/app/data
+      - IDF_PATH=/opt/esp-idf
+      - IDF_TOOLS_PATH=/root/.espressif
+      - ARDUINO_ESP32_PATH=/opt/arduino-esp32
+      # ccache for ESP-IDF compiles — the named volume below persists hits
+      # across container restarts and image rebuilds. Set IDF_CCACHE_ENABLE=0
+      # to disable without changing the Dockerfile.
+      - IDF_CCACHE_ENABLE=1
+      - CCACHE_DIR=/var/cache/ccache
+      # Persistent ESP-IDF build dir (one per board target). Lets ninja's
+      # incremental cache + ccache hits combine across compiles, taking warm
+      # builds from ~5-7 min to ~5-30s.
+      - VELXIO_PERSISTENT_BUILD_DIR=1
+    volumes:
+      - ./data:/app/data
+      - arduino-libs:/root/.arduino15
+      - ccache:/var/cache/ccache
+      - velxio-build:/var/lib/velxio-build
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 90s
+
+volumes:
+  arduino-libs:
+  ccache:
+  velxio-build:

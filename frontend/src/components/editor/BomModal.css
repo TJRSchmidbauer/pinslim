@@ -1,0 +1,437 @@
+.bom-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 16px;
+}
+
+.bom-modal-container {
+  background: #18191c;
+  border: 1px solid #2d3139;
+  border-radius: 14px;
+  width: 100%;
+  max-width: 780px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+  color: #e2e8f0;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+body.light-theme .bom-modal-container {
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  color: #111827;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
+}
+
+.bom-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 22px;
+  border-bottom: 1px solid #2d3139;
+  background: #1e2025;
+}
+
+body.light-theme .bom-modal-header {
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.bom-header-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.bom-header-icon {
+  font-size: 1.4rem;
+}
+
+.bom-header-title h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0;
+  color: #f8fafc;
+  letter-spacing: -0.01em;
+}
+
+body.light-theme .bom-header-title h2 {
+  color: #0f172a;
+}
+
+.bom-modal-close {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.bom-modal-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+body.light-theme .bom-modal-close:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+/* ── Navigation Tabs ────────────────────────────────────────────────────────── */
+.bom-modal-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 8px 16px 0;
+  background: #18191c;
+  border-bottom: 1px solid #2d3139;
+}
+
+body.light-theme .bom-modal-tabs {
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.bom-tab {
+  padding: 8px 16px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: #94a3b8;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+}
+
+.bom-tab:hover {
+  color: #f1f5f9;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+body.light-theme .bom-tab:hover {
+  color: #0f172a;
+  background: #f1f5f9;
+}
+
+.bom-tab.active {
+  color: #00e5ff;
+  border-bottom-color: #00e5ff;
+  background: rgba(0, 229, 255, 0.08);
+}
+
+body.light-theme .bom-tab.active {
+  color: #0071e3;
+  border-bottom-color: #0071e3;
+  background: rgba(0, 113, 227, 0.08);
+}
+
+/* ── Modal Body ───────────────────────────────────────────────────────────── */
+.bom-modal-body {
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 240px;
+}
+
+.bom-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.bom-empty-icon {
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+  opacity: 0.6;
+}
+
+.bom-empty-msg {
+  color: #cbd5e1;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 6px;
+}
+
+body.light-theme .bom-empty-msg {
+  color: #334155;
+}
+
+.bom-empty-hint {
+  color: #64748b;
+  font-size: 0.84rem;
+}
+
+/* Table */
+.bom-table-wrapper {
+  overflow-x: auto;
+}
+
+.bom-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.bom-table th {
+  text-align: left;
+  padding: 10px 14px;
+  background: #20232a;
+  color: #94a3b8;
+  font-weight: 600;
+  border-bottom: 2px solid #2d3139;
+  white-space: nowrap;
+}
+
+body.light-theme .bom-table th {
+  background: #f1f5f9;
+  color: #475569;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.bom-table td {
+  padding: 11px 14px;
+  border-bottom: 1px solid #252830;
+  color: #cbd5e1;
+  vertical-align: middle;
+}
+
+body.light-theme .bom-table td {
+  border-bottom: 1px solid #e2e8f0;
+  color: #1e293b;
+}
+
+.bom-table tr:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+body.light-theme .bom-table tr:hover {
+  background: #f8fafc;
+}
+
+.bom-td-pos {
+  font-weight: 700;
+  color: #64748b;
+  width: 40px;
+}
+
+.bom-td-des code {
+  background: #252830;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Cascadia Code', monospace;
+  font-size: 0.82rem;
+  color: #38bdf8;
+}
+
+body.light-theme .bom-td-des code {
+  background: #f1f5f9;
+  color: #0284c7;
+}
+
+.bom-item-name {
+  font-weight: 600;
+  color: #f8fafc;
+}
+
+body.light-theme .bom-item-name {
+  color: #0f172a;
+}
+
+.bom-td-cat {
+  color: #94a3b8;
+  font-size: 0.84rem;
+}
+
+body.light-theme .bom-td-cat {
+  color: #64748b;
+}
+
+.bom-item-qty {
+  font-weight: 700;
+  color: #00e5ff;
+}
+
+body.light-theme .bom-item-qty {
+  color: #0071e3;
+}
+
+.bom-conn-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.bom-conn-pill.connected {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+}
+
+body.light-theme .bom-conn-pill.connected {
+  background: #d1fae5;
+  color: #059669;
+}
+
+.bom-conn-pill.unconnected {
+  background: rgba(148, 163, 184, 0.12);
+  color: #94a3b8;
+}
+
+.bom-item-details {
+  font-size: 0.83rem;
+  color: #94a3b8;
+}
+
+body.light-theme .bom-item-details {
+  color: #64748b;
+}
+
+/* ── CSV Preview Tab ────────────────────────────────────────────────────────── */
+.bom-csv-preview-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bom-csv-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bom-csv-label {
+  font-size: 0.84rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+body.light-theme .bom-csv-label {
+  color: #64748b;
+}
+
+.bom-csv-textarea {
+  width: 100%;
+  background: #111215;
+  color: #38bdf8;
+  border: 1px solid #2d3139;
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  resize: vertical;
+  outline: none;
+  box-sizing: border-box;
+}
+
+body.light-theme .bom-csv-textarea {
+  background: #f8fafc;
+  color: #0284c7;
+  border: 1px solid #cbd5e1;
+}
+
+/* ── Footer ───────────────────────────────────────────────────────────────── */
+.bom-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 22px;
+  border-top: 1px solid #2d3139;
+  background: #1e2025;
+}
+
+body.light-theme .bom-modal-footer {
+  border-top: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.bom-btn {
+  padding: 9px 18px;
+  border-radius: 7px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.bom-btn-primary {
+  background: linear-gradient(135deg, #0071e3 0%, #0058b3 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 113, 227, 0.3);
+}
+
+.bom-btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0080ff 0%, #0066cc 100%);
+  box-shadow: 0 4px 16px rgba(0, 113, 227, 0.45);
+}
+
+.bom-btn-primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.bom-btn-secondary,
+.bom-btn-copy {
+  background: #252830;
+  border: 1px solid #3b4252;
+  color: #e2e8f0;
+}
+
+body.light-theme .bom-btn-secondary,
+body.light-theme .bom-btn-copy {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+}
+
+.bom-btn-secondary:hover:not(:disabled),
+.bom-btn-copy:hover:not(:disabled) {
+  background: #323745;
+  color: #ffffff;
+}
+
+body.light-theme .bom-btn-secondary:hover:not(:disabled),
+body.light-theme .bom-btn-copy:hover:not(:disabled) {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.bom-btn-cancel {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+}
+
+.bom-btn-cancel:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+body.light-theme .bom-btn-cancel:hover {
+  color: #0f172a;
+  background: #e2e8f0;
+}
