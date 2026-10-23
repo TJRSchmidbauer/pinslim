@@ -11,7 +11,9 @@
       "run": {
         "addBoard": "Board zum Ausführen hinzufügen",
         "runMicropython": "MicroPython ausführen",
-        "run": "Ausführen (automatisch kompilieren falls nötig)"
+        "run": "Ausführen (automatisch kompilieren falls nötig)",
+        "runActiveOnly": "Nur {{name}} ausführen",
+        "options": "Ausführungsoptionen"
       },
       "stop": "Stopp",
       "reset": "Zurücksetzen",
@@ -403,7 +405,8 @@
       "appearance": "Appearance",
       "themeDark": "Dark",
       "themeLight": "Light",
-      "themeSystem": "Match system"
+      "themeSystem": "Match system",
+      "account": "Konto"
     },
     "inspector": {
       "propertiesTab": "Eigenschaften",
@@ -453,6 +456,13 @@
         "recompiling": "Code seit dem letzten Build geändert: wird vor dem Flashen neu kompiliert...",
         "compiled": "Build OK in {{seconds}} s. Flashen startet..."
       }
+    },
+    "newProject": {
+      "title": "Neues Projekt starten",
+      "subtitle": "Wähle einen leeren Arbeitsbereich oder ein Board mit einem lauffähigen Blink-Beispiel. Dabei wird der aktuelle Arbeitsbereich vollständig ersetzt.",
+      "blankTitle": "Leeres Projekt",
+      "blankDesc": "Leerer Arbeitsbereich – füge eigene Boards und Bauteile hinzu",
+      "cancel": "Abbrechen"
     }
   },
   "about": {

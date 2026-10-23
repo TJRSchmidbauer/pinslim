@@ -56,7 +56,7 @@ export const PinslimLogo: React.FC<PinslimLogoProps> = ({
             fontWeight: 700,
             fontSize: `${Math.max(14, size * 0.75)}px`,
             letterSpacing: '-0.02em',
-            background: 'linear-gradient(135deg, #FFFFFF 30%, #00E5FF 100%)',
+            background: 'linear-gradient(135deg, var(--wb-13) 30%, var(--pinslim-logo-accent) 100%)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
           }}
