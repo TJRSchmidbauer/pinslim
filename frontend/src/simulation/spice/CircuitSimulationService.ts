@@ -206,12 +206,22 @@ export class CircuitSimulationService {
     }, CircuitSimulationService.EDGE_DRAIN_GAP_MS);
   }
 
+  private readonly simStore: SimulatorStorePort;
+  private readonly electricalStore: ElectricalStorePort;
+  private readonly scheduler: MixedModeSchedulerPort;
+  private readonly options: ServiceOptions;
+
   constructor(
-    private readonly simStore: SimulatorStorePort,
-    private readonly electricalStore: ElectricalStorePort,
-    private readonly scheduler: MixedModeSchedulerPort,
-    private readonly options: ServiceOptions,
-  ) {}
+    simStore: SimulatorStorePort,
+    electricalStore: ElectricalStorePort,
+    scheduler: MixedModeSchedulerPort,
+    options: ServiceOptions,
+  ) {
+    this.simStore = simStore;
+    this.electricalStore = electricalStore;
+    this.scheduler = scheduler;
+    this.options = options;
+  }
 
   /**
    * Permanently stop the orchestration loop. After `stop()`, the
@@ -364,7 +374,7 @@ export class CircuitSimulationService {
         ) as never,
       })),
     };
-    const input = buildInputFromStore(snap as Parameters<typeof buildInputFromStore>[0]);
+    const input = buildInputFromStore(snap as unknown as Parameters<typeof buildInputFromStore>[0]);
     const { netlist, pinNetMap, nets, voltageSources, sourcedNets } = buildNetlist(input);
 
     // Tell the scheduler exactly which vectors we want — every net

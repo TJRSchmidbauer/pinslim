@@ -88,7 +88,6 @@ export class NgSpiceNodeAdapter implements SolverPort {
   private readonly wasmDir: string;
   private stdoutBuffer: string[] = [];
   private stderrBuffer: string[] = [];
-  private callbackPointers: number[] = [];
 
   constructor(opts: { wasmDir?: string } = {}) {
     this.wasmDir = opts.wasmDir ?? defaultWasmDir();
@@ -141,7 +140,9 @@ export class NgSpiceNodeAdapter implements SolverPort {
     //   SendInitData(vecinfoall*, int, void*)   → iiii
     //   BGThreadRunning(bool, int, void*)       → iiii
     const noop = () => 0;
-    this.callbackPointers = [
+    // Registered so the WASM table holds valid entries; ngSpice_Init is
+    // currently called with null callbacks (see init()).
+    [
       M.addFunction(noop, 'iiii'),    // print
       M.addFunction(noop, 'iiii'),    // status
       M.addFunction(noop, 'iiiiii'),  // exit

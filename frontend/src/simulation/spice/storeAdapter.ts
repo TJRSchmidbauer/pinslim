@@ -156,7 +156,13 @@ export interface StoreSnapshot {
     metadataId: string;
     properties: Record<string, unknown>;
   }>;
-  wires: Wire[];
+  /** Only the topology is read — geometry and colour are irrelevant here. */
+  wires: Array<
+    Pick<Wire, 'id'> & {
+      start: Pick<Wire['start'], 'componentId' | 'pinName'>;
+      end: Pick<Wire['end'], 'componentId' | 'pinName'>;
+    }
+  >;
   boards: Array<{
     id: string;
     boardKind: BoardKind;

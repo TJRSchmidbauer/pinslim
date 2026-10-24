@@ -228,11 +228,11 @@ class VirtualSSD1306 implements I2CDevice {
   private ctrlByte = true;
   private isData = false;
 
-  constructor(
-    address: number,
-    private element: HTMLElement,
-  ) {
+  private element: HTMLElement;
+
+  constructor(address: number, element: HTMLElement) {
     this.address = address;
+    this.element = element;
   }
 
   /** Expose core buffer for tests. */

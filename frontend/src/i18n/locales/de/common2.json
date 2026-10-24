@@ -13,7 +13,8 @@
         "runMicropython": "MicroPython ausführen",
         "run": "Ausführen (automatisch kompilieren falls nötig)",
         "runActiveOnly": "Nur {{name}} ausführen",
-        "options": "Ausführungsoptionen"
+        "options": "Ausführungsoptionen",
+        "verifying": "Schaltung wird geprüft …"
       },
       "stop": "Stopp",
       "reset": "Zurücksetzen",
@@ -23,7 +24,7 @@
         "title": "Arduino-Bibliotheken suchen und installieren",
         "label": "Bibliotheken"
       },
-      "import": "Projekt importieren (.vlx Velxio oder .zip Wokwi)",
+      "import": "Projekt importieren (.vlx oder .zip Wokwi)",
       "export": "Aktuelles Projekt als .zip-Datei exportieren",
       "uploadFirmware": "Firmware hochladen (.hex, .bin, .elf, .ihex) zur Umgehung der Kompilierung",
       "toggleConsole": "Ausgabekonsole umschalten",
@@ -42,8 +43,28 @@
       "githubSyncLabel": "Mit GitHub synchronisieren",
       "uploadFirmwareLabel": "Firmware hochladen",
       "recordLabel": "Simulation aufzeichnen",
-      "themeToLight": "Switch to light theme",
-      "themeToDark": "Switch to dark theme"
+      "themeToLight": "Zum hellen Design wechseln",
+      "themeToDark": "Zum dunklen Design wechseln",
+      "rerunScript": "Skript mit den neuesten Änderungen erneut ausführen (ohne Neustart)",
+      "digitalRunning": "Digitalsimulation läuft",
+      "digitalResume": "Digitalsimulation fortsetzen",
+      "digitalFreeze": "Digitalsimulation anhalten",
+      "msg": {
+        "readyNoCompile": "Bereit (keine Kompilierung nötig)",
+        "micropythonReady": "MicroPython bereit",
+        "unknownBoard": "Unbekanntes Board",
+        "compiled": "Erfolgreich kompiliert",
+        "compilingAll": "Alle Ziele werden kompiliert ({{targets}}) …",
+        "exportFailed": "Export fehlgeschlagen.",
+        "renderingPng": "Schaltplanbild wird erstellt …",
+        "pngDownloaded": "Schaltplanbild heruntergeladen.",
+        "pngFailed": "Export des Schaltplanbilds fehlgeschlagen.",
+        "loadingFirmware": "Firmware wird geladen: {{name}} …",
+        "noBoard": "Kein Board ausgewählt",
+        "archMismatch": "Hinweis: Architektur {{detected}} erkannt, aktuelles Board ist aber {{current}}. Wird trotzdem geladen.",
+        "firmwareLoaded": "Firmware geladen: {{name}}",
+        "imported": "{{name}} importiert"
+      }
     },
     "fileExplorer": {
       "workspace": "ARBEITSBEREICH",
@@ -80,7 +101,17 @@
       "lastSaved": "zuletzt gespeichert",
       "saving": "wird gespeichert…",
       "saved": "gespeichert",
-      "saveFailed": "Speichern fehlgeschlagen"
+      "saveFailed": "Speichern fehlgeschlagen",
+      "deleteFolder": "Ordner löschen",
+      "folderHoldsEverything": "Der Ordner enthält alle Dateien dieses Boards – ein Board braucht mindestens eine Datei.",
+      "folderNamePlaceholder": "Ordnername",
+      "newFileInFolder": "Neue Datei hier",
+      "newFolderInBoard": "Neuer Ordner",
+      "newSubfolder": "Neuer Unterordner",
+      "openProjectTitle": "Projekt öffnen (.vlx oder Wokwi-.zip)",
+      "renameBoardTitle": "Board umbenennen (oder Namen doppelklicken)",
+      "renameChipTitle": "Chip umbenennen (oder Namen doppelklicken)",
+      "doubleClickRename": "Zum Umbenennen doppelklicken"
     },
     "fileTabs": {
       "unsavedChanges": "Ungespeicherte Änderungen",
@@ -180,7 +211,9 @@
         "mpyUnavailable": "MicroPython-Projekte können von hier aus nicht geflasht werden: nur Arduino-Sketches",
         "ready": "Den kompilierten Sketch auf ein echtes, per USB angeschlossenes Board flashen",
         "willCompile": "Den Sketch kompilieren und auf ein echtes, per USB angeschlossenes Board flashen"
-      }
+      },
+      "spiceWarning": "Warnung",
+      "spiceNoConverge": "Warnung: Lösung konvergiert nicht"
     },
     "componentPicker": {
       "title": "Komponente hinzufügen",
@@ -394,8 +427,8 @@
       "toggleExplorer": "Datei-Explorer",
       "toggleConsole": "Ausgabekonsole",
       "toggleScope": "Oszilloskop / Logikanalysator",
-      "home": "Velxio-Startseite",
-      "about": "Über Velxio",
+      "home": "Pinslim-Startseite",
+      "about": "Über Pinslim",
       "discord": "Discord-Community",
       "github": "GitHub-Repository",
       "compile": "Kompilieren",
@@ -405,8 +438,12 @@
       "appearance": "Appearance",
       "themeDark": "Dark",
       "themeLight": "Light",
-      "themeSystem": "Match system",
-      "account": "Konto"
+      "themeSystem": "Systemeinstellung",
+      "account": "Konto",
+      "aboutPinslim": "Über Pinslim",
+      "pinslimRepo": "Pinslim auf GitHub",
+      "reportIssue": "Problem melden",
+      "upstreamProject": "Originalprojekt: Velxio"
     },
     "inspector": {
       "propertiesTab": "Eigenschaften",
@@ -540,5 +577,76 @@
       "subtitle": "Keine Anmeldung erforderlich. Läuft zu 100 % in Ihrem Browser. Kostenlos und Open Source.",
       "openEditor": "Editor öffnen"
     }
+  },
+  "examples": {
+    "filters": {
+      "allBoards": "Alle Boards",
+      "boardLabel": "Board"
+    },
+    "collection": {
+      "label": "Beispielsammlung",
+      "school": "Schule (nach Themen)",
+      "general": "Alle Beispiele"
+    }
+  },
+  "ui": {
+    "properties": "Eigenschaften",
+    "filterByCategory": "Nach Kategorie filtern",
+    "toggleMenu": "Menü umschalten",
+    "close": "Schließen",
+    "remove": "Entfernen",
+    "disabled": "Deaktiviert",
+    "loadingFileSystem": "Dateisystem wird geladen …",
+    "piUploadAll": "Alle Dateien per serieller Verbindung auf den laufenden Pi übertragen",
+    "boardOptions": {
+      "title": "Board-Optionen",
+      "partitionScheme": "Partitionsschema",
+      "flashSize": "Flash-Größe",
+      "qemuGrows": "QEMU-Image wächst",
+      "cpuFreq": "CPU-Takt",
+      "flashFreq": "Flash-Takt",
+      "flashMode": "Flash-Modus",
+      "coreDebug": "Core-Debug-Level",
+      "concurrency": "Nebenläufigkeit",
+      "eventsCore": "Events laufen auf",
+      "arduinoCore": "Arduino läuft auf",
+      "eraseFlash": "Flash beim Hochladen löschen"
+    },
+    "lib": {
+      "noInstall": "Keine Installation nötig – einfach importieren",
+      "pyInWorkspace": "Die .py-Datei liegt im Arbeitsbereich – im Datei-Explorer bearbeiten oder löschen",
+      "searchHint": "Oben suchen, um eine Bibliothek zu finden und hinzuzufügen.",
+      "removeFromBoard": "Von diesem Board entfernen (libraries.json)",
+      "installAndAdd": "Bei Bedarf installieren und zu diesem Board hinzufügen",
+      "removeUpload": "Eigenen Upload entfernen",
+      "scopeHint": "Bibliotheken gelten für dieses Board (seine libraries.json = Kompilierumfang)",
+      "mpyHint": "MicroPython: Eine Bibliothek ist eine .py-Datei im Arbeitsbereich dieses Boards"
+    },
+    "scope": {
+      "triggerConfig": "Trigger-Einstellungen",
+      "triggerMode": "Trigger-Modus",
+      "triggerSource": "Trigger-Quelle",
+      "triggerEdge": "Trigger-Flanke",
+      "rearm": "Neu scharf schalten und die nächste Trigger-Flanke erfassen"
+    },
+    "libsJson": {
+      "title": "libraries.json – die deklarierten Bibliotheken von {{board}} (schreibgeschützt; Verwaltung über den Bibliotheksmanager)",
+      "none": "Für dieses Board sind keine Bibliotheken deklariert",
+      "count": "{{count}} deklariert: {{list}}"
+    },
+    "newFolder": "Neuer Ordner",
+    "noDatasheet": "Für dieses Bauteil gibt es noch kein Datenblatt.",
+    "pinsListedLeft": "Die Pins sind links aufgeführt.",
+    "noComponents": "Keine Bauteile",
+    "loadingProject": "Projekt wird geladen …",
+    "loadingExample": "Beispiel wird geladen …",
+    "sd": {
+      "reread": "Karte neu einlesen",
+      "empty": "Die Karte ist leer."
+    },
+    "featuredCommunity": "Ausgewählte Community-Projekte",
+    "circuitVerification": "Schaltungsprüfung",
+    "boardSensorsHint": "Board neigen und Akkustand einstellen (Simulationseingaben)",
+    "language": "Sprache"
   }
 }

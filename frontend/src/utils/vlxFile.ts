@@ -30,7 +30,7 @@
  */
 
 import type { BoardInstance } from '../types/board';
-import type { Component } from '../types/component';
+import type { Component } from '../store/useSimulatorStore';
 import type { Wire } from '../types/wire';
 import { useEditorStore, chipFileGroupId } from '../store/useEditorStore';
 import { useSimulatorStore } from '../store/useSimulatorStore';

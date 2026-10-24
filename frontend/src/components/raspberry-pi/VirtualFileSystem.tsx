@@ -7,7 +7,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useVfsStore } from '../../store/useVfsStore';
-import type { VfsNode } from '../../store/useVfsStore';
 import { getBoardBridge, useSimulatorStore } from '../../store/useSimulatorStore';
 import { showConfirmDialog } from '../../store/useMessageDialogStore';
 import { uploadFilesToPi } from '../../utils/piUpload';
@@ -98,14 +97,14 @@ interface NodeRowProps {
   onContext: (e: React.MouseEvent, nodeId: string, isDir: boolean) => void;
   renamingId: string | null;
   renameValue: string;
-  renameInputRef: React.RefObject<HTMLInputElement>;
+  renameInputRef: React.RefObject<HTMLInputElement | null>;
   onRenameChange: (v: string) => void;
   onRenameCommit: () => void;
   onRenameCancel: () => void;
   creatingIn: string | null;
   newNodeName: string;
   newNodeType: 'file' | 'directory';
-  newNodeInputRef: React.RefObject<HTMLInputElement>;
+  newNodeInputRef: React.RefObject<HTMLInputElement | null>;
   onNewNameChange: (v: string) => void;
   onNewNameCommit: () => void;
   onNewNameCancel: () => void;
@@ -388,7 +387,7 @@ export const VirtualFileSystem: React.FC<VirtualFileSystemProps> = ({ boardId, o
     setTimeout(() => setUploadStatus('idle'), 2500);
   };
 
-  if (!rootId) return <div style={styles.empty}>Loading file system…</div>;
+  if (!rootId) return <div style={styles.empty}>{t('ui.loadingFileSystem', 'Loading file system…')}</div>;
 
   return (
     <div style={styles.container}>
@@ -411,7 +410,7 @@ export const VirtualFileSystem: React.FC<VirtualFileSystemProps> = ({ boardId, o
             }}
             onClick={handleUpload}
             disabled={uploadStatus === 'uploading'}
-            title="Upload all files to the running Pi via serial"
+            title={t('ui.piUploadAll', 'Upload all files to the running Pi via serial')}
           >
             <IcoUpload />
             <span style={{ marginLeft: 4, fontSize: 10 }}>

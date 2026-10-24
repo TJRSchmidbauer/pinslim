@@ -19,6 +19,7 @@
 import React from 'react';
 import type { ExampleProject, ExampleBoard } from '../../data/examples';
 import { INLINE_SVGS } from './InlineComponentSVGs';
+import { useTranslation } from 'react-i18next';
 
 // ── Natural display sizes (px on the simulator canvas) ──────────────────────
 // A CompDef either points to a static file under /component-svgs/ (svg set) or
@@ -257,6 +258,7 @@ export const CircuitPreview: React.FC<CircuitPreviewProps> = ({
   className,
   style,
 }) => {
+  const { t } = useTranslation();
   const items: LayoutItem[] = [];
 
   // ── Build layout items ───────────────────────────────────────────────────
@@ -323,7 +325,7 @@ export const CircuitPreview: React.FC<CircuitPreviewProps> = ({
         }}
         className={className}
       >
-        <span style={{ color: '#555', fontSize: 12 }}>No components</span>
+        <span style={{ color: 'var(--wb-10)', fontSize: 12 }}>{t('ui.noComponents', 'No components')}</span>
       </div>
     );
   }

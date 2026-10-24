@@ -65,7 +65,7 @@ import {
   updateWires as icUpdateWires,
   setInterconnectRuntime,
 } from '../simulation/Interconnect';
-import { SENSOR_CONTROLS, getSensorControl } from '../simulation/sensorControlConfig';
+import { getSensorControl } from '../simulation/sensorControlConfig';
 import { dispatchSensorUpdate } from '../simulation/SensorUpdateRegistry';
 
 // ── Sensor pre-registration ──────────────────────────────────────────────────
@@ -254,30 +254,6 @@ class Esp32BridgeShim {
    * ESP32 ADC1: GPIO 36-39 → CH0-3, GPIO 32-35 → CH4-7
    * Returns true if the pin is a valid ADC pin.
    */
-  /** GPIO -> ADC channel for the bridge's board family. Classic ESP32:
-   * ADC1 on GPIO 36-39 (CH0-3) + 32-35 (CH4-7). ESP32-S3 family (incl.
-   * xiao-esp32-s3 and the S3-based arduino-nano-esp32): ADC1 = GPIO 1-10
-   * (CH0-9), ADC2 = GPIO 11-20 (stored at channel index 10-19, matching
-   * the machine's SENS stub). Without the S3 branch analogRead always saw
-   * 0 there (2026-07 emulation-gaps audit, F1). */
-  private adcChannelForPin(pin: number): number {
-    const kind = this.bridge.boardKind as string;
-    if (kind === 'esp32-s3' || kind === 'xiao-esp32-s3' || kind === 'arduino-nano-esp32') {
-      if (pin >= 1 && pin <= 10) return pin - 1;
-      if (pin >= 11 && pin <= 20) return 10 + (pin - 11);
-      return -1;
-    }
-    if (kind === 'esp32-c3' || kind === 'xiao-esp32-c3' || kind === 'aitewinrobot-esp32c3-supermini') {
-      // C3: ADC1 = GPIO0-4 -> CH0-4, GPIO5 (ADC2_CH0) -> index 5.
-      // Verified against the qemu SARADC: esp32_adc_set{channel:3} is what
-      // analogRead(3) returns (emulation-gaps harness, 2026-07-31).
-      return pin >= 0 && pin <= 5 ? pin : -1;
-    }
-    if (pin >= 36 && pin <= 39) return pin - 36; // GPIO 36→CH0 … 39→CH3
-    if (pin >= 32 && pin <= 35) return pin - 28; // GPIO 32→CH4 … 35→CH7
-    return -1;
-  }
-
   setAdcVoltage(pin: number, voltage: number): boolean {
     const channel = this.adcChannelForPin(pin);
     if (channel < 0) return false;
@@ -293,6 +269,18 @@ class Esp32BridgeShim {
   private adcChannelForPin(pin: number): number {
     const b = this.bridge as unknown as { adcChannelForGpio?: (gpio: number) => number };
     if (typeof b.adcChannelForGpio === 'function') return b.adcChannelForGpio(pin);
+    // Bridge without a chip map: ESP32-S3 family ADC1 = GPIO 1-10 (CH0-9),
+    // ADC2 = GPIO 11-20 (index 10-19); C3 family ADC1 = GPIO 0-4, GPIO5 →
+    // index 5 (both verified against the qemu SARADC, 2026-07).
+    const kind = this.bridge.boardKind as string;
+    if (kind === 'esp32-s3' || kind === 'xiao-esp32-s3' || kind === 'arduino-nano-esp32') {
+      if (pin >= 1 && pin <= 10) return pin - 1;
+      if (pin >= 11 && pin <= 20) return 10 + (pin - 11);
+      return -1;
+    }
+    if (kind === 'esp32-c3' || kind === 'xiao-esp32-c3' || kind === 'aitewinrobot-esp32c3-supermini') {
+      return pin >= 0 && pin <= 5 ? pin : -1;
+    }
     if (pin >= 36 && pin <= 39) return pin - 36; // GPIO 36→CH0 .. 39→CH3
     if (pin >= 32 && pin <= 35) return pin - 28; // GPIO 32→CH4 .. 35→CH7
     return -1;
@@ -904,10 +892,16 @@ class Stm32BridgeShim {
 }
 
 // ── Runtime Maps (outside Zustand — not serialisable) ─────────────────────
-const simulatorMap = new Map<
-  string,
-  AVRSimulator | RP2040Simulator | RiscVSimulator | Esp32C3Simulator | Esp32BridgeShim | Stm32BridgeShim
->();
+/** Every simulator a board can run on, including overlay-registered ones. */
+export type BoardSimulator =
+  | AVRSimulator
+  | RP2040Simulator
+  | RiscVSimulator
+  | Esp32C3Simulator
+  | Esp32BridgeShim
+  | Stm32BridgeShim
+  | ProBoardSimulator;
+const simulatorMap = new Map<string, BoardSimulator>();
 const pinManagerMap = new Map<string, PinManager>();
 // Per-board ESP32 GPIO Matrix mirror.  Populated for boards whose kind
 // is an ESP32 variant (others don't have a GPIO Matrix in the same
@@ -1028,7 +1022,7 @@ function isRiscVEsp32Kind(kind: BoardKind): boolean {
 }
 
 // ── Component type ────────────────────────────────────────────────────────
-interface Component {
+export interface Component {
   id: string;
   metadataId: string;
   x: number;
@@ -1106,13 +1100,7 @@ interface SimulatorState {
   /** @deprecated use boards[x].x/y */
   boardPosition: { x: number; y: number };
   /** @deprecated use getBoardSimulator(activeBoardId) */
-  simulator:
-    | AVRSimulator
-    | RP2040Simulator
-    | RiscVSimulator
-    | Esp32C3Simulator
-    | Esp32BridgeShim
-    | null;
+  simulator: BoardSimulator | null;
   /** @deprecated use getBoardPinManager(activeBoardId) */
   pinManager: PinManager;
   running: boolean;
@@ -1704,7 +1692,7 @@ export const useSimulatorStore = create<SimulatorState>((set, get) => {
         return {
           boards: [...s.boards, newBoard],
           activeBoardId: nextActive,
-          simulator: simulatorMap.get(nextActive) ?? s.simulator,
+          simulator: (nextActive && simulatorMap.get(nextActive)) || s.simulator,
         };
       });
       // Create the editor file group for this board. A board that ships its
@@ -3282,7 +3270,7 @@ export const useSimulatorStore = create<SimulatorState>((set, get) => {
     setWires: (wires) =>
       set((state) => ({
         // Ensure every wire has waypoints (backwards-compatible with saved projects)
-        wires: wires.map((w) => ({ waypoints: [], ...w })),
+        wires: wires.map((w) => ({ ...w, waypoints: w.waypoints ?? [] })),
         // Bulk replacement clears history for the same reason as setComponents.
         history: [],
         historyIndex: -1,
@@ -3834,7 +3822,10 @@ export const useSimulatorStore = create<SimulatorState>((set, get) => {
           esp32Bridge.sendSerialBytes(Array.from(new TextEncoder().encode(text)));
         }
       } else {
-        getBoardSimulator(boardId)?.serialWrite(text);
+        // Not every simulator has a UART input (overlay boards may not).
+        (getBoardSimulator(boardId) as { serialWrite?(t: string): void } | undefined)?.serialWrite?.(
+          text,
+        );
       }
     },
 
@@ -3870,7 +3861,10 @@ export const useSimulatorStore = create<SimulatorState>((set, get) => {
           esp32Bridge.sendSerialBytes(Array.from(new TextEncoder().encode(text)));
         }
       } else {
-        getBoardSimulator(boardId)?.serialWrite(text);
+        // Not every simulator has a UART input (overlay boards may not).
+        (getBoardSimulator(boardId) as { serialWrite?(t: string): void } | undefined)?.serialWrite?.(
+          text,
+        );
       }
     },
 

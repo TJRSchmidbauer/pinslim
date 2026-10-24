@@ -265,7 +265,7 @@ const IcoChip = () => (
 );
 
 // Board emoji icons — mirrors BoardPickerModal
-const BOARD_ICON: Record<BoardKind, string> = {
+const BOARD_ICON: Partial<Record<BoardKind, string>> = {
   'arduino-uno': '⬤',
   'arduino-nano': '▪',
   'arduino-mega': '▬',
@@ -285,7 +285,7 @@ const BOARD_ICON: Record<BoardKind, string> = {
 };
 
 // Color accent per board family
-const BOARD_COLOR: Record<BoardKind, string> = {
+const BOARD_COLOR: Partial<Record<BoardKind, string>> = {
   'arduino-uno': '#4fc3f7',
   'arduino-nano': '#4fc3f7',
   'arduino-mega': '#4fc3f7',
@@ -825,7 +825,7 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ onSaveClick, onNewCl
           </button>
           <button
             className="file-explorer-save-btn"
-            title="Open project (.vlx Velxio or .zip Wokwi)"
+            title={t('editor.fileExplorer.openProjectTitle', 'Open project (.vlx or Wokwi .zip)')}
             onClick={handleOpenProjectClick}
           >
             <IcoOpen />
@@ -896,7 +896,7 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ onSaveClick, onNewCl
                   <span className="fe-board-actions-spacer" />
                   <button
                     className="fe-board-new-btn"
-                    title="Rename board (or double-click the name)"
+                    title={t('editor.fileExplorer.renameBoardTitle', 'Rename board (or double-click the name)')}
                     onClick={(e) => {
                       e.stopPropagation();
                       startBoardRename(board);
@@ -962,7 +962,7 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ onSaveClick, onNewCl
                         e.stopPropagation();
                         startBoardRename(board);
                       }}
-                      title="Double-click to rename"
+                      title={t('editor.fileExplorer.doubleClickRename', 'Double-click to rename')}
                     >
                       {boardDisplayName(board)}
                     </span>
@@ -1155,7 +1155,7 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ onSaveClick, onNewCl
                       // Library actions happen in the Library Manager modal.
                       setManifestView(board.id);
                     }}
-                    title={`libraries.json — ${boardDisplayName(board)}'s declared libraries (read-only; manage from the Library Manager)`}
+                    title={t('ui.libsJson.title', "libraries.json — {{board}}'s declared libraries (read-only; manage from the Library Manager)", { board: boardDisplayName(board) })}
                   >
                     <span className="file-explorer-icon" style={{ color: '#ffd60a' }}>
                       <FileIcon name="libraries.json" />
@@ -1173,8 +1173,8 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ onSaveClick, onNewCl
                       }}
                       title={
                         board.libraries && board.libraries.length
-                          ? `${board.libraries.length} declared: ${board.libraries.join(', ')}`
-                          : 'No libraries declared for this board'
+                          ? t('ui.libsJson.count', '{{count}} declared: {{list}}', { count: board.libraries.length, list: board.libraries.join(', ') })
+                          : t('ui.libsJson.none', 'No libraries declared for this board')
                       }
                     >
                       {board.libraries?.length ?? 0}
@@ -1216,7 +1216,7 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ onSaveClick, onNewCl
                   {!(renamingSection?.id === chip.id && renamingSection.kind === 'chip') && (
                     <button
                       className="fe-board-new-btn"
-                      title="Rename chip (or double-click the name)"
+                      title={t('editor.fileExplorer.renameChipTitle', 'Rename chip (or double-click the name)')}
                       onClick={(e) => {
                         e.stopPropagation();
                         startChipRename(chip.id, chipName);
@@ -1263,7 +1263,7 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ onSaveClick, onNewCl
                         e.stopPropagation();
                         startChipRename(chip.id, chipName);
                       }}
-                      title="Double-click to rename"
+                      title={t('editor.fileExplorer.doubleClickRename', 'Double-click to rename')}
                     >
                       {chipName}
                     </span>

@@ -146,13 +146,14 @@ const epKey = (compId: string, pin: string) => `${compId}::${pin}`;
 class UnionFind {
   private parent = new Map<string, string>();
   find(x: string): string {
-    let r = this.parent.get(x);
-    if (r === undefined) {
+    const first = this.parent.get(x);
+    if (first === undefined) {
       this.parent.set(x, x);
       return x;
     }
+    let r: string = first;
     while (r !== this.parent.get(r)) {
-      const gp = this.parent.get(r)!;
+      const gp: string = this.parent.get(r)!;
       this.parent.set(r, this.parent.get(gp)!);
       r = gp;
     }

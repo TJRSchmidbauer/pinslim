@@ -27,7 +27,7 @@
     "shareProject": "Projekt teilen"
   },
   "footer": {
-    "about": "Velxio ist ein kostenloser, quelloffener Schaltkreis- und Mikrocontroller-Simulator, der vollständig in Ihrem Browser läuft. Arduino, ESP32, RP2040 und ATtiny85, mit SPICE-genauer analoger Co-Simulation. Entwickelt für Maker, Studenten und Embedded-Ingenieure, die durch praktisches Lernen lernen. AGPLv3."
+    "about": "Pinslim ist ein kostenloser, quelloffener Schaltkreis- und Mikrocontroller-Simulator, der vollständig in Ihrem Browser läuft. Arduino, ESP32, RP2040 und ATtiny85, mit SPICE-genauer analoger Co-Simulation. Entwickelt für Maker, Studenten und Embedded-Ingenieure, die durch praktisches Lernen lernen. AGPLv3."
   },
   "landing": {
     "hero": {
@@ -160,7 +160,7 @@
   },
   "pricing": {
     "title": "Preise",
-    "selfHosted": "Diese Velxio-Instanz wird selbst gehostet aus dem quelloffenen Image – alle Funktionen sind für alle Nutzer kostenlos.",
+    "selfHosted": "Diese Pinslim-Instanz wird selbst gehostet aus dem quelloffenen Image – alle Funktionen sind für alle Nutzer kostenlos.",
     "hostedVersion": "Die gehostete Version unter <link>velxio.dev</link> bietet eine optionale Pro-Stufe, die die Entwicklung finanziert.",
     "sourceCode": "Der Quellcode ist <link>MIT-lizenziert auf GitHub</link>."
   },
@@ -382,7 +382,7 @@
   "auth": {
     "login": {
       "title": "Anmelden",
-      "subtitle": "um mit Velxio fortzufahren",
+      "subtitle": "um mit Pinslim fortzufahren",
       "email": "E-Mail",
       "password": "Passwort",
       "signIn": "Anmelden",

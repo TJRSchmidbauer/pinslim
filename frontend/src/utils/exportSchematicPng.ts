@@ -10,7 +10,7 @@ import { getResolvedTheme } from '../lib/theme';
 
 export async function exportSchematicPng(): Promise<void> {
   const simStore = useSimulatorStore.getState();
-  const { boards, components, wires } = simStore;
+  const { boards, components } = simStore;
 
   if (boards.length === 0 && components.length === 0) {
     alert('Der Schaltplan ist leer. Bitte füge zuerst ein Bauteil oder Board hinzu.');
@@ -181,8 +181,8 @@ export async function exportSchematicPng(): Promise<void> {
   // 5. Render Components
   const registry = ComponentRegistry.getInstance();
   components.forEach((comp) => {
-    const meta = registry.getById(comp.type) || registry.getByTagName(comp.type);
-    const compName = meta?.name || comp.name || comp.type;
+    const meta = registry.getById(comp.metadataId);
+    const compName = meta?.name || comp.metadataId;
     const cWidth = 110;
     const cHeight = 80;
 
@@ -203,7 +203,7 @@ export async function exportSchematicPng(): Promise<void> {
     // Component Icon / Tag
     ctx.fillStyle = isLight ? '#0071e3' : '#38bdf8';
     ctx.font = 'bold 11px system-ui, sans-serif';
-    const compTitle = comp.name || compName;
+    const compTitle = compName;
     ctx.fillText(compTitle.length > 13 ? compTitle.slice(0, 12) + '…' : compTitle, cx + 10, cy + 24);
 
     // Details / Properties
@@ -216,7 +216,7 @@ export async function exportSchematicPng(): Promise<void> {
     } else if (props.color) {
       ctx.fillText(`Farbe: ${props.color}`, cx + 10, cy + 44);
     } else {
-      ctx.fillText(`Typ: ${comp.type}`, cx + 10, cy + 44);
+      ctx.fillText(`Typ: ${comp.metadataId}`, cx + 10, cy + 44);
     }
 
     ctx.restore();

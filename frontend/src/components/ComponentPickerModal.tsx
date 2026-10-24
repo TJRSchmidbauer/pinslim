@@ -63,6 +63,7 @@ import './velxio-components/Ssd1306I2cElement'; // registers velxio-ssd1306-i2c-
 import '@wokwi/elements';
 import '../velxio-elements';
 import './ComponentPickerModal.css';
+import { trPart } from '../i18n/content';
 
 interface ComponentPickerModalProps {
   isOpen: boolean;
@@ -394,7 +395,7 @@ export const ComponentPickerModal: React.FC<ComponentPickerModalProps> = ({
               setSelectedCategory(e.target.value as ComponentCategory | 'all' | 'boards');
               clearHover();
             }}
-            aria-label="Filter by category"
+            aria-label={t('ui.filterByCategory', 'Filter by category')}
           >
             <option value="all">{t('editor.componentPicker.allComponents')}</option>
             {categories
@@ -708,7 +709,7 @@ const ComponentCard: React.FC<ComponentCardProps> = ({ component, onSelect, hove
       </div>
       <div className="card-content">
         <div className="card-name">{component.name}</div>
-        {component.description && <div className="card-description">{component.description}</div>}
+        {component.description && <div className="card-description">{trPart(component.description)}</div>}
         <div className="card-meta">
           <span className="card-category">{component.category}</span>
           {component.pinCount > 0 && <span className="card-pins">{component.pinCount} pins</span>}
@@ -845,7 +846,7 @@ const BoardCard: React.FC<BoardCardProps> = ({ kind, onSelect, hoverApi }) => {
       </div>
       <div className="card-content">
         <div className="card-name">{BOARD_KIND_LABELS[kind]}</div>
-        <div className="card-description">{BOARD_DESCRIPTIONS[kind] ?? getProBoard(kind)?.description}</div>
+        <div className="card-description">{trPart(BOARD_DESCRIPTIONS[kind] ?? getProBoard(kind)?.description)}</div>
       </div>
     </button>
   );

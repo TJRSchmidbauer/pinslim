@@ -11,7 +11,7 @@ import { ExampleDetailPage } from './pages/ExampleDetailPage';
 import { ExampleEditorPage } from './pages/ExampleEditorPage';
 import { LocaleSync } from './i18n/LocaleSync';
 import { NON_DEFAULT_LOCALES } from './i18n/config';
-import { useProRoutes, useProRoutesSettled } from './lib/proRoutes';
+import { useProRoutes } from './lib/proRoutes';
 import { triggerSessionCheck } from './lib/proSession';
 import { MessageDialogHost } from './components/ui/MessageDialogHost';
 import './App.css';

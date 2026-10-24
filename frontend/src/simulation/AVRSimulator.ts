@@ -329,7 +329,6 @@ export class AVRSimulator {
   // EEPROM peripheral + its backing store. The backend (the actual cells) is
   // created once and reused across firmware reloads and resets so written
   // values persist between boots, like real hardware (GitHub issue #203).
-  private eeprom: AVREEPROM | null = null;
   private eepromBackend: EEPROMMemoryBackend | null = null;
   public i2cBus!: I2CBusManager;
   private program: Uint16Array | null = null;
@@ -411,7 +410,7 @@ export class AVRSimulator {
     const backend = this.eepromBackend ?? new EEPROMMemoryBackend(size);
     this.eepromBackend = backend;
     const config = this.boardVariant === 'tiny85' ? attiny85EepromConfig : eepromConfig;
-    this.eeprom = new AVREEPROM(cpu, backend, config);
+    new AVREEPROM(cpu, backend, config);
   }
 
   /**

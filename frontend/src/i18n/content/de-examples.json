@@ -1,0 +1,1266 @@
+{
+ "uno-oled-4pin-i2c": {
+  "t": "Arduino Uno: SSD1306-OLED (4-Pin-I2C)",
+  "d": "Das günstige 4-Pin-OLED-Modul SSD1306 (GND/VCC/SCL/SDA) per I2C an einem Arduino Uno ansteuern (SDA=A4, SCL=A5). Zeigt „Hello Velxio!“ mit einem laufenden Zähler."
+ },
+ "esp32-oled-4pin-i2c": {
+  "t": "ESP32: SSD1306-OLED (4-Pin-I2C)",
+  "d": "Das günstige 4-Pin-OLED-Modul SSD1306 (GND/VCC/SCL/SDA) per I2C an einem ESP32 ansteuern (SDA=21, SCL=22)."
+ },
+ "esp32-micropython-external-library": {
+  "t": "ESP32 + MicroPython: externe Bibliothek nutzen",
+  "d": "So nutzt ein MicroPython-Projekt eine Bibliothek: Es gibt keine requirements.txt und keinen Paketmanager – der Treiber ist eine .py-Datei im Arbeitsbereich. Alle Dateien werden vor dem Start von main.py auf das Dateisystem des Boards kopiert, daher findet `import ssd1306` die danebenliegende ssd1306.py und zeichnet auf das angeschlossene OLED. Der Bibliotheksmanager in der Werkzeugleiste installiert ARDUINO-Bibliotheken und wirkt im MicroPython-Modus nicht."
+ },
+ "esp32-idf-blink": {
+  "t": "ESP32: Blinken mit reinem ESP-IDF",
+  "d": "Eine LED aus einem reinen ESP-IDF-Projekt blinken lassen – mit app_main(), FreeRTOS-Wartezeiten und dem GPIO-Treiber, ohne Arduino-Core. Wähle in der Sprachauswahl „ESP-IDF“, um weitere solche Projekte zu schreiben."
+ },
+ "pico-oled-4pin-i2c": {
+  "t": "Raspberry Pi Pico: SSD1306-OLED (4-Pin-I2C)",
+  "d": "Das günstige 4-Pin-OLED-Modul SSD1306 (GND/VCC/SCL/SDA) per I2C an einem Raspberry Pi Pico ansteuern (SDA=GP4, SCL=GP5)."
+ },
+ "stm32-oled-4pin-i2c": {
+  "t": "STM32 Blue Pill: SSD1306-OLED (4-Pin-I2C)",
+  "d": "Das günstige 4-Pin-OLED-Modul SSD1306 (GND/VCC/SCL/SDA) über I2C1 an einem STM32 Blue Pill ansteuern (SDA=PB7, SCL=PB6)."
+ },
+ "ky-040-rotary-encoder": {
+  "t": "Drehgeber KY-040",
+  "d": "Einen Drehgeber KY-040 mit dem Arduino Uno auslesen. Drehen verändert einen Zähler (Quadratursignal an CLK/DT), Drücken der Achse (SW) setzt ihn zurück. Die Position im seriellen Monitor beobachten."
+ },
+ "stm32-bluepill-blink": {
+  "t": "STM32 Blue Pill: Blinken",
+  "d": "Die LED an PC13 auf dem Board blinken lassen und Text seriell ausgeben – auf einem STM32F103 Blue Pill (QEMU / libqemu-arm)."
+ },
+ "stm32-bluepill-serial-counter": {
+  "t": "STM32: Serieller Zähler",
+  "d": "Der STM32 Blue Pill gibt jede Sekunde einen hochzählenden Zähler und die Laufzeit seriell aus. Im seriellen Monitor beobachten. Die LED an PC13 blinkt als Lebenszeichen."
+ },
+ "stm32-f4-discovery-blink": {
+  "t": "STM32F4 Discovery: LED blinken",
+  "d": "Die grüne LED an PD12 blinken lassen und Text seriell ausgeben – auf einem STM32F4 Discovery (STM32F407VG, Cortex-M4) unter QEMU."
+ },
+ "stm32-olimex-h405-blink": {
+  "t": "Olimex STM32-H405: Blinken",
+  "d": "Die Status-LED an PC12 blinken lassen und Text seriell ausgeben – auf einem Olimex STM32-H405 (STM32F405RG, Cortex-M4) unter QEMU."
+ },
+ "stm32-netduino-plus2-blink": {
+  "t": "Netduino Plus 2: Blinken",
+  "d": "Die LED an PA10 blinken lassen und Text seriell ausgeben – auf einem Netduino Plus 2 (STM32F405, Cortex-M4) unter QEMU."
+ },
+ "stm32-netduino2-serial": {
+  "t": "Netduino 2: Serieller Zähler",
+  "d": "Der Netduino 2 (STM32F205, Cortex-M3) gibt einen hochzählenden Zähler seriell aus. GPIO/LED folgen, sobald der F205 vollständig angebunden ist; die serielle Ausgabe funktioniert unter QEMU bereits."
+ },
+ "stm32-blackpill-f401-blink": {
+  "t": "STM32 Black Pill (F401): Blinken",
+  "d": "Die LED an PC13 blinken lassen und Text seriell ausgeben – auf einem STM32F401CE Black Pill (Cortex-M4) unter QEMU."
+ },
+ "stm32-bluepill-f103cb-blink": {
+  "t": "STM32 Blue Pill (F103CB): Blinken",
+  "d": "Die LED an PC13 blinken lassen und Text seriell ausgeben – auf einem STM32F103CB Blue Pill (Cortex-M3, 128 KB Flash) unter QEMU."
+ },
+ "stm32-uno-gpio-mirror": {
+  "t": "[STM32 + Arduino] GPIO-Spiegel",
+  "d": "Demo mit zwei Boards: Der STM32 Blue Pill schaltet PA1 alle 500 ms um (verbunden mit Pin 2 des Arduino Uno). Der Uno liest Pin 2 und spiegelt ihn auf seine eingebaute LED (Pin 13). Zeigt die Simulation unterschiedlicher Boards – QEMU-STM32 steuert einen avr8js-Arduino."
+ },
+ "stm32-uno-serial-link": {
+  "t": "[STM32 + Arduino] Serielle Verbindung",
+  "d": "UART zwischen zwei Boards: Der STM32 Blue Pill sendet „PING n“ über USART1 (PA9 TX) an den RX-Pin des Arduino Uno (Pin 0). Der Uno liest jede Zeile, blinkt mit LED 13 und gibt „[Uno] got: ...“ im eigenen seriellen Monitor aus. Beide Monitore beobachten."
+ },
+ "stm32-esp32-gpio-sync": {
+  "t": "[STM32 + ESP32] GPIO-Synchronisation",
+  "d": "Demo mit zwei Boards: Der STM32 Blue Pill schaltet PA1 um (verbunden mit GPIO4 des ESP32). Der ESP32 liest GPIO4, gibt den Zustand aus und spiegelt ihn auf GPIO2. Zwei QEMU-Backends (libqemu-arm + libqemu-xtensa) kommunizieren über eine Leitung."
+ },
+ "stm32-blackpill-blink": {
+  "t": "STM32 Black Pill: Blinken",
+  "d": "Die LED an PC13 blinken lassen und Text seriell ausgeben – auf einem STM32F411 Black Pill (Cortex-M4, QEMU / libqemu-arm)."
+ },
+ "stm32-bluepill-blackpill-gpio": {
+  "t": "[STM32 + STM32] Blue Pill → Black Pill",
+  "d": "Zwei verschiedene STM32-Boards kommunizieren: Der Blue Pill (F103) schaltet PA1 um, verbunden mit PA0 des Black Pill (F411). Der Black Pill liest PA0 und spiegelt ihn auf seine LED an PC13. Beide laufen in getrennten QEMU-Instanzen."
+ },
+ "stm32-bluepill-bmp280": {
+  "t": "STM32: Wettersensor BMP280 (I2C)",
+  "d": "Temperatur und Luftdruck eines BMP280 über I2C1 am STM32 Blue Pill auslesen (SCL=PB6, SDA=PB7). Der Sensor läuft als I2C-Slave in QEMU; die Werte erscheinen im seriellen Monitor. Zeigt den Hardware-I2C-Master des STM32 von Anfang bis Ende."
+ },
+ "stm32-bluepill-oled": {
+  "t": "STM32: SSD1306-OLED-Display (I2C)",
+  "d": "Ein 128×64-OLED SSD1306 über I2C1 am STM32 Blue Pill ansteuern (SCL=PB6, SDA=PB7). Die Bildspeicher-Daten werden vom I2C-Slave in QEMU abgefangen und auf der Zeichenfläche dargestellt. Zeigt „Hello Velxio!“ mit einem laufenden Bildzähler."
+ },
+ "stm32-bluepill-mpu6050": {
+  "t": "STM32: Bewegungssensor MPU6050 (I2C)",
+  "d": "Die WHO_AM_I-Kennung und die Beschleunigungsachsen eines 6-Achsen-Sensors MPU6050 über I2C1 am STM32 Blue Pill auslesen (SCL=PB6, SDA=PB7). Der Sensor läuft als I2C-Slave in QEMU; die Rohdaten erscheinen im seriellen Monitor."
+ },
+ "stm32-bluepill-rtc": {
+  "t": "STM32: Echtzeituhr DS1307 (I2C)",
+  "d": "Uhrzeit und Datum einer Echtzeituhr DS1307 über I2C1 am STM32 Blue Pill auslesen (SCL=PB6, SDA=PB7). Der DS1307 in QEMU liefert die Systemzeit im BCD-Format; im seriellen Monitor tickt sie jede Sekunde weiter."
+ },
+ "stm32-blackpill-oled": {
+  "t": "STM32 Black Pill: SSD1306-OLED (I2C)",
+  "d": "Ein 128×64-OLED SSD1306 über I2C1 an einem STM32 Black Pill ansteuern (F411, Cortex-M4; SCL=PB6, SDA=PB7). Zeigt, dass die I2C-Anzeige auch auf dem F4-Board funktioniert. Zeigt „Black Pill“ mit einem laufenden Zähler."
+ },
+ "stm32-bluepill-weather-station": {
+  "t": "STM32: Wetterstation (BMP280 + OLED)",
+  "d": "Ein komplettes I2C-Dashboard auf dem STM32 Blue Pill: Temperatur und Luftdruck vom BMP280 lesen und live auf einem SSD1306-OLED anzeigen. Beide teilen sich den Bus I2C1 (BMP280 0x76, OLED 0x3C, SCL=PB6/SDA=PB7). Übt Lesen und Schreiben auf einem Bus."
+ },
+ "stm32-bluepill-7segment": {
+  "t": "STM32: 7-Segment-Zähler",
+  "d": "Von 0 bis 9 auf einer 7-Segment-Anzeige zählen, angesteuert über sieben GPIO-Pins (PA0–PA6 = Segmente A–G) des STM32 Blue Pill. Reine Digitalausgabe: Für jede Ziffer wird das passende Muster auf die Segment-Pins geschrieben. Gemeinsame Kathode (COM → GND)."
+ },
+ "stm32-bluepill-rgb": {
+  "t": "STM32: RGB-LED-Farbwechsel",
+  "d": "Eine RGB-LED über drei GPIO-Pins (PA0=R, PA1=G, PA2=B) des STM32 Blue Pill durch Rot, Grün und Blau schalten. Reine Digitalausgabe; gemeinsame Kathode (COM → GND)."
+ },
+ "stm32-bluepill-button": {
+  "t": "STM32: Taster → LED",
+  "d": "Einen Taster an PA0 (INPUT_PULLUP) lesen und auf die LED an PC13 des STM32 Blue Pill spiegeln. Drücken zieht den Eingang auf LOW; die Firmware schaltet die LED, solange gedrückt ist. Zeigt die Eingabe über GPIO."
+ },
+ "stm32-bluepill-switch": {
+  "t": "STM32: Schiebeschalter → LED",
+  "d": "Einen Schiebeschalter an PA0 lesen und seine Stellung auf der LED an PC13 des STM32 Blue Pill anzeigen. Umschalten legt den Eingang auf HIGH oder LOW. Zeigt die Eingabe über ein rastendes Bauteil."
+ },
+ "stm32-bluepill-stepper": {
+  "t": "STM32: Schrittmotor",
+  "d": "Einen Schrittmotor mit der Vollschrittfolge über vier GPIO-Pins (PA0–PA3) des STM32 Blue Pill drehen. Reine Digitalausgabe: Die Firmware bestromt nacheinander die Spulen A+, B+, A-, B- und dreht so den Rotor."
+ },
+ "uno-stepper-a4988": {
+  "t": "Arduino Uno: Schrittmotor + A4988",
+  "d": "Einen bipolaren Schrittmotor vom Arduino Uno über einen A4988-Treiber drehen. Der Mikrocontroller gibt nur Impulse an STEP und setzt DIR; der A4988 treibt die Spulen. Der Rotor dreht sich dauerhaft."
+ },
+ "esp32-stepper-a4988": {
+  "t": "ESP32: Schrittmotor + A4988",
+  "d": "Einen bipolaren Schrittmotor vom ESP32 über einen A4988-Treiber drehen (STEP = GPIO26, DIR = GPIO27)."
+ },
+ "pico-stepper-a4988": {
+  "t": "Raspberry Pi Pico: Schrittmotor + A4988",
+  "d": "Einen bipolaren Schrittmotor vom Raspberry Pi Pico über einen A4988-Treiber drehen (STEP = GP3, DIR = GP4)."
+ },
+ "blink-led": {
+  "t": "LED blinken lassen",
+  "d": "Das klassische Arduino-Blink-Beispiel – eine LED ein- und ausschalten"
+ },
+ "traffic-light": {
+  "t": "Ampel",
+  "d": "Eine Ampel mit roter, gelber und grüner LED simulieren"
+ },
+ "button-led": {
+  "t": "Tastersteuerung",
+  "d": "Eine LED mit einem Taster steuern"
+ },
+ "fade-led": {
+  "t": "LED dimmen",
+  "d": "Eine LED per PWM sanft heller und dunkler werden lassen"
+ },
+ "serial-hello": {
+  "t": "Serielles Hallo Welt",
+  "d": "Nachrichten über die serielle Schnittstelle senden"
+ },
+ "rgb-led": {
+  "t": "RGB-LED-Farben",
+  "d": "Mit einer RGB-LED durch die Farben wechseln"
+ },
+ "simon-says": {
+  "t": "Spiel „Simon sagt“",
+  "d": "Merkspiel mit LEDs und Tastern"
+ },
+ "pico-doom-raycaster": {
+  "t": "Pico Doom – Raycaster-Demo",
+  "d": "3D-Gang in der Ich-Perspektive im Stil von Wolfenstein / frühem Doom auf einem Pi Pico mit ILI9341-TFT. DDA-Raycasting mit 160 Strahlen pro Bild, ohne Bildspeicher (Spalten werden mit drawFastVLine direkt auf das TFT gezeichnet). Vor/zurück bewegen, zwei weitere Tasten drehen die Spielfigur. 16×16-Kachelkarte mit 5 Wandfarben. Das vollständige Doom bräuchte die WAD-Daten mit einer eigenen Kompression im 2 MB großen Flash, die der Emulator nicht nachbilden kann – diese Demo zeigt, was der Pico tatsächlich darstellt."
+ },
+ "tft-display": {
+  "t": "TFT-Display ILI9341",
+  "d": "Farb-TFT-Demo: Flächen, Text und ein springender Ball mit der Bibliothek Adafruit ILI9341 (240×320)"
+ },
+ "lcd-hello": {
+  "t": "LCD-Anzeige 20×4",
+  "d": "Text auf einem 20×4-LCD mit der Bibliothek LiquidCrystal anzeigen"
+ },
+ "serial-echo": {
+  "t": "Serielles Echo (USART)",
+  "d": "Testet die serielle Kommunikation: Eingetippte Zeichen werden zurückgesendet und ein Status ausgegeben. Zum Ausprobieren den seriellen Monitor öffnen."
+ },
+ "serial-led-control": {
+  "t": "LED seriell steuern",
+  "d": "Eine LED über serielle Befehle steuern: „1“ oder „0“ senden. Testet USART-Empfang und GPIO-Ausgabe zusammen."
+ },
+ "i2c-scanner": {
+  "t": "I2C-Scanner (TWI)",
+  "d": "Durchsucht den I2C-Bus und meldet alle gefundenen Geräte. Ein SSD1306-OLED (0x3C) ist angeschlossen; virtuelle Geräte an 0x48, 0x50 und 0x68 antworten ebenfalls."
+ },
+ "i2c-rtc-read": {
+  "t": "I2C-Echtzeituhr (DS1307)",
+  "d": "Liest die Uhrzeit aus einer virtuellen Echtzeituhr DS1307 per I2C und gibt sie seriell aus. Testet I2C-Lesezugriffe."
+ },
+ "i2c-eeprom-rw": {
+  "t": "I2C-EEPROM lesen/schreiben",
+  "d": "Schreibt Daten in ein virtuelles I2C-EEPROM (0x50) und liest sie zurück. Testet I2C-Schreib- und Lesezugriffe."
+ },
+ "spi-loopback": {
+  "t": "SPI-Loopback-Test",
+  "d": "Testet SPI, indem Bytes gesendet und Antworten gelesen werden. Zeigt das Protokoll mit MOSI/MISO/SCK/SS."
+ },
+ "multi-protocol": {
+  "t": "Mehrere Protokolle",
+  "d": "Nutzt Seriell, I2C und SPI zusammen: liest die Echtzeituhr per I2C, sendet SPI-Daten und protokolliert alles seriell."
+ },
+ "pico-blink": {
+  "t": "[Pico] LED blinken lassen",
+  "d": "Klassisches Blink-Beispiel auf dem Raspberry Pi Pico – eingebaute LED an GPIO25"
+ },
+ "pico-serial-echo": {
+  "t": "[Pico] Serielles Echo",
+  "d": "Serielle Eingaben mit Zeitstempel zurücksenden – testet den UART des RP2040"
+ },
+ "pico-serial-led-control": {
+  "t": "[Pico] LED seriell steuern",
+  "d": "Die LED des Pico über serielle Befehle steuern (1 = an, 0 = aus, ? = Status)"
+ },
+ "pico-i2c-scanner": {
+  "t": "[Pico] I2C-Scanner",
+  "d": "Den I2C-Bus des Pico nach angeschlossenen Geräten durchsuchen"
+ },
+ "pico-i2c-rtc-read": {
+  "t": "[Pico] I2C-Echtzeituhr lesen",
+  "d": "Die Uhrzeit aus einer virtuellen Echtzeituhr DS1307 per I2C am Raspberry Pi Pico lesen"
+ },
+ "pico-i2c-eeprom-rw": {
+  "t": "[Pico] I2C-EEPROM lesen/schreiben",
+  "d": "Daten in ein virtuelles I2C-EEPROM am Pico schreiben und zurücklesen"
+ },
+ "pico-spi-loopback": {
+  "t": "[Pico] SPI-Loopback",
+  "d": "SPI-Loopback-Test auf dem RP2040 – sendet und empfängt Bytes über SPI0"
+ },
+ "pico-adc-read": {
+  "t": "[Pico] ADC auslesen",
+  "d": "Analogwerte an GPIO26–28 und den internen Temperatursensor auslesen"
+ },
+ "pico-multi-protocol": {
+  "t": "[Pico] Mehrere Protokolle",
+  "d": "Umfassender Test: Seriell, I2C, SPI und ADC auf dem Raspberry Pi Pico"
+ },
+ "esp32-blink-led": {
+  "t": "ESP32: LED blinken lassen",
+  "d": "Die eingebaute LED an GPIO2 und eine externe rote LED an GPIO4 blinken lassen. Prüft, ob die ESP32-Emulation funktioniert."
+ },
+ "esp32-serial-echo": {
+  "t": "ESP32: Serielles Echo",
+  "d": "Der ESP32 liest seriell und sendet das Gelesene zurück. Zeigt mehrere UARTs und den seriellen Monitor."
+ },
+ "pi-to-arduino-led-control": {
+  "t": "[Pi + Arduino] LEDs seriell steuern",
+  "d": "Ein Raspberry Pi 3B steuert zwei LEDs an einem Arduino Uno über die serielle Schnittstelle. Der Pi sendet Befehle (LED1_ON, LED2_ON …) aus einem Python-Skript; der Arduino wertet sie aus und schaltet die LEDs."
+ },
+ "dual-pico-serial1-passthrough": {
+  "t": "[2× Pico W] Serial1-Verbindung (UART0)",
+  "d": "Zwei Raspberry Pi Pico W kommunizieren über Serial1 (UART0 an GP0/GP1). Pico A sendet jede Sekunde „PING #N“, Pico B antwortet mit „PONG #N“. Den seriellen Monitor beider Boards öffnen, um das Gespräch zu sehen."
+ },
+ "dual-pico-bidirectional-handshake": {
+  "t": "[2× Pico W] Digitaler Handshake in beide Richtungen",
+  "d": "Zwei Picos signalisieren sich über getrennte Digitalleitungen. Pico A steuert GP15 (Daten) und beobachtet GP14 (Bestätigung); Pico B liest GP15 und quittiert jeden Wechsel mit einem Impuls an GP14. Beide seriellen Monitore protokollieren jedes Ereignis, sodass der Hin- und Rückweg sichtbar wird."
+ },
+ "dual-pico-digital-mirror": {
+  "t": "[2× Pico W] Digitaler GPIO-Spiegel",
+  "d": "Der einfachste Test mit zwei Boards: Pico A schaltet GP15 alle 500 ms um; Pico B liest GP15 als Digitaleingang und spiegelt den Zustand auf seine eingebaute LED. Die seriellen Monitore zeigen, dass die Leitung funktioniert."
+ },
+ "nano-blink": {
+  "t": "Nano: LED blinken lassen",
+  "d": "Die eingebaute LED an Pin 13 des Arduino Nano blinken lassen."
+ },
+ "nano-serial": {
+  "t": "Nano: Serielles Hallo",
+  "d": "Jede Sekunde „Hello World“ und die Laufzeit vom Arduino Nano seriell ausgeben."
+ },
+ "nano-button-led": {
+  "t": "Nano: Taster + LED",
+  "d": "Ein Taster an Pin 2 schaltet eine LED an Pin 13 des Arduino Nano ein."
+ },
+ "nano-fade": {
+  "t": "Nano: PWM-Dimmen",
+  "d": "Eine LED per PWM an Pin 9 des Arduino Nano auf- und abdimmen."
+ },
+ "mega-blink": {
+  "t": "Mega: LED blinken lassen",
+  "d": "Die eingebaute LED an Pin 13 des Arduino Mega 2560 blinken lassen."
+ },
+ "mega-serial": {
+  "t": "Mega: Serielles Hallo",
+  "d": "„Hello World“ seriell auf dem Arduino Mega – testet alle 4 UART-Schnittstellen."
+ },
+ "mega-led-chase": {
+  "t": "Mega: Lauflicht mit 8 LEDs",
+  "d": "Lauflicht im Knight-Rider-Stil über 8 LEDs an den Pins 2–9. Zeigt die vielen Ein-/Ausgänge des Mega."
+ },
+ "mega-serial-control": {
+  "t": "Mega: LEDs seriell steuern",
+  "d": "„1“ bis „8“ seriell senden, um einzelne LEDs am Arduino Mega umzuschalten."
+ },
+ "c3-blink": {
+  "t": "ESP32-C3: LED blinken lassen",
+  "d": "Eine LED an GPIO 8 des ESP32-C3 blinken lassen. Läuft im QEMU-Backend von lcgamboa (libqemu-riscv32) mit 160 MHz."
+ },
+ "c3-serial": {
+  "t": "ESP32-C3: Serielles Hallo",
+  "d": "Jede Sekunde „Hello World“ und ein Lebenszeichen vom ESP32-C3 seriell ausgeben. Läuft im Browser."
+ },
+ "c3-rgb": {
+  "t": "ESP32-C3: RGB-LED",
+  "d": "Eine RGB-LED an GPIO 6, 7 und 8 des ESP32-C3 durch Rot, Grün und Blau schalten."
+ },
+ "c3-button": {
+  "t": "ESP32-C3: Taster + LED",
+  "d": "Ein Taster an GPIO 9 schaltet eine LED an GPIO 8 um. Testet GPIO-Eingänge im ESP32-C3-Emulator."
+ },
+ "c3-serial-echo": {
+  "t": "ESP32-C3: Serielles Echo",
+  "d": "Im seriellen Monitor tippen und die Eingabe vom ESP32-C3-Emulator zurückbekommen."
+ },
+ "uno-7segment": {
+  "t": "Uno: 7-Segment-Zähler",
+  "d": "Von 0 bis 9 auf einer 7-Segment-Anzeige zählen, direkt angesteuert über die Pins 2–8 des Arduino Uno."
+ },
+ "pico-7segment": {
+  "t": "Pico: 7-Segment-Zähler",
+  "d": "Von 0 bis 9 auf einer 7-Segment-Anzeige zählen, angesteuert über GPIO 2–8 des Raspberry Pi Pico."
+ },
+ "esp32-7segment": {
+  "t": "ESP32: 7-Segment-Zähler",
+  "d": "Von 0 bis 9 auf einer 7-Segment-Anzeige zählen, angesteuert über GPIO 12, 13, 14, 25, 26, 27 und 32 des ESP32."
+ },
+ "uno-potentiometer": {
+  "t": "Uno: Potentiometer → Seriell",
+  "d": "Ein Potentiometer an A0 auslesen und den Wert im seriellen Monitor ausgeben."
+ },
+ "uno-rgb-cycle": {
+  "t": "Uno: RGB-LED-Farbwechsel",
+  "d": "Eine RGB-LED an den Pins 9 (R), 10 (G) und 11 (B) per PWM durch 7 Farben schalten."
+ },
+ "pico-button-led": {
+  "t": "Pico: Taster + LED",
+  "d": "Ein Taster an GP2 schaltet eine LED an GP3 des Raspberry Pi Pico ein."
+ },
+ "pico-rgb": {
+  "t": "Pico: RGB-LED-Farbwechsel",
+  "d": "Eine RGB-LED an GPIO 6 (R), 7 (G) und 8 (B) des Raspberry Pi Pico durch die Farben schalten."
+ },
+ "uno-dht22": {
+  "t": "Uno: DHT22 Temperatur & Luftfeuchte",
+  "d": "Temperatur und Luftfeuchtigkeit mit einem DHT22-Sensor an Pin 7 messen."
+ },
+ "uno-hcsr04": {
+  "t": "Uno: Ultraschall-Abstand HC-SR04",
+  "d": "Abstand mit einem Ultraschallsensor HC-SR04 messen. TRIG an Pin 9, ECHO an Pin 10."
+ },
+ "uno-pir": {
+  "t": "Uno: PIR-Bewegungsmelder",
+  "d": "Bewegung mit einem PIR-Infrarotsensor an Pin 4 erkennen. Die eingebaute LED an Pin 13 leuchtet bei Bewegung."
+ },
+ "uno-servo": {
+  "t": "Uno: Servo schwenken",
+  "d": "Einen Servomotor über Pin 9 (PWM) gleichmäßig von 0° bis 180° und zurück bewegen. Nutzt die eingebaute Servo-Bibliothek."
+ },
+ "uno-photoresistor": {
+  "t": "Uno: Lichtsensor mit Fotowiderstand",
+  "d": "Die Helligkeit über ein Fotowiderstand-Modul an A0 messen. Eine LED an Pin 9 wird im Dunkeln entsprechend heller."
+ },
+ "uno-ntc": {
+  "t": "Uno: Temperatur mit NTC-Thermistor",
+  "d": "Die Temperatur über einen NTC-Thermistor 10k an A1 mit der Steinhart-Hart-Gleichung berechnen."
+ },
+ "pico-dht22": {
+  "t": "Pico: DHT22 Temperatur & Luftfeuchte",
+  "d": "Temperatur und Luftfeuchtigkeit mit einem DHT22-Sensor an GP7 des Raspberry Pi Pico messen."
+ },
+ "pico-hcsr04": {
+  "t": "Pico: Ultraschall-Abstand HC-SR04",
+  "d": "Abstand mit einem HC-SR04 am Raspberry Pi Pico messen. TRIG an D5 (GP17), ECHO an D6 (GP18)."
+ },
+ "pico-pir": {
+  "t": "Pico: PIR-Bewegungsmelder",
+  "d": "Bewegung mit einem PIR-Sensor an D4 (GP16) erkennen. Die eingebaute LED (GP25) leuchtet bei Bewegung."
+ },
+ "pico-servo": {
+  "t": "Pico: Servo schwenken",
+  "d": "Einen Servomotor am Raspberry Pi Pico über D3 / GP15 (PWM) von 0° bis 180° und zurück bewegen."
+ },
+ "pico-ntc": {
+  "t": "Pico: Temperatur mit NTC-Thermistor",
+  "d": "Die Temperatur über einen NTC-Thermistor 10k am ADC-Pin A0 (GP26) des Pico mit der Steinhart-Hart-Gleichung bestimmen."
+ },
+ "pico-joystick": {
+  "t": "Pico: Analog-Joystick",
+  "d": "X/Y-Achse und Tastendruck eines Analog-Joysticks auslesen. VERT an A0 (GP26), HORZ an A1 (GP27), SEL-Taste an D4 (GP16)."
+ },
+ "esp32-dht22": {
+  "t": "ESP32: DHT22 Temperatur & Luftfeuchte",
+  "d": "Temperatur und Luftfeuchtigkeit mit einem DHT22-Sensor an GPIO4 des ESP32 messen."
+ },
+ "esp32-hcsr04": {
+  "t": "ESP32: Ultraschall-Abstand HC-SR04",
+  "d": "Abstand mit einem HC-SR04 am ESP32 messen. TRIG an GPIO18, ECHO an GPIO19."
+ },
+ "esp32-mpu6050": {
+  "t": "ESP32: Beschleunigungssensor MPU-6050",
+  "d": "Beschleunigung und Drehrate in 3 Achsen von einem MPU-6050 per I2C auslesen (SDA=D21, SCL=D22)."
+ },
+ "esp32-pir": {
+  "t": "ESP32: PIR-Bewegungsmelder",
+  "d": "Bewegung mit einem PIR-Sensor an GPIO5 des ESP32 erkennen. Ereignisse werden mit Zeitstempel seriell protokolliert."
+ },
+ "esp32-servo": {
+  "t": "ESP32: Servo + Potentiometer",
+  "d": "Den Winkel eines Servomotors direkt mit einem Potentiometer steuern. Der Servo folgt der Potistellung in Echtzeit."
+ },
+ "esp32-joystick": {
+  "t": "ESP32: Analog-Joystick",
+  "d": "X/Y-Achse und Tastendruck eines Analog-Joysticks am ESP32 auslesen. X an D35, Y an D34, Taste an GPIO15."
+ },
+ "c3-dht22": {
+  "t": "ESP32-C3: DHT22 Temperatur & Luftfeuchte",
+  "d": "Temperatur und Luftfeuchtigkeit mit einem DHT22-Sensor an GPIO3 des ESP32-C3 (RISC-V) messen."
+ },
+ "c3-hcsr04": {
+  "t": "ESP32-C3: Ultraschall-Abstand HC-SR04",
+  "d": "Abstand mit einem HC-SR04 am ESP32-C3 messen. TRIG an GPIO5, ECHO an GPIO6."
+ },
+ "c3-pir": {
+  "t": "ESP32-C3: PIR-Bewegungsmelder",
+  "d": "Bewegung mit einem PIR-Sensor an GPIO7 des ESP32-C3 erkennen. Erkennungen und Anzahl werden seriell ausgegeben."
+ },
+ "c3-servo": {
+  "t": "ESP32-C3: Servo schwenken",
+  "d": "Einen Servomotor am ESP32-C3 über GPIO10 (PWM) von 0° bis 180° und zurück bewegen."
+ },
+ "esp32c3-wifi-scan": {
+  "t": "ESP32-C3: WLAN-Suche",
+  "d": "Verfügbare WLAN-Netze mit dem ESP32-C3 (RISC-V) suchen. Der emulierte ESP32-C3 findet den Zugangspunkt „Velxio-GUEST“."
+ },
+ "esp32c3-wifi-connect": {
+  "t": "ESP32-C3: WLAN verbinden",
+  "d": "Den ESP32-C3 mit dem virtuellen WLAN „Velxio-GUEST“ verbinden und die zugewiesene IP-Adresse ausgeben. Nutzt Kanal 6 für eine schnellere Verbindung."
+ },
+ "esp32c3-http-server": {
+  "t": "ESP32-C3: HTTP-Server",
+  "d": "Einen einfachen Webserver auf dem ESP32-C3 betreiben. Nach der WLAN-Verbindung antwortet er mit einer HTML-Seite, erreichbar über den IoT-Gateway-Link."
+ },
+ "esp32c3-ble-advertise": {
+  "t": "ESP32-C3: BLE-Advertising",
+  "d": "BLE 5.0 initialisieren und mit dem Advertising beginnen. Hinweis: Der ESP32-C3 kann nur BLE (kein klassisches Bluetooth). Die Initialisierung wird erkannt, die eigentliche Funkverbindung wird aber nicht emuliert."
+ },
+ "esp32-wifi-scan": {
+  "t": "ESP32: WLAN-Suche",
+  "d": "Verfügbare WLAN-Netze suchen und im seriellen Monitor anzeigen. Der emulierte ESP32 findet den Zugangspunkt „Velxio-GUEST“."
+ },
+ "esp32-wifi-connect": {
+  "t": "ESP32: WLAN verbinden",
+  "d": "Mit dem virtuellen WLAN „Velxio-GUEST“ verbinden und die zugewiesene IP-Adresse ausgeben. Nutzt Kanal 6 für eine schnellere Verbindung."
+ },
+ "esp32-http-server": {
+  "t": "ESP32: HTTP-Server",
+  "d": "Einen einfachen Webserver auf dem ESP32 betreiben. Nach der WLAN-Verbindung antwortet er mit einer HTML-Seite, erreichbar über den IoT-Gateway-Link."
+ },
+ "esp32-ble-advertise": {
+  "t": "ESP32: BLE-Advertising",
+  "d": "BLE initialisieren und mit dem Advertising beginnen. Hinweis: Die Initialisierung wird erkannt, die eigentliche BLE-Kommunikation wird im Simulator aber nicht emuliert."
+ },
+ "esp32-bmp280": {
+  "t": "ESP32: Wetterstation mit BMP280",
+  "d": "Temperatur und Luftdruck von einem Luftdrucksensor BMP280 per I2C auslesen (SDA=D21, SCL=D22)."
+ },
+ "esp32-oled": {
+  "t": "ESP32: SSD1306-OLED-Display",
+  "d": "Text und Grafik auf einem 128×64-OLED SSD1306 per I2C anzeigen (SDA=D21, SCL=D22)."
+ },
+ "attiny85-blink": {
+  "t": "ATtiny85: LED blinken lassen",
+  "d": "Eine externe LED an PB1 (Digispark-Pin 1) über einen 220-Ω-Vorwiderstand blinken lassen."
+ },
+ "attiny85-button-led": {
+  "t": "ATtiny85: Taster + LED",
+  "d": "Ein Taster an PB0 schaltet die LED an PB1 ein. Nutzt den internen Pull-up-Widerstand – kein externer Widerstand nötig."
+ },
+ "attiny85-pwm-fade": {
+  "t": "ATtiny85: LED per PWM dimmen",
+  "d": "Eine LED mit analogWrite() an PB1 (OC0B) sanft auf- und abdimmen. Zeigt die PWM von Timer0 auf dem ATtiny85."
+ },
+ "attiny85-ntc-sensor": {
+  "t": "ATtiny85: Temperatursensor mit NTC",
+  "d": "Die Temperatur über einen NTC-Thermistor an PB3 (ADC3) messen. Die LED an PB1 blinkt umso schneller, je wärmer es wird."
+ },
+ "esp32cam-webcam-demo": {
+  "t": "ESP32-CAM: Webcam-Demo",
+  "d": "Die OV2640-Kamera initialisieren, die Chip-ID über SCCB prüfen und dann in einer Schleife mit esp_camera_fb_get() Bilder holen und deren Metadaten seriell ausgeben. Der einfachste Test, ob die Emulation läuft – in der Kopfzeile der Zeichenfläche auf „Kamera“ klicken, um die Webcam zu streamen."
+ },
+ "esp32cam-lcd-preview": {
+  "t": "ESP32-CAM + ILI9341: Live-Vorschau",
+  "d": "Webcam-Bilder werden mit jpg2rgb565() direkt dekodiert und auf einem 320×240-SPI-TFT dargestellt (160×120 mittig, halbe Größe). Die Statuszeile zeigt Bilder pro Sekunde, Bildzähler, Dekodierfehler und einen Puls. Benötigt die Bibliotheken Adafruit GFX und Adafruit ILI9341."
+ },
+ "esp32-doom": {
+  "t": "ESP32 Doom – Raycaster (ILI9341)",
+  "d": "Ein Raycaster in der Ich-Perspektive im Stil von Wolfenstein / frühem Doom auf einem ESP32 mit 320×240-Farb-TFT ILI9341. Das ganze Bild wird jede Runde über Hardware-SPI (VSPI) mit Blockschreibzugriffen von Adafruit_ILI9341 neu gezeichnet, mit Entfernungsnebel und dunkleren Ost/West-Wänden für Tiefe. Vier Tasten bewegen und drehen die Spielfigur; im Leerlauf läuft eine Demo durch die 16×16-Karte. Gedacht als Geschwindigkeitstest der Emulation – zeigt die FPS auf dem Display und gibt Statistiken seriell aus."
+ },
+ "pi3-blink-led": {
+  "t": "[Pi 3] LED blinken lassen",
+  "d": "Ein Raspberry Pi 3 lässt mit gpiozero eine rote LED an GPIO17 blinken. Pi starten, im Dateisystem-Bereich auf „Hochladen“ klicken und dann ausführen: python3 /home/pi/script.py"
+ },
+ "pi3-running-lights": {
+  "t": "[Pi 3] Lauflicht (5 LEDs)",
+  "d": "Ein Raspberry Pi 3 erzeugt mit gpiozero ein Knight-Rider-Lauflicht über 5 LEDs an GPIO17/27/22/5/6. Pi starten, hochladen und dann ausführen: python3 /home/pi/script.py"
+ },
+ "pi4-button-led": {
+  "t": "[Pi 4] Taster schaltet LED um",
+  "d": "Ein Raspberry Pi 4 liest mit gpiozero einen Taster an GPIO2 und schaltet damit eine LED an GPIO17 um. Pi starten, hochladen, python3 /home/pi/script.py ausführen und dann den Taster klicken."
+ },
+ "pi4-rgb-color-cycle": {
+  "t": "[Pi 4] RGB-LED-Farbwechsel",
+  "d": "Ein Raspberry Pi 4 schaltet eine RGB-LED mit gemeinsamer Kathode über GPIO17/27/22 durch 7 Farben (gpiozero RGBLED, pwm=False). Pi starten, hochladen, python3 /home/pi/script.py ausführen."
+ },
+ "pi5-pir-motion-alarm": {
+  "t": "[Pi 5] PIR-Bewegungsalarm",
+  "d": "Ein Raspberry Pi 5 schaltet eine LED an GPIO17 ein, sobald ein PIR-Bewegungssensor an GPIO4 Bewegung erkennt (gpiozero MotionSensor). Pi starten, hochladen, python3 /home/pi/script.py ausführen und dann den PIR auslösen."
+ },
+ "pi5-traffic-light": {
+  "t": "[Pi 5] Ampel",
+  "d": "Ein Raspberry Pi 5 betreibt mit gpiozero eine Ampelsteuerung (rot/gelb/grün) an GPIO17/27/22. Pi starten, hochladen und dann ausführen: python3 /home/pi/script.py"
+ },
+ "voltage-divider": {
+  "t": "Spannungsteiler",
+  "d": "R1 und R2 teilen 5 V in eine kleinere Spannung, die der ADC misst. Eine Grundschaltung der Elektronik."
+ },
+ "rc-low-pass-filter": {
+  "t": "RC-Tiefpass",
+  "d": "Ein RC-Glied glättet das PWM-Signal zu einer gleichmäßigen Analogspannung. Klassischer DAC-Trick."
+ },
+ "wheatstone-bridge": {
+  "t": "Wheatstone-Brücke",
+  "d": "Eine Brücke aus vier Widerständen erkennt kleinste Widerstandsänderungen. Eingesetzt in Dehnungsmessstreifen und Wägezellen."
+ },
+ "ntc-temperature": {
+  "t": "Temperatursensor mit NTC",
+  "d": "NTC-Modul (mit eingebautem 10k-Pull-up). Die Temperatur wird über das Beta-Modell berechnet."
+ },
+ "led-current-limiting": {
+  "t": "LED mit Vorwiderstand",
+  "d": "R so berechnen, dass 10 mA durch die LED fließen. I = (Ub − Uf) / R."
+ },
+ "parallel-resistors": {
+  "t": "Parallelschaltung von Widerständen",
+  "d": "Drei Widerstände parallel: R_ges = 1/(1/R1 + 1/R2 + 1/R3). Messung mit dem ADC."
+ },
+ "pot-adc-reader": {
+  "t": "Potentiometer am ADC",
+  "d": "Den Drehknopf des Potentiometers drehen, um die Spannung an A0 zwischen 0 und 5 V zu verändern."
+ },
+ "photoresistor-light": {
+  "t": "Lichtsensor mit Fotowiderstand",
+  "d": "LDR mit Pull-down-Widerstand. Mehr Licht = kleinerer LDR-Widerstand = höhere Spannung."
+ },
+ "multi-led-bar": {
+  "t": "LED-Balkenanzeige",
+  "d": "5 LEDs mit eigenen Vorwiderständen an Digitalpins als Balkenanzeige."
+ },
+ "capacitor-charge-curve": {
+  "t": "Ladekurve eines Kondensators",
+  "d": "Einen Kondensator über einen Widerstand laden und den exponentiellen Verlauf U(t) mit dem ADC messen."
+ },
+ "npn-led-switch": {
+  "t": "NPN-Transistor als LED-Schalter",
+  "d": "Ein NPN-Transistor 2N2222 schaltet eine LED mit größerem Strom über einen schwach belastbaren Mikrocontroller-Pin."
+ },
+ "pnp-high-side-switch": {
+  "t": "PNP-Schalter auf der Plusseite",
+  "d": "Ein PNP-Transistor 2N3906 verbindet eine Last mit Ub, sobald die Basis auf LOW gezogen wird."
+ },
+ "mosfet-pwm-led": {
+  "t": "LED-Dimmer mit MOSFET und PWM",
+  "d": "N-MOSFET 2N7000 als Schalter auf der Minusseite. Das PWM-Signal an Pin 9 steuert das Gate und dimmt die LED."
+ },
+ "diode-rectifier": {
+  "t": "Einweggleichrichter",
+  "d": "Die Diode lässt nur die positiven Halbwellen durch. Die gleichgerichtete Spannung wird am ADC gemessen."
+ },
+ "zener-regulator": {
+  "t": "Spannungsstabilisierung mit Z-Diode",
+  "d": "Eine Z-Diode mit 5,1 V begrenzt die Ausgangsspannung. Auch wenn die Eingangsspannung schwankt, bleibt der Ausgang bei 5,1 V."
+ },
+ "schottky-reverse-protection": {
+  "t": "Verpolschutz",
+  "d": "Eine Schottky-Diode schützt die Schaltung, falls die Batterie versehentlich falsch herum angeschlossen wird."
+ },
+ "bjt-common-emitter": {
+  "t": "Emitterschaltung (Verstärker)",
+  "d": "Ein NPN-Transistor verstärkt ein kleines Wechselsignal. Verstärkung = −Rc/Re."
+ },
+ "darlington-high-current": {
+  "t": "Darlington-Schaltung (hoher Strom)",
+  "d": "Zwei hintereinandergeschaltete NPN-Transistoren ergeben das Quadrat der Stromverstärkung. So lassen sich große Lasten vom Mikrocontroller aus schalten."
+ },
+ "opamp-inverting": {
+  "t": "Invertierender Verstärker (LM358)",
+  "d": "U_aus = −(Rf/Rin) · U_ein. Verstärkung −10 mit Rin = 1 kΩ und Rf = 10 kΩ."
+ },
+ "opamp-voltage-follower": {
+  "t": "Spannungsfolger (Impedanzwandler)",
+  "d": "Operationsverstärker mit voller Gegenkopplung. U_aus = U_ein. Hochohmiger Eingang, niederohmiger Ausgang."
+ },
+ "opamp-comparator": {
+  "t": "Komparator mit LED",
+  "d": "Ein Operationsverstärker vergleicht die Potispannung mit einer Referenz von 2,5 V. Die LED zeigt, welche größer ist."
+ },
+ "opamp-difference": {
+  "t": "Differenzverstärker",
+  "d": "U_aus = Verstärkung · (U2 − U1). Nützlich für Brückensensoren und Differenzsignale."
+ },
+ "opamp-schmitt-trigger": {
+  "t": "Schmitt-Trigger",
+  "d": "Ein Operationsverstärker mit Mitkopplung erzeugt eine Hysterese und glättet verrauschte Signale."
+ },
+ "mixed-and-transistor-driver": {
+  "t": "Gemischt: Mikrocontroller + AND-Gatter + Transistor",
+  "d": "Digital und analog in EINER Schaltung: Der Arduino erzeugt zwei Logikpegel (einen dauerhaften HIGH-Freigabepegel und einen blinkenden), ein AND-Gatter verknüpft sie, und der Ausgang schaltet einen NPN-Transistor, der die „Motor“-LED treibt. Die LED sollte blinken – damit ist gezeigt, dass Mikrocontroller → Logikgatter → Transistor → Last über Digital- und Analogsimulation (ngspice) gemeinsam funktioniert."
+ },
+ "and-gate-alarm": {
+  "t": "Alarm mit AND-Gatter",
+  "d": "Zwei Scharfschalter führen auf ein AND-Gatter – die Alarm-LED leuchtet NUR, wenn BEIDE eingeschaltet sind (z. B. beide Türen geschlossen). Es sind Schiebeschalter, sie bleiben also in ihrer Stellung, sodass beide gleichzeitig an sein können. Reine Logik ohne Mikrocontroller – läuft in der digitalen Gattersimulation."
+ },
+ "xor-toggle-detector": {
+  "t": "XOR als Unterschiedserkennung",
+  "d": "Ein XOR-Gatter erkennt, wenn zwei Schalter unterschiedlich stehen."
+ },
+ "nand-sr-latch": {
+  "t": "RS-Flipflop aus NAND-Gattern",
+  "d": "Zwei über Kreuz verschaltete NAND-Gatter bilden ein Setz-Rücksetz-Flipflop. Speicher ganz ohne Takt!"
+ },
+ "full-adder": {
+  "t": "Volladdierer (1 Bit)",
+  "d": "Summe = A XOR B XOR Cin, Übertrag Cout = (A AND B) OR (Cin AND (A XOR B))."
+ },
+ "binary-counter-leds": {
+  "t": "4-Bit-Binärzähler",
+  "d": "Von 0 bis 15 zählen und auf 4 LEDs anzeigen. Jede LED steht für ein Bit."
+ },
+ "logic-probe": {
+  "t": "Logikprüfer (HIGH/LOW/offen)",
+  "d": "Den Zustand eines beliebigen Digitalpins lesen und auf 3 LEDs anzeigen: grün = HIGH, rot = LOW, gelb = offen (undefiniert)."
+ },
+ "relay-led-switch": {
+  "t": "LED über Relais schalten",
+  "d": "Ein NPN-Transistor steuert ein Relais. Das Relais schaltet eine LED an einer eigenen Spannungsquelle."
+ },
+ "optocoupler-signal": {
+  "t": "Signaltrennung mit Optokoppler",
+  "d": "Ein Optokoppler 4N25 trennt den Mikrocontroller galvanisch von einem Stromkreis mit höherer Spannung."
+ },
+ "l293d-motor-control": {
+  "t": "Gleichstrommotor steuern (L293D)",
+  "d": "Die H-Brücke L293D lässt einen Gleichstrommotor vorwärts und rückwärts laufen und bremst ihn."
+ },
+ "l293d-speed-pwm": {
+  "t": "Motordrehzahl per PWM",
+  "d": "Ein Potentiometer steuert die Motordrehzahl per PWM am Enable-Pin des L293D."
+ },
+ "power-supply-7805": {
+  "t": "Netzteil mit Spannungsregler 7805",
+  "d": "9-V-Batterie → 7805 → stabile 5 V für den Arduino. Der klassische Linearregler."
+ },
+ "lm317-adjustable-psu": {
+  "t": "Einstellbares Netzteil mit LM317",
+  "d": "LM317 mit Spannungsteiler R1/R2. U_aus = 1,25 · (1 + R2/R1). Jede Spannung von 1,25 bis 37 V einstellbar."
+ },
+ "battery-voltage-monitor": {
+  "t": "Batteriespannung überwachen",
+  "d": "Ein Spannungsteiler setzt die 9-V-Batteriespannung auf den Messbereich 0–5 V des ADC herab."
+ },
+ "esp32-dual-adc": {
+  "t": "ESP32: Zwei ADC-Kanäle",
+  "d": "Der ESP32 liest zwei Analogkanäle (GPIO34, GPIO35) gleichzeitig mit 12 Bit Auflösung."
+ },
+ "mega-multi-led": {
+  "t": "Arduino Mega: Balken mit 16 LEDs",
+  "d": "Der Arduino Mega steuert 16 LEDs an den Pins 22–37. Knight-Rider-Lauflicht."
+ },
+ "nano-sensor-station": {
+  "t": "Arduino Nano: Sensorstation",
+  "d": "Kleine Wetterstation: NTC und Fotowiderstand am Nano messen Temperatur und Helligkeit."
+ },
+ "esp32-pwm-led-rgb": {
+  "t": "ESP32: RGB-LED mit LEDC-PWM",
+  "d": "Die LEDC-Einheit des ESP32 steuert eine RGB-LED mit getrennten PWM-Kanälen."
+ },
+ "an-voltage-divider": {
+  "t": "Spannungsteiler",
+  "d": "Zwei Widerstände teilen eine Gleichspannung von 5 V in zwei Hälften. Die klassische erste SPICE-Demo – an R2 liegen 2,5 V."
+ },
+ "an-series-resistors": {
+  "t": "Reihenschaltung von Widerständen",
+  "d": "Durch drei Widerstände in Reihe fließt derselbe Strom – das Amperemeter zeigt U/(R1+R2+R3)."
+ },
+ "an-parallel-resistors": {
+  "t": "Parallelschaltung von Widerständen",
+  "d": "Drei Widerstände parallel – der Gesamtwiderstand ist der Kehrwert der Summe der Kehrwerte. Das Amperemeter zeigt den Gesamtstrom."
+ },
+ "an-rc-low-pass": {
+  "t": "RC-Tiefpass",
+  "d": "Sinus mit 1 kHz durch R = 1,6 kΩ und C = 100 nF. fg ≈ 1 kHz – das Ausgangssignal ist um 3 dB gedämpft."
+ },
+ "an-rc-high-pass": {
+  "t": "RC-Hochpass",
+  "d": "R und C eines Tiefpasses vertauscht ergeben einen Hochpass. Sinus mit 1 kHz durch C – R – Masse."
+ },
+ "an-rl-low-pass": {
+  "t": "RL-Tiefpass",
+  "d": "Spule in Reihe, Widerstand gegen Masse. Hohe Frequenzen fallen an L ab, tiefe Frequenzen gelangen zum Ausgang."
+ },
+ "an-rlc-series-resonance": {
+  "t": "RLC-Reihenschwingkreis",
+  "d": "L = 1 mH und C = 1 µF ergeben fr ≈ 5 kHz. Den Funktionsgenerator durchstimmen – Uc erreicht bei Resonanz ein Maximum (abhängig von der Güte)."
+ },
+ "an-half-wave-rectifier": {
+  "t": "Einweggleichrichter",
+  "d": "Eine einzelne Diode lässt nur die positive Halbwelle eines 50-Hz-Sinus durch. Am Lastwiderstand liegt die gleichgerichtete Spannung."
+ },
+ "an-bridge-rectifier": {
+  "t": "Brückengleichrichter (Zweiweg)",
+  "d": "Vier Dioden in Brückenschaltung richten beide Halbwellen der Wechselspannung gleich. An R1 entstehen Zweiweg-Impulse mit doppelter Eingangsfrequenz."
+ },
+ "an-smoothed-rectifier": {
+  "t": "Einweggleichrichter mit Glättung",
+  "d": "Einweggleichrichter mit nachgeschaltetem Ladekondensator 100 µF. Der Ausgang ist nahezu Gleichspannung; die Restwelligkeit sinkt mit größerem C."
+ },
+ "an-zener-regulator": {
+  "t": "Parallelregler mit Z-Diode",
+  "d": "Vorwiderstand und Z-Diode in Sperrrichtung begrenzen den Ausgang auf Uz (5,1 V bei einer 1N4733), auch wenn sich die Eingangsspannung ändert."
+ },
+ "an-diode-clipper": {
+  "t": "Begrenzer mit Dioden",
+  "d": "Zwei Dioden nach VCC/Masse hinter einem Vorwiderstand begrenzen das Ausgangssignal auf etwa ±0,7 V – symmetrisches Abschneiden."
+ },
+ "an-diode-clamper": {
+  "t": "Klemmschaltung (Pegelverschiebung)",
+  "d": "Ein Kondensator in Reihe und eine Diode parallel verschieben das Signal so, dass sein negativer Spitzenwert bei 0 V liegt. Der Ausgang schwingt zwischen 0 und 2·Uspitze."
+ },
+ "an-voltage-doubler": {
+  "t": "Spannungsverdoppler (Villard / Greinacher)",
+  "d": "Zwei Kondensatoren und zwei Dioden erzeugen aus Wechselspannung etwa 2·Uspitze Gleichspannung. Die erste Stufe klemmt, die zweite erfasst den Spitzenwert."
+ },
+ "an-bjt-common-emitter": {
+  "t": "Transistor in Emitterschaltung",
+  "d": "Klassischer Spannungsverstärker: Basis über Spannungsteiler vorgespannt, Gegenkopplung über Re, der Kollektorwiderstand bestimmt die Verstärkung."
+ },
+ "an-bjt-emitter-follower": {
+  "t": "Emitterfolger",
+  "d": "Kollektorschaltung als Puffer: Spannungsverstärkung 1, hoher Eingangs- und niedriger Ausgangswiderstand. Ideal als Treiberstufe."
+ },
+ "an-bjt-switch": {
+  "t": "Transistor als Schalter",
+  "d": "Die Basis wird über Rb in die Sättigung gesteuert, der Kollektor hängt über einen Lastwiderstand an Ub. Ein Gleichspannungssprung am Eingang schaltet Uce zwischen ca. 0,2 V und Ub."
+ },
+ "an-darlington": {
+  "t": "Darlington-Schaltung",
+  "d": "Zwei hintereinandergeschaltete NPN-Transistoren multiplizieren β – β_ges ≈ β1·β2. Sinnvoll, wenn ein einzelner Transistor nicht genug Basisstrom für eine große Last bekommt."
+ },
+ "an-current-mirror": {
+  "t": "NPN-Stromspiegel",
+  "d": "Der Referenzstrom in Q1 wird über den Kollektor von Q2 gespiegelt – gleiche Transistoren und gemeinsames Ube machen beide Kollektorströme gleich groß."
+ },
+ "an-bjt-diff-pair": {
+  "t": "Differenzverstärker mit Transistoren",
+  "d": "Long-Tailed-Pair: Ein gemeinsamer Emitterwiderstand verteilt den Strom je nach Differenzeingangssignal auf Q1 und Q2."
+ },
+ "an-mosfet-switch": {
+  "t": "MOSFET als Schalter (Minusseite)",
+  "d": "NMOS 2N7000 mit Pull-down-Widerstand am Gate. Liegt die Gatespannung über Uth, leitet der Transistor und führt den Laststrom nach Masse ab."
+ },
+ "an-mosfet-common-source": {
+  "t": "MOSFET in Sourceschaltung",
+  "d": "2N7000 als Kleinsignalverstärker: Der Drainwiderstand bestimmt die Verstärkung, der Sourcewiderstand stabilisiert den Arbeitspunkt. Signal über Kondensator eingekoppelt."
+ },
+ "an-mosfet-pmos-highside": {
+  "t": "PMOS-Schalter auf der Plusseite",
+  "d": "Ein P-Kanal-MOSFET (IRF9540) liefert Strom aus VCC, sobald das Gate unter VCC − |Uth| gezogen wird. Ideal zum Schalten von Lasten."
+ },
+ "an-opamp-inverting": {
+  "t": "Invertierender Verstärker",
+  "d": "Verstärkung = −Rf/Rin. Rf = 10 k, Rin = 1 k → Verstärkung −10. Das LM358-Modell mit einfacher Versorgung begrenzt den Ausgang auf [0, VCC − 1,5 V]."
+ },
+ "an-opamp-non-inverting": {
+  "t": "Nichtinvertierender Verstärker",
+  "d": "Verstärkung = 1 + Rf/Rg. Rf = 10 k, Rg = 1 k → Verstärkung +11. Der Ausgang ist phasengleich mit dem Eingang."
+ },
+ "an-opamp-follower": {
+  "t": "Spannungsfolger",
+  "d": "Puffer mit Verstärkung 1: Der Ausgang folgt exakt dem nichtinvertierenden Eingang. Unendlicher Eingangs-, nahezu kein Ausgangswiderstand."
+ },
+ "an-opamp-summing": {
+  "t": "Summierverstärker",
+  "d": "Summenpunkt an der virtuellen Masse: U_aus = −Rf · (U1/R1 + U2/R2). Mischer mit zwei Eingängen und Verstärkung 1 je Kanal."
+ },
+ "an-opamp-integrator": {
+  "t": "Integrierer",
+  "d": "Rf durch einen Kondensator ersetzt: U_aus = −(1/RC) ∫U_ein dt. Rechteck hinein → Dreieck heraus. Klassischer Baustein des Analogrechners."
+ },
+ "an-opamp-comparator": {
+  "t": "Komparator mit Operationsverstärker",
+  "d": "Ein Operationsverstärker ohne Rückkopplung vergleicht U_ein mit einer Referenz. Der Ausgang geht auf HIGH, wenn IN+ > IN−, sonst auf LOW."
+ },
+ "an-schmitt-trigger": {
+  "t": "Schmitt-Trigger mit Operationsverstärker",
+  "d": "Mitkopplung (R2 vom Ausgang nach IN+) erzeugt eine Hysterese: zwei Schaltschwellen statt einer. Glättet verrauschte Signale."
+ },
+ "digital-not-inverter": {
+  "t": "NOT-Gatter (Inverter)",
+  "d": "Ein Schiebeschalter steuert ein NOT-Gatter. Die LED leuchtet normalerweise und geht aus, wenn der Schalter auf HIGH steht."
+ },
+ "digital-and-two-switches": {
+  "t": "AND-Gatter – beide Schalter",
+  "d": "Zwei Schiebeschalter führen auf ein AND-Gatter. Die LED leuchtet nur, wenn beide Schalter auf HIGH stehen."
+ },
+ "digital-or-any-switch": {
+  "t": "OR-Gatter – irgendein Schalter",
+  "d": "Zwei Schiebeschalter an einem OR-Gatter. Die LED leuchtet, sobald einer der Schalter auf HIGH steht."
+ },
+ "digital-nand-two-switches": {
+  "t": "NAND-Gatter – das Universalgatter",
+  "d": "NAND ist HIGH, außer wenn alle Eingänge HIGH sind. Die LED bleibt an, außer wenn beide Schalter gleichzeitig auf HIGH stehen."
+ },
+ "digital-nor-idle-light": {
+  "t": "NOR-Gatter – Ruhelicht",
+  "d": "NOR gibt nur HIGH aus, wenn alle Eingänge LOW sind. Die LED leuchtet, solange beide Schalter auf LOW stehen."
+ },
+ "digital-xor-difference": {
+  "t": "XOR – Unterschiedserkennung",
+  "d": "XOR schaltet nur, wenn sich die Eingänge unterscheiden. Einen Schalter umlegen – die LED leuchtet. Beide wieder gleich stellen – sie geht aus."
+ },
+ "digital-xnor-equality": {
+  "t": "XNOR – Gleichheitsanzeige",
+  "d": "XNOR gibt nur HIGH aus, wenn beide Eingänge gleich sind. Eine Gleichheitsanzeige – die LED leuchtet, solange beide Schalter gleich stehen."
+ },
+ "digital-and3-all-on": {
+  "t": "AND mit 3 Eingängen – alle drei",
+  "d": "Drei Schiebeschalter steuern ein AND-Gatter mit 3 Eingängen. Die LED bleibt aus, bis alle Schalter gleichzeitig auf HIGH stehen."
+ },
+ "digital-half-adder": {
+  "t": "Halbaddierer",
+  "d": "XOR liefert die SUMME, AND den ÜBERTRAG zweier 1-Bit-Zahlen A und B. Zwei LEDs zeigen das Ergebnis in Echtzeit."
+ },
+ "digital-full-adder": {
+  "t": "Volladdierer (Gatterebene)",
+  "d": "Drei Eingänge – A, B und Cin – führen auf zwei XOR, zwei AND und ein OR. Die XOR liefern die SUMME, das OR der AND-Ausgänge den Übertrag Cout. Die klassische, verkettbare Addiererzelle."
+ },
+ "digital-mux-2to1": {
+  "t": "Multiplexer 2 zu 1",
+  "d": "Zwei AND-Gatter führen auf ein OR-Gatter. SEL schaltet entweder D0 oder D1 auf Y. Der Lehrbuch-Multiplexer auf Gatterebene."
+ },
+ "digital-comparator-equal-2bit": {
+  "t": "2-Bit-Gleichheitsvergleicher",
+  "d": "Zwei XNOR vergleichen die einzelnen Bits, ein AND fasst sie zusammen. Die LED leuchtet nur, wenn A1A0 = B1B0."
+ },
+ "digital-majority-voter": {
+  "t": "Mehrheitsentscheider mit 3 Eingängen",
+  "d": "Der Ausgang ist HIGH, wenn mindestens 2 von 3 Eingängen HIGH sind: Y = AB + AC + BC. Fehlertolerante Logik aus sieben Gattern."
+ },
+ "digital-xor-from-nands": {
+  "t": "XOR nur aus NAND-Gattern",
+  "d": "Vier NAND-Gatter mit je 2 Eingängen bilden ein XOR. Der Beweis, dass NAND funktional vollständig ist – jedes Gatter lässt sich nur aus NANDs bauen."
+ },
+ "digital-aoi-gate": {
+  "t": "AOI-Gatter (AND-OR-Invert)",
+  "d": "Eine in CMOS-Bibliotheken übliche Verbundzelle: zwei AND führen auf ein NOR. Ausgang = !((A·B) + (C·D)). In echtem Silizium schneller als drei Einzelgatter."
+ },
+ "digital-buffer-three-inverters": {
+  "t": "Puffer aus drei Invertern",
+  "d": "Drei NOT-Gatter in Reihe invertieren dreimal → wirken wie ein nichtinvertierender Puffer mit drei Gatterlaufzeiten. Für höhere Belastbarkeit oder um ein schwaches Signal aufzufrischen."
+ },
+ "digital-and4-all-on": {
+  "t": "AND-Gatter mit 4 Eingängen",
+  "d": "Vier Schalter führen auf ein AND-Gatter mit 4 Eingängen. Die LED leuchtet nur, wenn alle Eingänge gleichzeitig HIGH sind."
+ },
+ "digital-comparator-magnitude-1bit": {
+  "t": "1-Bit-Größenvergleicher",
+  "d": "Drei Ausgänge zeigen das Verhältnis von A und B: A>B, A=B, A<B. Aufgebaut aus zwei NOT, zwei AND und einem XNOR."
+ },
+ "digital-decoder-2to4": {
+  "t": "Dekodierer 2 zu 4",
+  "d": "Zwei Auswahlleitungen wählen genau einen von vier Ausgängen. Jeder Ausgang ist A·B für eine Kombination aus A/!A und B/!B. Das Rückgrat der Adressdekodierung in jeder CPU."
+ },
+ "digital-parity-4bit": {
+  "t": "4-Bit-Paritätsgenerator",
+  "d": "Drei hintereinandergeschaltete XOR berechnen das Paritätsbit eines 4-Bit-Nibbles. Die LED ist HIGH, wenn eine ungerade Anzahl von Schaltern auf HIGH steht."
+ },
+ "digital-mux-4to1": {
+  "t": "Multiplexer 4 zu 1",
+  "d": "Zwei Auswahlleitungen schalten einen von vier Dateneingängen auf Y. Aufgebaut aus einem 2-zu-4-Dekodierer, vier AND-Gattern und einem OR mit 4 Eingängen."
+ },
+ "digital-half-subtractor": {
+  "t": "Halbsubtrahierer",
+  "d": "Berechnet A − B für zwei 1-Bit-Zahlen. DIFF = A XOR B, BORGEN = !A · B. Das Gegenstück zum Halbaddierer."
+ },
+ "digital-ripple-adder-4bit": {
+  "t": "4-Bit-Ripple-Carry-Addierer",
+  "d": "Vier verkettete Volladdierer – A[3:0] + B[3:0] + Cin → S[3:0] + Cout. Mit neun Eingangsschaltern jede 4-Bit-Summe live berechnen. 26 Gatter reine Schaltnetz-Logik."
+ },
+ "digital-multiplier-2x2": {
+  "t": "Binärmultiplizierer 2 Bit × 2 Bit",
+  "d": "Vier AND-Gatter bilden die Teilprodukte, zwei Halbaddierer summieren die Spalten. Die vier LEDs zeigen das 4-Bit-Produkt P3..P0 von A1A0 × B1B0."
+ },
+ "digital-comparator-4bit": {
+  "t": "4-Bit-Größenvergleicher",
+  "d": "Vergleicht zwei 4-Bit-Zahlen A und B. Vier XNOR prüfen die Gleichheit der Bits, eine Kaskade aus AND/OR entscheidet A>B, ein NOR leitet A<B ab. Drei LEDs zeigen das Ergebnis live."
+ },
+ "digital-priority-encoder-8to3": {
+  "t": "Prioritätsencoder 8 zu 3",
+  "d": "Acht Eingangsschalter; drei LEDs zeigen die Nummer des höchsten eingeschalteten Schalters als 3-Bit-Binärzahl. Eine vierte „gültig“-LED leuchtet, sobald irgendein Eingang aktiv ist."
+ },
+ "digital-decoder-3to8": {
+  "t": "Dekodierer 3 zu 8",
+  "d": "Drei Auswahlbits steuern acht Ausgänge – es leuchtet immer genau eine LED, nämlich die mit dem Binärwert A2A1A0. Acht AND-Gatter mit 3 Eingängen und drei Inverter."
+ },
+ "digital-binary-to-gray-3bit": {
+  "t": "3-Bit-Wandler Binär → Gray",
+  "d": "Zwei XOR wandeln eine 3-Bit-Binärzahl in den Gray-Code: G2=B2, G1=B2⊕B1, G0=B1⊕B0. Beim Hochzählen ändert sich immer nur ein Ausgang – die Kerneigenschaft des Gray-Codes."
+ },
+ "digital-bcd-validity": {
+  "t": "BCD-Gültigkeitsprüfung",
+  "d": "Die LED leuchtet nur, wenn die 4-Bit-Eingabe eine gültige BCD-Ziffer (0–9) ist. Die ungültigen Werte 10–15 werden über B3·B2 + B3·B1 erkannt und für die „gültig“-Lampe invertiert."
+ },
+ "digital-half-adder-nand-only": {
+  "t": "Halbaddierer nur aus NAND",
+  "d": "Ein Halbaddierer ausschließlich aus sechs NAND-Gattern mit 2 Eingängen: vier für die XOR-Summe, zwei für den AND-Übertrag. Beweis, dass NAND allein funktional vollständig ist."
+ },
+ "digital-gray-to-binary-3bit": {
+  "t": "3-Bit-Wandler Gray → Binär",
+  "d": "Die Umkehrung des Binär-Gray-Wandlers – drei Eingangsschalter führen auf eine XOR-Kette vom höchsten zum niedrigsten Bit, die den Binärwert zurückgewinnt."
+ },
+ "digital-compressor-4to2": {
+  "t": "4:2-Kompressor (Wallace-Zelle)",
+  "d": "Fünf Bits gleicher Wertigkeit hinein, drei heraus. Zwei verkettete Volladdierer verdichten 5 Bits in konstanter Zeit zu Summe, Übertrag und Cout – der Baustein von Wallace- und Dadda-Multiplizierern."
+ },
+ "digital-popcount-4bit": {
+  "t": "4-Bit-Einsenzähler (Popcount)",
+  "d": "Zählt, wie viele der vier Eingangsschalter auf HIGH stehen, und zeigt die Anzahl als 3-Bit-Binärzahl auf drei LEDs. Aufgebaut als Addiererbaum – wie die Popcount-Befehle in Prozessoren."
+ },
+ "digital-hamming-encoder-74": {
+  "t": "Hamming-(7,4)-Kodierer",
+  "d": "Vier Datenbits hinein, sieben kodierte Bits heraus. Drei Paritätsbits aus je drei XOR bilden den klassischen fehlerkorrigierenden Code, der ECC-Speicher und Raumfahrt-Speicher schützt."
+ },
+ "digital-adder-subtractor-4bit": {
+  "t": "4-Bit-Addierer/Subtrahierer",
+  "d": "Eine Modusleitung wählt Addition (M=0) oder Subtraktion (M=1, per Zweierkomplement). Jedes B-Bit wird mit M per XOR verknüpft, und M speist auch den Übertragseingang von FA0 – so rechnet dieselbe Kette A+B oder A−B."
+ },
+ "digital-alu-slice-1bit": {
+  "t": "1-Bit-ALU-Scheibe (AND / OR / XOR / ADD)",
+  "d": "Eine vollständige 1-Bit-ALU-Zelle – AND, OR, XOR und ADD werden parallel berechnet, ein 4-zu-1-Multiplexer wählt das Ergebnis für Y. Der Übertragspfad ist so verdrahtet, dass sich die Scheiben wie bei MIPS zu einer 32-Bit-ALU verketten lassen."
+ },
+ "digital-carry-lookahead-adder-4bit": {
+  "t": "4-Bit-Carry-Lookahead-Addierer",
+  "d": "Ersetzt die Übertragskette durch ein paralleles Übertragsnetz. Generate-/Propagate-Signale und vier Vorausberechnungen liefern c1..c4 mit konstanter Gattertiefe – dasselbe Prinzip, das auf 64-Bit-Addierer in CPUs skaliert."
+ },
+ "digital-bcd-7seg-segment-a": {
+  "t": "BCD → 7-Segment: Segment „a“",
+  "d": "Schaltet Segment „a“ für die Ziffern 0, 2, 3, 5, 6, 7, 8, 9 ein und lässt es bei 1 und 4 aus. Ein Ausschnitt eines Dekodierers wie dem 7447, aus Gattern aufgebaut, sodass die KV-Diagramm-Minimierung a = B3 + B1 + B2·B0 + !B2·!B0 sichtbar wird."
+ },
+ "digital-ripple-counter-4bit": {
+  "t": "4-Bit-Asynchronzähler (T-Flipflops)",
+  "d": "Vier verkettete T-Flipflops bilden einen asynchronen Zähler – mit der SPICE-Simulation unmöglich (keine Flankenerkennung im Gleichstromfall). Jedes Mal, wenn der CLOCK-Schalter von LOW auf HIGH geschoben wird, zählt der Zähler weiter; die vier LEDs zeigen den Wert binär, das niederwertigste Bit oben. Die ereignisgesteuerte Digitalsimulation berechnet die Flipflops exakt. (Mit ?digitalgates=off sieht man, dass ngspice das nicht kann.)"
+ },
+ "epaper-1in54-uno-hello": {
+  "t": "E-Paper 1,54\": Hallo – Arduino Uno",
+  "d": "GxEPD2 im Seitenmodus zeigt „Hello, Velxio“ auf einem 200×200-E-Ink-Display SSD1681 am Arduino Uno. Das kleinste Display, das mit 16 Zeilen Seitenhöhe in 32 KB Flash und 2 KB SRAM des Uno passt."
+ },
+ "epaper-2in13-pico-clock": {
+  "t": "E-Paper 2,13\": Wanduhr – Raspberry Pi Pico",
+  "d": "Zählt die Sekunden und aktualisiert das Bild einmal pro Minute auf einem 2,13\"-Display SSD1675A mit 250×122 Pixeln. Läuft auf dem Pico mit dem Core von Earle Philhower; SPI0-Standardpins."
+ },
+ "epaper-2in9-esp32-weather": {
+  "t": "E-Paper 2,9\": Wetter – ESP32",
+  "d": "Beispiel-Wetteranzeige auf einem 2,9\"-Display SSD1680 mit 296×128 Pixeln. Zeigt die E-Paper-Darstellung über das Backend: Der QEMU-Prozess dekodiert den SPI-Verkehr und schickt das fertige Bild als WebSocket-Ereignis an den Browser."
+ },
+ "epaper-4in2-pico-image": {
+  "t": "E-Paper 4,2\": Standbild – Raspberry Pi Pico",
+  "d": "Ein festes Schwarz-Weiß-Muster mit 400×300 Pixeln (ineinanderliegende Quadrate) wird einmal übertragen. Groß genug für ein echtes Layout mit Titel, Trennlinie und Datentabelle."
+ },
+ "epaper-7in5-esp32-dashboard": {
+  "t": "E-Paper 7,5\": Dashboard – ESP32",
+  "d": "Volles 800×480-Dashboard mit mehreren Kacheln auf dem größten Schwarz-Weiß-Display. Nur für ESP32 – der Bildspeicher ist für AVR/Pico auch mit GxEPD2 im Seitenmodus zu groß."
+ },
+ "epaper-2in9-bwr-esp32-alert": {
+  "t": "E-Paper 2,9\": Dreifarbiger Alarm – ESP32",
+  "d": "Dreifarbiges Display (Schwarz/Weiß/Rot) mit 296×128 Pixeln zeigt ein Status-Abzeichen. Demonstriert die rote Farbebene des SSD1680: Titel in Schwarz, „ALERT“ in Rot auf Weiß. Nutzt die RAM-Befehle 0x24 (Schwarz-Weiß) und 0x26 (Rot)."
+ },
+ "epaper-5in65-7c-esp32-rainbow": {
+  "t": "E-Paper 5,65\": Regenbogen in 7 Farben – ESP32",
+  "d": "Steuert das 7-Farben-ACeP-Display GoodDisplay GDEP0565D90 / Waveshare 5,65\" an (Controller UC8159c). Zeichnet waagrechte Farbbalken und einen mittigen Titel, um alle Farben zu zeigen. Echte Hardware braucht ca. 12 s zum Aktualisieren; der Emulator meldet BUSY für 150 ms."
+ },
+ "i8080-banner-streamer": {
+  "t": "Intel 8080: Bannerausgabe",
+  "d": "Ein nachgebauter Intel 8080 startet aus einem 328 Byte großen ROM, gibt ein Banner aus und meldet dann etwa alle 50 ms „uptime ticks: 0xNN“. Im seriellen Monitor beobachten."
+ },
+ "i8080-button-counter": {
+  "t": "Intel 8080: Tastenzähler",
+  "d": "Ein eigenständiger Intel-8080-Chip mit einem 34 Byte großen ROM. Die Taste INC zählt binär auf 8 LEDs hoch, RST setzt zurück. CPU, RAM und Programm stecken alle im einen Chip auf der Zeichenfläche."
+ },
+ "i8080-killbits": {
+  "t": "Kill the Bit (1975)",
+  "d": "Das berühmte Reaktionsspiel von Dean McDaniel für den Altair 8800 (1975) auf einem programmierbaren Intel-8080-Chip OHNE Arduino – versorgt von einem Labornetzteil. Eine einzelne LED wandert über 8 LEDs; im richtigen Moment die passende Taste drücken, um sie zu „erwischen“. Das ROM ist killbits.s (das bearbeitbare Programm des Chips); auf „Ausführen“ klicken."
+ },
+ "z80-larson-scanner": {
+  "t": "Z80: Kometen-Lauflicht",
+  "d": "Ein schnellerer „Komet“ aus ZWEI LEDs läuft über 8 LEDs, gesteuert von einem programmierbaren Z80-Chip – eine hellere Variante des Larson-Lauflichts. In Z80-Assembler geschrieben (scanner.s), OHNE Arduino: Der Chip läuft eigenständig an einem geregelten Netzteil. Auf „Ausführen“ klicken."
+ },
+ "z80-led-chaser-c": {
+  "t": "Z80: Lauflicht in C (ohne Board)",
+  "d": "Ein programmierbarer Z80-Chip lässt eine LED im Larson-Stil hin- und herlaufen – das Programm ist aber in C geschrieben (chaser.c) und wird von SDCC für den Z80 übersetzt. Ohne Arduino: Der Chip läuft eigenständig an einem geregelten Netzteil. Auf „Ausführen“ klicken. Benötigt sdcc auf dem Server."
+ },
+ "z80-larson-no-board": {
+  "t": "Z80: Larson-Lauflicht (ohne Board)",
+  "d": "Der programmierbare Z80-Chip steuert 8 LEDs OHNE Arduino – versorgt von einem Labornetzteil. Eigene Chips machen den Simulator zu einem allgemeinen Elektronik-Simulator. Auf „Ausführen“ klicken: Eine LED läuft hin und her."
+ },
+ "galaksija-z80-computer": {
+  "t": "Galaksija – Z80-Heimcomputer von 1983",
+  "d": "Ein echter jugoslawischer Heimcomputer von 1983 (Voja Antonić, ROM gemeinfrei), aufgebaut aus einzelnen Chips am Bus: Ein Z80 führt das BASIC-ROM aus, ein Inverter dekodiert die Adressen, ein 64K-RAM enthält den Speicher und erzeugt das Textbild aus seinem Video-RAM, und eine speicherabgebildete Tastatur liefert die Eingaben. Auf „Fortsetzen“ klicken, dann in die Zeichenfläche klicken und TIPPEN – der Rechner startet mit „READY“, und man kann wie am Original Galaksija-BASIC eingeben."
+ },
+ "robot-desktop-eyes": {
+  "t": "Schreibtisch-Roboter mit animierten Augen",
+  "d": "Schreibtisch-Roboter im Cozmo-Stil auf dem ESP32: OLED-Gesicht mit zufälligem Blinzeln, Blicken und Ausdrücken, Wettermodus mit DHT11, Aufwachen per PIR, Schlafmodus per LDR bei Dunkelheit, Reaktionen auf Geräusche und zwei Augenbrauen-Servos. C++-Projekt mit 34 Dateien und echten Arduino-Bibliotheken (U8g2lib, DHT, ESP32Servo)."
+ },
+ "microsd-card-uno": {
+  "t": "microSD-Karte (Arduino Uno)",
+  "d": "Dateien auf einer microSD-Karte über SPI lesen und schreiben. Die Karte enthält bereits die Dateien dieses Projekts; eigene Dateien lassen sich im Bereich „SD-Karte“ des Bauteils hochladen. Listet das Hauptverzeichnis auf, schreibt /log.txt und liest sie zurück. Seriellen Monitor mit 9600 Baud öffnen."
+ },
+ "microsd-card-esp32": {
+  "t": "microSD-Karte (ESP32)",
+  "d": "Dateien auf einer microSD-Karte über SPI (VSPI) am ESP32 lesen und schreiben. Die Karte enthält bereits die Dateien dieses Projekts; eigene Dateien lassen sich im Bereich „SD-Karte“ des Bauteils hochladen. Listet das Hauptverzeichnis auf, schreibt /log.txt und liest sie zurück. Seriellen Monitor mit 115200 Baud öffnen."
+ },
+ "esp32-wifi-mqtt": {
+  "t": "ESP32: WLAN + MQTT",
+  "d": "Einen ESP32 mit dem WLAN und einem öffentlichen MQTT-Broker verbinden. Der Sketch veröffentlicht auf einem eigenen Topic und abonniert es zugleich, sodass jede Nachricht über broker.hivemq.com zurückkommt und GPIO2 umschaltet – ein eigenständiger Test von WLAN und MQTT ohne weitere Einrichtung. Im seriellen Monitor (115200 Baud) Verbindung und Nachrichten beobachten. Der Emulator stellt ein offenes WLAN namens „Velxio-GUEST“ bereit."
+ },
+ "esp32s3-ili9341-hello": {
+  "t": "ESP32-S3: TFT ILI9341 – Hallo",
+  "d": "Zeichnet eine gefüllte Fläche, ein abgerundetes Rechteck und Text auf ein 320×240-TFT ILI9341, angesteuert vom ESP32-S3 über Hardware-SPI (FSPI / GPSPI2)."
+ },
+ "esp32s3-blink-led": {
+  "t": "ESP32-S3: LED blinken lassen",
+  "d": "Eine externe rote LED an GPIO4 des ESP32-S3 DevKitC-1 blinken lassen. Prüft, ob die GPIO-Emulation des ESP32-S3 funktioniert."
+ },
+ "esp32s3-serial-echo": {
+  "t": "ESP32-S3: Serielles Echo",
+  "d": "Der ESP32-S3 liest seriell und sendet das Gelesene zurück. Zeigt UART und seriellen Monitor auf dem S3."
+ },
+ "esp32s3-oled-i2c": {
+  "t": "ESP32-S3: SSD1306-OLED-Display",
+  "d": "Text auf einem 128×64-OLED SSD1306 per I2C vom ESP32-S3 anzeigen (Standard-Wire-Pins SDA=GPIO8, SCL=GPIO9)."
+ },
+ "esp32s3-potentiometer": {
+  "t": "ESP32-S3: Potentiometer (ADC)",
+  "d": "Ein Potentiometer mit dem 12-Bit-ADC des ESP32-S3 an GPIO1 (ADC1_CH0) auslesen und Rohwert und Spannung ausgeben."
+ },
+ "c3-ili9341": {
+  "t": "ESP32-C3: TFT-Display ILI9341 (SPI)",
+  "d": "Zeichnet eine gefüllte Fläche, ein abgerundetes Rechteck und Text auf ein 320×240-TFT ILI9341, angesteuert vom ESP32-C3 über Hardware-SPI (FSPI: SCK=4, MISO=5, MOSI=6, CS=7)."
+ },
+ "c3-oled-i2c": {
+  "t": "ESP32-C3: SSD1306-OLED-Display",
+  "d": "Text auf einem 128×64-OLED SSD1306 per I2C vom ESP32-C3 anzeigen (Standard-Wire-Pins SDA=GPIO8, SCL=GPIO9)."
+ },
+ "c3-potentiometer": {
+  "t": "ESP32-C3: Potentiometer (ADC)",
+  "d": "Ein Potentiometer mit dem 12-Bit-ADC des ESP32-C3 an GPIO0 (ADC1_CH0) auslesen und Rohwert und Spannung ausgeben."
+ },
+ "100d-aqi-esp": {
+  "t": "Luftqualitätsindex (AQI) mit ESP",
+  "d": "Luftqualitätsindex (AQI) mit ESP auf ESP32 (MicroPython) – nutzt DHT, HTTP server, OLED, Wi-Fi. Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-auto-night-light-using-ldr-esp32-plus-micropython": {
+  "t": "Automatisches Nachtlicht mit LDR (ESP32 + MicroPython)",
+  "d": "Automatisches Nachtlicht mit LDR (ESP32 + MicroPython) auf ESP32 (MicroPython) – nutzt LDR. Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-battery-monitor-with-blynk-iot": {
+  "t": "Batterieüberwachung mit Blynk IoT",
+  "d": "Batterieüberwachung mit Blynk IoT auf ESP32 (MicroPython) – nutzt Blynk, Blynk Cloud, Wi-Fi. Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-bluetooth-based-wireless-led-control-system": {
+  "t": "LED-Funksteuerung per Bluetooth",
+  "d": "LED-Funksteuerung per Bluetooth auf ESP32 (MicroPython) – nutzt BLE. Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-blynk-based-iot-relay-control-micropython": {
+  "t": "IoT-Relaissteuerung mit Blynk (MicroPython)",
+  "d": "IoT-Relaissteuerung mit Blynk (MicroPython) auf Raspberry Pi Pico W (MicroPython) – nutzt Blynk, Blynk Cloud, Wi-Fi. Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-blynk-controlled-dc-brushless-fan": {
+  "t": "Bürstenloser Lüfter über Blynk gesteuert",
+  "d": "Bürstenloser Lüfter über Blynk gesteuert auf ESP32 (MicroPython) – nutzt Blynk, Blynk Cloud, Wi-Fi. Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-clap-toggle-switch-using-esp32-and-digital-sound-sensor-micropython": {
+  "t": "Klatschschalter mit ESP32 und Geräuschsensor (MicroPython)",
+  "d": "Klatschschalter mit ESP32 und Geräuschsensor (MicroPython) auf ESP32 (MicroPython). Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-dc-motor-speed-control-web-slider": {
+  "t": "Motordrehzahl per Web-Schieberegler",
+  "d": "Motordrehzahl per Web-Schieberegler auf ESP32 (MicroPython) – nutzt Servo, Wi-Fi. Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-dht11-web-server-using-esp32-and-micropython": {
+  "t": "DHT11-Webserver mit ESP32 und MicroPython",
+  "d": "DHT11-Webserver mit ESP32 und MicroPython auf ESP32 (MicroPython) – nutzt DHT, Wi-Fi. Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-dimmer-led-using-potentiometer-micropython": {
+  "t": "LED-Dimmer mit Potentiometer (MicroPython)",
+  "d": "LED-Dimmer mit Potentiometer (MicroPython) auf ESP32 (MicroPython) – nutzt Servo. Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-dual-ir-entry-exit-detector-with-telegram-alerts": {
+  "t": "Ein-/Ausgangszähler mit zwei IR-Sensoren und Telegram-Meldungen",
+  "d": "Ein-/Ausgangszähler mit zwei IR-Sensoren und Telegram-Meldungen auf ESP32 (MicroPython) – nutzt Telegram, Wi-Fi. Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-eeprom-simulation-using-micropython-on-esp32-wokwi": {
+  "t": "EEPROM-Simulation mit MicroPython auf dem ESP32",
+  "d": "EEPROM-Simulation mit MicroPython auf dem ESP32 auf ESP32 (MicroPython). Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-esp32-ble-led-control": {
+  "t": "ESP32: LED-Steuerung per BLE",
+  "d": "ESP32: LED-Steuerung per BLE auf ESP32 (MicroPython) – nutzt BLE. Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-esp32-hotspot-access-point-setup-micropython": {
+  "t": "ESP32 als WLAN-Hotspot (MicroPython)",
+  "d": "ESP32 als WLAN-Hotspot (MicroPython) auf ESP32 (MicroPython) – nutzt Wi-Fi. Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-esp32-ir-sensor-telegram-alert-micropython": {
+  "t": "ESP32: IR-Sensor mit Telegram-Meldung (MicroPython)",
+  "d": "ESP32: IR-Sensor mit Telegram-Meldung (MicroPython) auf ESP32 (MicroPython) – nutzt Telegram, Wi-Fi. Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-esp32-oled-smart-ui-eyes-animation-time-and-weather-micropython": {
+  "t": "ESP32-OLED: Augen-Animation, Uhrzeit und Wetter (MicroPython)",
+  "d": "ESP32-OLED: Augen-Animation, Uhrzeit und Wetter (MicroPython) auf ESP32 (MicroPython) – nutzt OLED, Wi-Fi. Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-flask-server-based-led-control-using-micropython": {
+  "t": "LED-Steuerung über einen Flask-Server (MicroPython)",
+  "d": "LED-Steuerung über einen Flask-Server (MicroPython) auf ESP32 (MicroPython) – nutzt HTTP server, Wi-Fi. Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-iot-atmospheric-monitoring-system-using-esp32-wowki-and-blynk": {
+  "t": "IoT-Umweltmessstation mit ESP32 und Blynk",
+  "d": "IoT-Umweltmessstation mit ESP32 und Blynk auf ESP32 (MicroPython) – nutzt Blynk, Blynk Cloud, Wi-Fi. Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-iot-based-dsm-smart-metering": {
+  "t": "IoT-Stromzähler (Smart Metering)",
+  "d": "IoT-Stromzähler (Smart Metering) auf ESP32 (MicroPython) – nutzt Blynk, Blynk Cloud, OTA, Wi-Fi. Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-iot-environment-monitoring-with-anomaly-detection": {
+  "t": "IoT-Umweltüberwachung mit Anomalie-Erkennung",
+  "d": "IoT-Umweltüberwachung mit Anomalie-Erkennung auf ESP32 (MicroPython) – nutzt DHT, LDR, ThingSpeak, Wi-Fi. Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-iot-relay-control-web-server-raspberry-pi-pico-2w": {
+  "t": "IoT-Relaissteuerung per Webserver (Raspberry Pi Pico 2W)",
+  "d": "IoT-Relaissteuerung per Webserver (Raspberry Pi Pico 2W) auf Raspberry Pi Pico W (MicroPython) – nutzt Wi-Fi. Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-iot-smart-irrigation-system": {
+  "t": "Intelligente IoT-Bewässerung",
+  "d": "Intelligente IoT-Bewässerung auf ESP32 (MicroPython) – nutzt Blynk, Blynk Cloud, Wi-Fi. Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-joystick-controlled-servo": {
+  "t": "Servo per Joystick steuern",
+  "d": "Servo per Joystick steuern auf ESP32 (MicroPython) – nutzt Servo. Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-joystick-direction-display-with-oled": {
+  "t": "Joystick-Richtung auf dem OLED anzeigen",
+  "d": "Joystick-Richtung auf dem OLED anzeigen auf Raspberry Pi Pico (MicroPython) – nutzt OLED. Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-mq4-gas-leak-detection-system-using-esp32-and-micropython": {
+  "t": "Gaslecksuche mit MQ4, ESP32 und MicroPython",
+  "d": "Gaslecksuche mit MQ4, ESP32 und MicroPython auf ESP32 (MicroPython). Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-mq7-co-gas-detection-esp32": {
+  "t": "Kohlenmonoxid-Erkennung mit MQ7 und ESP32",
+  "d": "Kohlenmonoxid-Erkennung mit MQ7 und ESP32 auf ESP32 (MicroPython). Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-mq-135-gas-sensor-with-esp32-micropython": {
+  "t": "Gassensor MQ-135 mit ESP32 (MicroPython)",
+  "d": "Gassensor MQ-135 mit ESP32 (MicroPython) auf ESP32 (MicroPython) – nutzt OTA. Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-micropython-watch": {
+  "t": "MicroPython-Uhr",
+  "d": "MicroPython-Uhr auf ESP32 (MicroPython) – nutzt OLED, Wi-Fi. Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-ntp-synchronized-digital-clock-using-esp32-and-max7219": {
+  "t": "NTP-synchronisierte Digitaluhr mit ESP32 und MAX7219",
+  "d": "NTP-synchronisierte Digitaluhr mit ESP32 und MAX7219 auf ESP32 (MicroPython) – nutzt MAX7219, Wi-Fi. Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-ota-update-pico2w": {
+  "t": "OTA-Update für den Pico 2W",
+  "d": "OTA-Update für den Pico 2W auf Raspberry Pi Pico W (MicroPython) – nutzt OTA, Wi-Fi. Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-pir-motion-detector-using-raspberry-pi-pico-2w-and-micropython": {
+  "t": "PIR-Bewegungsmelder mit Raspberry Pi Pico 2W und MicroPython",
+  "d": "PIR-Bewegungsmelder mit Raspberry Pi Pico 2W und MicroPython auf Raspberry Pi Pico W (MicroPython). Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-password-lock-system-using-esp32": {
+  "t": "Codeschloss mit ESP32",
+  "d": "Codeschloss mit ESP32 auf ESP32 (MicroPython) – nutzt I²C LCD. Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-pico-2-w-dht11-http-csv-logger": {
+  "t": "Pico 2 W: DHT11-Messwerte als CSV über HTTP",
+  "d": "Pico 2 W: DHT11-Messwerte als CSV über HTTP auf Raspberry Pi Pico W (MicroPython) – nutzt DHT, HTTP server, Wi-Fi. Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-pico-w-async-led-control-micropython": {
+  "t": "Pico W: Asynchrone LED-Steuerung (MicroPython)",
+  "d": "Pico W: Asynchrone LED-Steuerung (MicroPython) auf Raspberry Pi Pico W (MicroPython) – nutzt Wi-Fi. Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-pico-w-web-servo-controller": {
+  "t": "Pico W: Servo über das Web steuern",
+  "d": "Pico W: Servo über das Web steuern auf Raspberry Pi Pico W (MicroPython) – nutzt OTA, Servo, Wi-Fi. Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-potentiometer-visualizer": {
+  "t": "Potentiometer-Anzeige",
+  "d": "Potentiometer-Anzeige auf ESP32 (MicroPython). Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-pulse-monitor": {
+  "t": "Pulsmesser",
+  "d": "Pulsmesser auf ESP32 (MicroPython) – nutzt OLED. Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-rgb-color-mixer-using-potentiometers-esp32-plus-micropython": {
+  "t": "RGB-Farbmischer mit Potentiometern (ESP32 + MicroPython)",
+  "d": "RGB-Farbmischer mit Potentiometern (ESP32 + MicroPython) auf ESP32 (MicroPython) – nutzt Servo. Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-raspberry-pi-pico-2-w-thingsboard-iot": {
+  "t": "Raspberry Pi Pico 2 W mit ThingsBoard IoT",
+  "d": "Raspberry Pi Pico 2 W mit ThingsBoard IoT auf Raspberry Pi Pico W (MicroPython) – nutzt DHT, MQTT, Wi-Fi. Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-servo-motor-control-with-raspberry-pi-pico-2-w-micropython": {
+  "t": "Servosteuerung mit Raspberry Pi Pico 2 W (MicroPython)",
+  "d": "Servosteuerung mit Raspberry Pi Pico 2 W (MicroPython) auf Raspberry Pi Pico W (MicroPython) – nutzt Servo. Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-single-digit-seven-segment-display-with-raspberry-pi-pico-micropython": {
+  "t": "Einstellige 7-Segment-Anzeige mit Raspberry Pi Pico (MicroPython)",
+  "d": "Einstellige 7-Segment-Anzeige mit Raspberry Pi Pico (MicroPython) auf Raspberry Pi Pico (MicroPython). Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-smart-home-automation-system": {
+  "t": "Smart-Home-Steuerung",
+  "d": "Smart-Home-Steuerung auf ESP32 (MicroPython) – nutzt Blynk, Blynk Cloud, DHT, Wi-Fi. Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-smart-indoor-security-system": {
+  "t": "Intelligente Alarmanlage für Innenräume",
+  "d": "Intelligente Alarmanlage für Innenräume auf ESP32 (MicroPython) – nutzt Wi-Fi. Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-smart-iot-gas-monitoring-system": {
+  "t": "Intelligente IoT-Gasüberwachung",
+  "d": "Intelligente IoT-Gasüberwachung auf ESP32 (MicroPython) – nutzt DHT, HTTP server, Wi-Fi. Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-stepper-motor-control-using-esp32-and-a4988-micropython": {
+  "t": "Schrittmotorsteuerung mit ESP32 und A4988 (MicroPython)",
+  "d": "Schrittmotorsteuerung mit ESP32 und A4988 (MicroPython) auf ESP32 (MicroPython) – nutzt Stepper. Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-temperature-based-led-indicator-micropython-esp32": {
+  "t": "Temperaturanzeige mit LEDs (MicroPython, ESP32)",
+  "d": "Temperaturanzeige mit LEDs (MicroPython, ESP32) auf ESP32 (MicroPython) – nutzt DHT. Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-ultrasonic-led-distance-indicator-esp32-micropython": {
+  "t": "Abstandsanzeige mit Ultraschall und LEDs (ESP32, MicroPython)",
+  "d": "Abstandsanzeige mit Ultraschall und LEDs (ESP32, MicroPython) auf ESP32 (MicroPython) – nutzt HC-SR04. Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-websocket-led-control-using-raspberry-pi-pico-w": {
+  "t": "LED-Steuerung per WebSocket mit Raspberry Pi Pico W",
+  "d": "LED-Steuerung per WebSocket mit Raspberry Pi Pico W auf Raspberry Pi Pico W (MicroPython) – nutzt WebSocket, Wi-Fi. Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "100d-wi-fi-controlled-4wd-robot-car": {
+  "t": "WLAN-gesteuertes Roboterauto mit Allradantrieb",
+  "d": "WLAN-gesteuertes Roboterauto mit Allradantrieb auf ESP32 (MicroPython) – nutzt Wi-Fi. Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ }
+}

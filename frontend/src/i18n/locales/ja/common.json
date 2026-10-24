@@ -27,7 +27,7 @@
     "shareProject": "プロジェクトを共有"
   },
   "footer": {
-    "about": "Velxioは、ブラウザ上で完全に動作する無料のオープンソース回路・マイクロコントローラシミュレータです。Arduino、ESP32、RP2040、ATtiny85に対応し、SPICE精度のアナログ同時シミュレーションを提供します。メーカー、学生、組み込みエンジニアが実践的に学ぶために作られました。AGPLv3ライセンス。"
+    "about": "Pinslimは、ブラウザ上で完全に動作する無料のオープンソース回路・マイクロコントローラシミュレータです。Arduino、ESP32、RP2040、ATtiny85に対応し、SPICE精度のアナログ同時シミュレーションを提供します。メーカー、学生、組み込みエンジニアが実践的に学ぶために作られました。AGPLv3ライセンス。"
   },
   "landing": {
     "hero": {
@@ -160,7 +160,7 @@
   },
   "pricing": {
     "title": "料金",
-    "selfHosted": "このVelxioインスタンスはオープンソースイメージからセルフホストされています—すべての機能は利用者全員に無料です。",
+    "selfHosted": "このPinslimインスタンスはオープンソースイメージからセルフホストされています—すべての機能は利用者全員に無料です。",
     "hostedVersion": "ホスト版（<link>velxio.dev</link>）では、開発資金を支援するオプションのProプランを提供しています。",
     "sourceCode": "ソースコードは<link>GitHub上でMITライセンス</link>です。"
   },
@@ -382,7 +382,7 @@
   "auth": {
     "login": {
       "title": "サインイン",
-      "subtitle": "Velxioに続ける",
+      "subtitle": "Pinslimに続ける",
       "email": "メール",
       "password": "パスワード",
       "signIn": "サインイン",

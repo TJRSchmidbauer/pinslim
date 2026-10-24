@@ -12,6 +12,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useLocalizedHref } from '../../i18n/useLocalizedNavigate';
+import { useTranslation } from 'react-i18next';
 
 type FeaturedProject = {
   id: string;
@@ -37,6 +38,7 @@ const BOARD_LABELS: Record<string, string> = {
 };
 
 export const CommunityProjectsGrid = () => {
+  const { t } = useTranslation();
   const [projects, setProjects] = useState<FeaturedProject[] | null>(null);
   const [hidden, setHidden] = useState(false);
   const localize = useLocalizedHref();
@@ -65,7 +67,7 @@ export const CommunityProjectsGrid = () => {
   return (
     <section style={styles.shell}>
       <div style={styles.header}>
-        <h2 style={styles.title}>Featured community projects</h2>
+        <h2 style={styles.title}>{t('ui.featuredCommunity', 'Featured community projects')}</h2>
         <p style={styles.sub}>
           The most-run public circuits on Velxio. Open one to see how it's wired,
           remix the code, and run it live.

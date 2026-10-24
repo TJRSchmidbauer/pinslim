@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
-import { useTranslation } from 'react-i18next';
 import { useSimulatorStore } from '../../store/useSimulatorStore';
 import { BOARD_KIND_LABELS } from '../../types/board';
 import { ComponentRegistry } from '../../services/ComponentRegistry';
@@ -94,7 +93,6 @@ const KNOWN_COMPONENT_NAMES: Record<string, { name: string; category: string }> 
 };
 
 export const BomModal: React.FC<BomModalProps> = ({ isOpen, onClose }) => {
-  const { t } = useTranslation();
   const { boards, components, wires } = useSimulatorStore();
   const [activeTab, setActiveTab] = useState<'table' | 'csv'>('table');
   const [copied, setCopied] = useState(false);
@@ -136,13 +134,13 @@ export const BomModal: React.FC<BomModalProps> = ({ isOpen, onClose }) => {
     if (processedIds.has(comp.id)) return;
     processedIds.add(comp.id);
 
-    const compType = comp.type || 'unknown';
+    const compType = comp.metadataId || 'unknown';
     const cleanType = compType.replace(/^(wokwi|velxio)-/, '');
     const known = KNOWN_COMPONENT_NAMES[compType] || KNOWN_COMPONENT_NAMES[cleanType];
 
     const meta = registry.getById(compType) || registry.getById(cleanType);
     
-    let compName = comp.name || meta?.name || known?.name || cleanType;
+    let compName = meta?.name || known?.name || cleanType;
     let compCategory = meta ? ComponentRegistry.getCategoryDisplayName(meta.category) : known?.category || 'Elektronikbauteil';
 
     // If component is actually a board

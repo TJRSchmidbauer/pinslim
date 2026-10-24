@@ -6,6 +6,7 @@ import { useProjectStore } from '../store/useProjectStore';
 import { useSEO } from '../utils/useSEO';
 import { EditorPage } from './EditorPage';
 import type { BoardInstance, BoardKind } from '../types/board';
+import { useTranslation } from 'react-i18next';
 
 const DOMAIN = 'https://velxio.dev';
 
@@ -17,6 +18,7 @@ interface ProjectMeta {
 }
 
 export const ProjectByIdPage: React.FC = () => {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const loadProjectState = useSimulatorStore((s) => s.loadProjectState);
@@ -31,16 +33,16 @@ export const ProjectByIdPage: React.FC = () => {
   useSEO(
     projectMeta && projectMeta.isPublic
       ? {
-          title: `${projectMeta.name} by ${projectMeta.ownerUsername} | Velxio`,
+          title: `${projectMeta.name} by ${projectMeta.ownerUsername} | Pinslim`,
           description: projectMeta.description
-            ? `${projectMeta.description} — Simulate and remix this Arduino project on Velxio.`
-            : `Arduino project by ${projectMeta.ownerUsername}. View and simulate it free on Velxio.`,
+            ? `${projectMeta.description} — Simulate and remix this Arduino project on Pinslim.`
+            : `Arduino project by ${projectMeta.ownerUsername}. View and simulate it free on Pinslim.`,
           url: `${DOMAIN}/project/${id}`,
         }
       : {
-          title: 'Project — Velxio Arduino Emulator',
+          title: 'Project — Pinslim',
           description:
-            'View and simulate this Arduino project on Velxio — free, open-source multi-board emulator.',
+            'View and simulate this Arduino project on Pinslim — free, open-source multi-board emulator.',
           url: `${DOMAIN}/editor`,
           noindex: true,
         },
@@ -125,7 +127,7 @@ export const ProjectByIdPage: React.FC = () => {
           justifyContent: 'center',
         }}
       >
-        <p style={{ color: 'var(--wb-11)' }}>Loading project…</p>
+        <p style={{ color: 'var(--wb-11)' }}>{t('ui.loadingProject', 'Loading project…')}</p>
       </div>
     );
   }

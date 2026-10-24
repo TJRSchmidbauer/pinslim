@@ -28,6 +28,7 @@ import {
 } from '../../store/useSimulatorStore';
 import { useElectricalStore } from '../../store/useElectricalStore';
 import { setAdcVoltage } from '../parts/partUtils';
+import type { AnySimulator } from '../parts/PartSimulationRegistry';
 import type { BoardKind } from '../../types/board';
 import { interpolateAt } from './waveformStats';
 import { boardPinToNumber } from '../../utils/boardPinMapping';
@@ -186,7 +187,7 @@ export function connectAnalogInputsToMcu(): () => void {
         if (v == null) continue;
         const clamped = Math.max(0, Math.min(vMax, v));
         const gpioPin = gpioForBoardPin(board.boardKind, pinName, channel);
-        if (gpioPin >= 0) setAdcVoltage(sim, gpioPin, clamped);
+        if (gpioPin >= 0) setAdcVoltage(sim as AnySimulator, gpioPin, clamped);
       }
     }
   }

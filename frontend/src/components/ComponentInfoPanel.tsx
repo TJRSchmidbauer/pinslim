@@ -27,6 +27,7 @@ import type { PropertyDescriptor } from '../types/component-metadata';
 import { loadDoc, productPageHref, type ComponentDoc } from './componentDocs';
 import { trackProductPageClick } from '../utils/analytics';
 import './ComponentInfoPanel.css';
+import { trPart } from '../i18n/content';
 
 export interface PanelData {
   id: string; // component / board id — used to look up the Markdown doc
@@ -134,17 +135,17 @@ export const ComponentInfoBody: React.FC<{
           <ReactMarkdown remarkPlugins={[remarkGfm]}>{doc.body}</ReactMarkdown>
         </div>
       ) : data.description ? (
-        <p className="cip-desc">{data.description}</p>
+        <p className="cip-desc">{trPart(data.description)}</p>
       ) : (
         <p className="cip-desc cip-desc--empty">
-          No datasheet written for this part yet.
-          {data.pinCount > 0 && ' Its pins are listed on the left.'}
+          {translate('ui.noDatasheet', 'No datasheet written for this part yet.')}
+          {data.pinCount > 0 && ` ${translate('ui.pinsListedLeft', 'Its pins are listed on the left.')}`}
         </p>
       )}
 
       {showProps && shownProps.length > 0 && (
         <div className="cip-props">
-          <div className="cip-section-title">Properties</div>
+          <div className="cip-section-title">{translate('ui.properties', 'Properties')}</div>
           <div className="cip-prop-list">
             {shownProps.map((p) => (
               <div className="cip-prop-row" key={p.name}>

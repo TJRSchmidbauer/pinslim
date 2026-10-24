@@ -30,10 +30,12 @@ import { EditorPage } from './EditorPage';
 import { AppHeader } from '../components/layout/AppHeader';
 import { useSEO } from '../utils/useSEO';
 import { starterBoard, starterTitle, starterDescription } from '../data/starters';
+import { useTranslation } from 'react-i18next';
 
 const DOMAIN = 'https://velxio.dev';
 
 export const ExampleEditorPage: React.FC = () => {
+  const { t } = useTranslation();
   // Re-render when the pro overlay registers late examples (dynamic import).
   useSyncExternalStore(subscribeProExamples, getProExamplesVersion, getProExamplesVersion);
 
@@ -176,7 +178,7 @@ export const ExampleEditorPage: React.FC = () => {
         }}
       >
         <div style={{ textAlign: 'center', color: 'var(--wb-12)' }}>
-          <div style={{ fontSize: 15 }}>Loading example…</div>
+          <div style={{ fontSize: 15 }}>{t('ui.loadingExample', 'Loading example…')}</div>
           {installing && (
             <div style={{ marginTop: 10, fontSize: 13, color: 'var(--wb-11)' }}>
               Installing {installing.current} ({installing.done + 1}/{installing.total})

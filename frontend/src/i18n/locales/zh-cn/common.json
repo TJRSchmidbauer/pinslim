@@ -27,7 +27,7 @@
     "shareProject": "分享项目"
   },
   "footer": {
-    "about": "Velxio 是一款免费、开源的电路和微控制器模拟器，完全在浏览器中运行。支持 Arduino、ESP32、RP2040 和 ATtiny85，并具有 SPICE 精度的模拟协同仿真。专为通过实践学习的设计者、学生和嵌入式工程师打造。采用 AGPLv3 许可。"
+    "about": "Pinslim 是一款免费、开源的电路和微控制器模拟器，完全在浏览器中运行。支持 Arduino、ESP32、RP2040 和 ATtiny85，并具有 SPICE 精度的模拟协同仿真。专为通过实践学习的设计者、学生和嵌入式工程师打造。采用 AGPLv3 许可。"
   },
   "landing": {
     "hero": {
@@ -160,7 +160,7 @@
   },
   "pricing": {
     "title": "定价",
-    "selfHosted": "此 Velxio 实例是从开源镜像自托管的——所有功能对每位用户免费。",
+    "selfHosted": "此 Pinslim 实例是从开源镜像自托管的——所有功能对每位用户免费。",
     "hostedVersion": "托管版本 <link>velxio.dev</link> 提供可选的 Pro 层级，有助于资助开发。",
     "sourceCode": "源代码在 GitHub 上采用 <link>MIT 许可</link>。"
   },
@@ -382,7 +382,7 @@
   "auth": {
     "login": {
       "title": "登录",
-      "subtitle": "以继续使用 Velxio",
+      "subtitle": "以继续使用 Pinslim",
       "email": "邮箱",
       "password": "密码",
       "signIn": "登录",

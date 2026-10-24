@@ -21,6 +21,7 @@ import {
 import { readFat16Image, type FatDirFile } from '../../utils/fatImage';
 import { sdCardUploadAllowed, triggerSdCardUpgradePrompt } from '../../lib/proSdCardGate';
 import { getEsp32Bridge, useSimulatorStore } from '../../store/useSimulatorStore';
+import { useTranslation } from 'react-i18next';
 
 interface SdCardPanelProps {
   files: UploadedSdFile[];
@@ -44,6 +45,7 @@ function humanSize(n: number): string {
 }
 
 export const SdCardPanel: React.FC<SdCardPanelProps> = ({ files, onChange, boardId }) => {
+  const { t } = useTranslation();
   const inputRef = useRef<HTMLInputElement>(null);
   const total = files.reduce((s, f) => s + fileBytes(f), 0);
 
@@ -131,7 +133,7 @@ export const SdCardPanel: React.FC<SdCardPanelProps> = ({ files, onChange, board
           <span className="sd-card-file-size">{humanSize(fileBytes(f))}</span>
           <button
             className="sd-card-file-remove"
-            title="Remove"
+            title={t('ui.remove', 'Remove')}
             onClick={() => remove(f.name)}
           >
             x
@@ -158,7 +160,7 @@ export const SdCardPanel: React.FC<SdCardPanelProps> = ({ files, onChange, board
           files included, each downloadable. */}
       <div className="sd-card-label sd-card-label--live">
         Card contents
-        <button className="sd-card-refresh" onClick={refreshLive} title="Re-read the card">
+        <button className="sd-card-refresh" onClick={refreshLive} title={t('ui.sd.reread', 'Re-read the card')}>
           Refresh
         </button>
       </div>
@@ -168,7 +170,7 @@ export const SdCardPanel: React.FC<SdCardPanelProps> = ({ files, onChange, board
           logs) appear here and can be downloaded.
         </div>
       ) : live.length === 0 ? (
-        <div className="sd-card-hint">The card is empty.</div>
+        <div className="sd-card-hint">{t('ui.sd.empty', 'The card is empty.')}</div>
       ) : (
         live.map((f) => (
           <div key={f.name} className="sd-card-file">

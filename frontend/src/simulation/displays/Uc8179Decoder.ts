@@ -43,7 +43,6 @@ export class Uc8179Decoder {
   private winX0 = 0;
   private winX1 = 0;
   private winY0 = 0;
-  private winY1 = 0;
   private cx = 0;
   private cy = 0;
 
@@ -58,7 +57,6 @@ export class Uc8179Decoder {
     this.height = opts.height;
     this.ram = new Uint8Array(opts.width * opts.height).fill(1); // white
     this.winX1 = opts.width - 1;
-    this.winY1 = opts.height - 1;
     this.onFlush = opts.onFlush;
   }
 
@@ -75,7 +73,6 @@ export class Uc8179Decoder {
     this.winX0 = 0;
     this.winX1 = this.width - 1;
     this.winY0 = 0;
-    this.winY1 = this.height - 1;
     this.cx = 0;
     this.cy = 0;
     this.inDeepSleep = false;
@@ -118,7 +115,7 @@ export class Uc8179Decoder {
       this.winX0 = (p[0] << 8) | p[1];
       this.winX1 = (p[2] << 8) | p[3];
       this.winY0 = (p[4] << 8) | p[5];
-      this.winY1 = (p[6] << 8) | p[7];
+      // p[6..7] (window Y end) is ignored: writes wrap at the panel height.
       return;
     }
     if (cmd === UC8179_CMD_DTM2 && this.activeVisible) {

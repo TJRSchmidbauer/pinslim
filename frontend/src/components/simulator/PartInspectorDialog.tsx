@@ -61,6 +61,7 @@ import { showConfirmDialog } from '../../store/useMessageDialogStore';
 // dialog file can eventually retire without orphaning them.
 import './ComponentPropertyDialog.css';
 import './PartInspectorDialog.css';
+import { localizeExample } from '../../i18n/content';
 
 function isEditable(prop: any): boolean {
   if (prop.control === 'select' && prop.options) return true;
@@ -746,7 +747,7 @@ export const PartInspectorDialog: React.FC<PartInspectorDialogProps> = ({
                       href={`/example/${ex.id}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      title={ex.description}
+                      title={localizeExample(ex).description}
                     >
                       <svg
                         width="11"
@@ -763,7 +764,7 @@ export const PartInspectorDialog: React.FC<PartInspectorDialogProps> = ({
                         <polyline points="15 3 21 3 21 9" />
                         <line x1="10" y1="14" x2="21" y2="3" />
                       </svg>
-                      <span>{ex.title}</span>
+                      <span>{localizeExample(ex).title}</span>
                     </a>
                   ))}
                 </div>

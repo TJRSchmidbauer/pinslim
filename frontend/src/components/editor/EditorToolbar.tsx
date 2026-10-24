@@ -118,48 +118,6 @@ interface EditorToolbarProps {
   rightSlot?: React.ReactNode;
 }
 
-const BOARD_PILL_ICON: Record<BoardKind, string> = {
-  'arduino-uno': '⬤',
-  'arduino-nano': '▪',
-  'arduino-mega': '▬',
-  'raspberry-pi-pico': '◆',
-  'raspberry-pi-3': '⬛',
-  'raspberry-pi-4': '⬛',
-  'raspberry-pi-5': '⬛',
-  esp32: '⬡',
-  'esp32-s3': '⬡',
-  'esp32-c3': '⬡',
-  'stm32-bluepill': '◈',
-  'stm32-blackpill': '◈',
-  'stm32-bluepill-f103cb': '◈',
-  'stm32-blackpill-f401': '◈',
-  'stm32-f4-discovery': '◈',
-  'stm32-olimex-h405': '◈',
-  'stm32-netduino-plus2': '◈',
-  'stm32-netduino2': '◈',
-};
-
-const BOARD_PILL_COLOR: Record<BoardKind, string> = {
-  'arduino-uno': '#4fc3f7',
-  'arduino-nano': '#4fc3f7',
-  'arduino-mega': '#4fc3f7',
-  'raspberry-pi-pico': '#ce93d8',
-  'raspberry-pi-3': 'var(--color-feedback-error)',
-  'raspberry-pi-4': 'var(--color-feedback-error)',
-  'raspberry-pi-5': 'var(--color-feedback-error)',
-  esp32: 'var(--color-feedback-success)',
-  'esp32-s3': 'var(--color-feedback-success)',
-  'esp32-c3': 'var(--color-feedback-success)',
-  'stm32-bluepill': 'var(--color-accent-fg)',
-  'stm32-blackpill': 'var(--wb-12)',
-  'stm32-bluepill-f103cb': 'var(--color-accent-fg)',
-  'stm32-blackpill-f401': 'var(--wb-12)',
-  'stm32-f4-discovery': 'var(--color-accent-fg)',
-  'stm32-olimex-h405': 'var(--color-feedback-success)',
-  'stm32-netduino-plus2': '#ce93d8',
-  'stm32-netduino2': '#ce93d8',
-};
-
 export const EditorToolbar = ({
   consoleOpen,
   setConsoleOpen,
@@ -256,7 +214,7 @@ export const EditorToolbar = ({
   // Synchronous re-entrancy guard: a click while a run/verify is already in
   // flight is ignored, so rapid clicks can't stack multiple verifications.
   const runInFlightRef = useRef(false);
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [message, setMessage] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
   const [libManagerOpen, setLibManagerOpen] = useState(false);
   const [pendingLibraries, setPendingLibraries] = useState<string[]>([]);
   const [installModalOpen, setInstallModalOpen] = useState(false);
@@ -499,7 +457,7 @@ export const EditorToolbar = ({
     // QEMU-Linux boards don't need arduino-cli compilation
     if (isPiBoardKind(kind)) {
       blog('info', `${boardLabel}: no compilation needed — run Python scripts directly.`);
-      setMessage({ type: 'success', text: 'Ready (no compilation needed)' });
+      setMessage({ type: 'success', text: t('editor.toolbar.msg.readyNoCompile', 'Ready (no compilation needed)') });
       setCompiling(false);
       return;
     }
@@ -512,7 +470,7 @@ export const EditorToolbar = ({
         const pyFiles = groupFiles.map((f) => ({ name: f.name, content: f.content }));
         await loadMicroPythonProgram(activeBoardId, pyFiles);
         blog('success', 'MicroPython firmware loaded successfully');
-        setMessage({ type: 'success', text: 'MicroPython ready' });
+        setMessage({ type: 'success', text: t('editor.toolbar.msg.micropythonReady', 'MicroPython ready') });
       } catch (err) {
         const errMsg = err instanceof Error ? err.message : 'Failed to load MicroPython';
         blog('error', errMsg);
@@ -527,7 +485,7 @@ export const EditorToolbar = ({
 
     if (!fqbn) {
       blog('error', `No FQBN for board kind: ${kind}`);
-      setMessage({ type: 'error', text: 'Unknown board' });
+      setMessage({ type: 'error', text: t('editor.toolbar.msg.unknownBoard', 'Unknown board') });
       setCompiling(false);
       return;
     }
@@ -638,7 +596,7 @@ export const EditorToolbar = ({
             console.log('[manifest] auto-declared from build:', mergedLibs);
           }
         }
-        setMessage({ type: 'success', text: 'Compiled successfully' });
+        setMessage({ type: 'success', text: t('editor.toolbar.msg.compiled', 'Compiled successfully') });
         markCompiled();
         setMissingLibHint(false);
       } else {
@@ -1042,7 +1000,7 @@ export const EditorToolbar = ({
     addLog({
       timestamp: new Date(),
       type: 'info',
-      message: `Compiling all targets (${targetSummary})...`,
+      message: t('editor.toolbar.msg.compilingAll', 'Compiling all targets ({{targets}})...', { targets: targetSummary }),
     });
 
     // Make every custom-chip live (WASM + ROM) before compiling the boards,
@@ -1271,7 +1229,7 @@ export const EditorToolbar = ({
         });
       }
     } catch (err) {
-      setMessage({ type: 'error', text: 'Export failed.' });
+      setMessage({ type: 'error', text: t('editor.toolbar.msg.exportFailed', 'Export failed.') });
     }
   };
 
@@ -1281,11 +1239,11 @@ export const EditorToolbar = ({
   // returns a PNG, which we trigger a download for.
   const handleExportScreenshot = async () => {
     try {
-      setMessage({ type: 'info', text: 'Rendering PNG schematic image…' });
+      setMessage({ type: 'info', text: t('editor.toolbar.msg.renderingPng', 'Rendering PNG schematic image…') });
       await exportSchematicPng();
-      setMessage({ type: 'success', text: 'Schaltplanbild heruntergeladen.' });
+      setMessage({ type: 'success', text: t('editor.toolbar.msg.pngDownloaded', 'Schematic image downloaded.') });
     } catch (err: any) {
-      setMessage({ type: 'error', text: err?.message || 'Screenshot export failed.' });
+      setMessage({ type: 'error', text: err?.message || t('editor.toolbar.msg.pngFailed', 'Schematic image export failed.') });
     }
   };
 
@@ -1299,12 +1257,12 @@ export const EditorToolbar = ({
     if (!file) return;
 
     setConsoleOpen(true);
-    addLog({ timestamp: new Date(), type: 'info', message: `Loading firmware: ${file.name}...` });
+    addLog({ timestamp: new Date(), type: 'info', message: t('editor.toolbar.msg.loadingFirmware', 'Loading firmware: {{name}}...', { name: file.name }) });
 
     try {
       const boardKind = activeBoard?.boardKind;
       if (!boardKind) {
-        setMessage({ type: 'error', text: 'No board selected' });
+        setMessage({ type: 'error', text: t('editor.toolbar.msg.noBoard', 'No board selected') });
         return;
       }
 
@@ -1317,7 +1275,7 @@ export const EditorToolbar = ({
         addLog({
           timestamp: new Date(),
           type: 'info',
-          message: `Note: Detected ${detected} architecture, but current board is ${current}. Loading anyway.`,
+          message: t('editor.toolbar.msg.archMismatch', 'Note: Detected {{detected}} architecture, but current board is {{current}}. Loading anyway.', { detected, current }),
         });
       }
 
@@ -1335,7 +1293,7 @@ export const EditorToolbar = ({
         compileBoardProgram(activeBoardId, result.program);
         markCompiled();
         addLog({ timestamp: new Date(), type: 'info', message: result.message });
-        setMessage({ type: 'success', text: `Firmware loaded: ${file.name}` });
+        setMessage({ type: 'success', text: t('editor.toolbar.msg.firmwareLoaded', 'Firmware loaded: {{name}}', { name: file.name }) });
       }
     } catch (err) {
       const errMsg = err instanceof Error ? err.message : 'Failed to load firmware';
@@ -1353,7 +1311,7 @@ export const EditorToolbar = ({
       const result = await importProjectFile(file);
       if (result.kind === 'vlx') {
         // importVlxFile already wrote into the stores.
-        setMessage({ type: 'success', text: `Imported ${file.name}` });
+        setMessage({ type: 'success', text: t('editor.toolbar.msg.imported', 'Imported {{name}}', { name: file.name }) });
         return;
       }
       // .zip path: apply the parsed payload to the stores ourselves, then
@@ -1416,7 +1374,7 @@ export const EditorToolbar = ({
       setMessage(
         importWarnings.length > 0
           ? { type: 'error', text: `Imported ${file.name} — ${importWarnings.join(' ')}` }
-          : { type: 'success', text: `Imported ${file.name}` },
+          : { type: 'success', text: t('editor.toolbar.msg.imported', 'Imported {{name}}', { name: file.name }) },
       );
       if (result.libraries.length > 0) {
         setPendingLibraries(result.libraries);
@@ -1586,8 +1544,8 @@ export const EditorToolbar = ({
                     ? t('editor.toolbar.run.verifying', 'Checking circuit...')
                     : isBoardless
                       ? digitalRunning
-                        ? 'Digital simulation running'
-                        : 'Resume digital simulation'
+                        ? t('editor.toolbar.digitalRunning', 'Digital simulation running')
+                        : t('editor.toolbar.digitalResume', 'Resume digital simulation')
                       : isMultiBoard
                         ? t('editor.toolbar.runAll')
                         : !activeBoard
@@ -1675,7 +1633,7 @@ export const EditorToolbar = ({
               onClick={handleStop}
               disabled={isBoardless ? !digitalRunning : !anyBoardRunning}
               className="tb-btn tb-btn-stop"
-              title={isBoardless ? 'Freeze digital simulation' : t('editor.toolbar.stop')}
+              title={isBoardless ? t('editor.toolbar.digitalFreeze', 'Freeze digital simulation') : t('editor.toolbar.stop')}
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="none">
                 <rect x="3" y="3" width="18" height="18" rx="2" />

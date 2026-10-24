@@ -11,6 +11,7 @@
  */
 import { createPortal } from 'react-dom';
 import type { CircuitWarning, VerificationResult } from '../../simulation/verify/circuitVerifier';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   result: VerificationResult;
@@ -24,13 +25,14 @@ const SEVERITY_COPY: Record<CircuitWarning['severity'], { label: string; color: 
 };
 
 export const CircuitVerificationModal: React.FC<Props> = ({ result, onCancel, onRunAnyway }) => {
+  const { t } = useTranslation();
   const items: CircuitWarning[] = [...result.errors, ...result.warnings];
   // Portaled to <body>: see LibraryManagerModal - the toolbar's
   // container-type would otherwise shrink this fixed overlay.
   return createPortal(
     <div style={styles.overlay} onClick={onCancel}>
       <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
-        <h2 style={styles.title}>Circuit verification</h2>
+        <h2 style={styles.title}>{t('ui.circuitVerification', 'Circuit verification')}</h2>
         <p style={styles.subtitle}>
           {result.errors.length === 0
             ? `${result.warnings.length} warning${result.warnings.length === 1 ? '' : 's'} found.`

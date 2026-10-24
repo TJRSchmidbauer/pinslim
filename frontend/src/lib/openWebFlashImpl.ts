@@ -3,9 +3,13 @@ import type { WebFlashImpl, WebFlashRequest, WebFlashResult } from './proWebFlas
 
 let pregrantedPort: SerialPort | null = null;
 
-function base64ToBinaryString(base64: string): string {
-  const binaryString = atob(base64);
-  return binaryString;
+// esptool-js 0.6 takes the image as bytes; handing it a binary string
+// (the pre-0.5 API) made writeFlash fail.
+function base64ToBytes(base64: string): Uint8Array {
+  const bin = atob(base64);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return bytes;
 }
 
 export const openWebFlashImpl: WebFlashImpl = {
@@ -45,7 +49,7 @@ export const openWebFlashImpl: WebFlashImpl = {
       port = await navigator.serial.requestPort();
     }
 
-    const binaryStr = base64ToBinaryString(req.binaryBase64);
+    const image = base64ToBytes(req.binaryBase64);
 
     const isEsp = req.boardKind.toLowerCase().includes('esp32');
 
@@ -77,11 +81,17 @@ export const openWebFlashImpl: WebFlashImpl = {
         req.onProgress({ phase: 'writing', pct: 40, line: 'Writing binary image to flash...' });
         
         await esploader.writeFlash({
-          fileArray: [{ data: binaryStr, address: 0x10000 }],
+          // The backend returns a MERGED image (bootloader, partition table
+          // and app at their real offsets, starting at 0x0) — writing it at
+          // the app offset 0x10000 shifted everything and the chip never
+          // booted.
+          fileArray: [{ data: image, address: 0x0 }],
+          flashMode: 'keep',
+          flashFreq: 'keep',
           flashSize: 'keep',
           eraseAll: false,
           compress: true,
-          reportProgress: (fileIndex: number, written: number, total: number) => {
+          reportProgress: (_fileIndex: number, written: number, total: number) => {
             const pct = Math.round(40 + (written / total) * 55);
             req.onProgress({ phase: 'writing', pct, line: `Writing: ${Math.round((written / total) * 100)}%` });
           },

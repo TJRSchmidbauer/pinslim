@@ -332,7 +332,7 @@ interface ChannelPickerProps {
   activeChannels: OscChannel[];
   onClose: () => void;
   anchorRect: DOMRect;
-  dropdownRef: React.RefObject<HTMLDivElement>;
+  dropdownRef: React.RefObject<HTMLDivElement | null>;
 }
 
 const ChannelPicker: React.FC<ChannelPickerProps> = ({
@@ -596,12 +596,12 @@ export const Oscilloscope: React.FC = () => {
             Auto = free-running (current default).  Normal = window pins
             on every triggering edge.  Single = arm once, freeze on first
             edge — click again to re-arm. */}
-        <span className="osc-label" title="Trigger configuration">Trigger</span>
+        <span className="osc-label" title={t('ui.scope.triggerConfig', 'Trigger configuration')}>Trigger</span>
         <select
           className="osc-select"
           value={triggerMode}
           onChange={(e) => setTriggerMode(e.target.value as TriggerMode)}
-          title="Trigger mode"
+          title={t('ui.scope.triggerMode', 'Trigger mode')}
         >
           <option value="auto">Auto</option>
           <option value="normal">Normal</option>
@@ -614,7 +614,7 @@ export const Oscilloscope: React.FC = () => {
               className="osc-select"
               value={triggerChannelId ?? channels[0]?.id ?? ''}
               onChange={(e) => setTriggerChannel(e.target.value || null)}
-              title="Trigger source"
+              title={t('ui.scope.triggerSource', 'Trigger source')}
               disabled={channels.length <= 1}
             >
               {channels.map((c) => (
@@ -628,7 +628,7 @@ export const Oscilloscope: React.FC = () => {
               className="osc-select"
               value={triggerEdge}
               onChange={(e) => setTriggerEdge(e.target.value as TriggerEdge)}
-              title="Trigger edge"
+              title={t('ui.scope.triggerEdge', 'Trigger edge')}
             >
               <option value="rising">↑ Rising</option>
               <option value="falling">↓ Falling</option>
@@ -649,7 +649,7 @@ export const Oscilloscope: React.FC = () => {
               <button
                 className="osc-btn osc-btn-active"
                 onClick={rearmTrigger}
-                title="Re-arm and capture the next triggering edge"
+                title={t('ui.scope.rearm', 'Re-arm and capture the next triggering edge')}
               >
                 Re-arm
               </button>

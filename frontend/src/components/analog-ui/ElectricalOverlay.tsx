@@ -19,6 +19,7 @@
  * reveals every voltage around it at once. The summary pill always shows.
  */
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useElectricalStore } from '../../store/useElectricalStore';
 import { useSimulatorStore } from '../../store/useSimulatorStore';
 import { buildWireNetMap } from '../../simulation/spice/NetlistBuilder';
@@ -49,6 +50,7 @@ export function ElectricalOverlay({
   hoveredComponentId = null,
   hoveredBoardId = null,
 }: ElectricalOverlayProps = {}) {
+  const { t } = useTranslation();
   const nodeVoltages = useElectricalStore((s) => s.nodeVoltages);
   const converged = useElectricalStore((s) => s.converged);
   const error = useElectricalStore((s) => s.error);
@@ -145,9 +147,18 @@ export function ElectricalOverlay({
   );
   const badgeColor = analysisMode === 'tran' ? probe.ac : probe.dcDim;
 
+  // Nothing to solve is not a problem worth a red pill: ngspice answers an
+  // empty canvas (or a board with no parts wired to it) with "There are no
+  // vectors currently active", which read like a fault on every fresh
+  // workspace.
+  const nothingToSolve =
+    (boards.length === 0 && components.length === 0) ||
+    (!!error && /no vectors currently active/i.test(error));
+  if (nothingToSolve) return null;
+
   const summaryLines: string[] = [];
-  if (error) summaryLines.push(`Warning: ${error}`);
-  else if (!converged) summaryLines.push('Warning: did not converge');
+  if (error) summaryLines.push(`${t('editor.canvas.spiceWarning', 'Warning')}: ${error}`);
+  else if (!converged) summaryLines.push(t('editor.canvas.spiceNoConverge', 'Warning: did not converge'));
   else {
     const n = Object.keys(nodeVoltages).length;
     summaryLines.push(`${n} nets | ${solveMs.toFixed(0)} ms`);

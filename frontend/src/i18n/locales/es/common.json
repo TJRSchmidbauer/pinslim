@@ -27,7 +27,7 @@
     "shareProject": "Compartir proyecto"
   },
   "footer": {
-    "about": "Velxio es un simulador gratuito y de código abierto de circuitos y microcontroladores que funciona completamente en tu navegador. Arduino, ESP32, RP2040 y ATtiny85, con co-simulación analógica precisa con SPICE. Creado para makers, estudiantes e ingenieros de sistemas embebidos que aprenden haciendo. AGPLv3."
+    "about": "Pinslim es un simulador gratuito y de código abierto de circuitos y microcontroladores que funciona completamente en tu navegador. Arduino, ESP32, RP2040 y ATtiny85, con co-simulación analógica precisa con SPICE. Creado para makers, estudiantes e ingenieros de sistemas embebidos que aprenden haciendo. AGPLv3."
   },
   "landing": {
     "hero": {
@@ -160,7 +160,7 @@
   },
   "pricing": {
     "title": "Precios",
-    "selfHosted": "Esta instancia de Velxio está autoalojada desde la imagen de código abierto: todas las funciones son gratuitas para todos los que la usan.",
+    "selfHosted": "Esta instancia de Pinslim está autoalojada desde la imagen de código abierto: todas las funciones son gratuitas para todos los que la usan.",
     "hostedVersion": "La versión alojada en <link>velxio.dev</link> ofrece un nivel Pro opcional que ayuda a financiar el desarrollo.",
     "sourceCode": "El código fuente tiene <link>licencia MIT en GitHub</link>."
   },
@@ -382,7 +382,7 @@
   "auth": {
     "login": {
       "title": "Iniciar sesión",
-      "subtitle": "para continuar en Velxio",
+      "subtitle": "para continuar en Pinslim",
       "email": "Correo electrónico",
       "password": "Contraseña",
       "signIn": "Iniciar sesión",

@@ -22,7 +22,12 @@
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+
+    /* Mirrors the vite/vitest alias: OSS builds resolve @pro to the no-op stub. */
+    "paths": {
+      "@pro/*": ["./src/__pro_stub__/*"]
+    }
   },
   "include": ["src"]
 }

@@ -21,6 +21,7 @@
  */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { getEsp32Bridge } from '../../store/useSimulatorStore';
+import { useTranslation } from 'react-i18next';
 
 interface SensorBridge {
   setImuAcceleration?: (x: number, y: number, z: number) => void;
@@ -65,6 +66,7 @@ export const BoardSensorControls: React.FC<BoardSensorControlsProps> = ({
   showImu,
   showBattery,
 }) => {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [roll, setRoll] = useState(0);
   const [pitch, setPitch] = useState(0);
@@ -169,7 +171,7 @@ export const BoardSensorControls: React.FC<BoardSensorControlsProps> = ({
       <button
         onClick={() => setOpen((v) => !v)}
         disabled={!boardId}
-        title="Tilt the board and set its battery level (simulation inputs)"
+        title={t('ui.boardSensorsHint', 'Tilt the board and set its battery level (simulation inputs)')}
         style={{
           backgroundColor: open ? 'rgba(88,166,255,0.15)' : 'transparent',
           border: `1px solid ${open ? '#58a6ff' : 'transparent'}`,

@@ -19,8 +19,10 @@ import {
   getLocaleFromPath,
   switchLocale,
 } from '../../i18n/path';
+import { useTranslation } from 'react-i18next';
 
 export const LanguageSwitcher: React.FC = () => {
+  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const rootRef = useRef<HTMLDivElement>(null);
@@ -58,8 +60,8 @@ export const LanguageSwitcher: React.FC = () => {
         className="velxio-language-btn"
         aria-haspopup="listbox"
         aria-expanded={open}
-        aria-label="Language"
-        title="Language"
+        aria-label={t('ui.language', 'Language')}
+        title={t('ui.language', 'Language')}
         onClick={() => setOpen((v) => !v)}
       >
         <Globe size={16} strokeWidth={1.8} aria-hidden="true" />
@@ -69,7 +71,7 @@ export const LanguageSwitcher: React.FC = () => {
         <ul
           className="velxio-language-menu"
           role="listbox"
-          aria-label="Language"
+          aria-label={t('ui.language', 'Language')}
         >
           {LOCALES.map((loc) => {
             const meta = LOCALE_META[loc];

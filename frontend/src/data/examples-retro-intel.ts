@@ -838,6 +838,8 @@ export const retroIntelExamples: ExampleProject[] = [
   {
     id: 'galaksija-z80-computer',
     title: 'Galaksija — 1983 Z80 home computer',
+    // Boardless: the Z80 chip runs its own ROM, there is no sketch.
+    code: '',
     description:
       'A real 1983 Yugoslav home computer (Voja Antonić, public-domain ROM) built from ' +
       'discrete chips on the bus: a Z80 CPU runs its BASIC ROM, an inverter decodes the ' +

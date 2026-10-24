@@ -34,7 +34,12 @@ export interface ProBoardSimulator {
   readonly isProBoardSimulator: true;
   onSerialData: ((ch: string) => void) | null;
   onPinChangeWithTime: ((pin: number, state: boolean, time: number) => void) | null;
+  /** Run / Stop / Reset and pin injection — the store drives every board
+   *  simulator through these, overlay ones included. */
+  start(): void;
   stop(): void;
+  reset(): void;
+  setPinState(pin: number, state: boolean): void;
   detachPioPeripheral?(): void;
 }
 

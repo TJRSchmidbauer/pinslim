@@ -158,12 +158,12 @@ export const BoardOptionsModal = ({
       <div className="bom-modal" onClick={(e) => e.stopPropagation()}>
         <div className="bom-header">
           <div className="bom-title">
-            <div className="bom-title-main">Board Options</div>
+            <div className="bom-title-main">{t('ui.boardOptions.title', 'Board Options')}</div>
             <div className="bom-title-sub">
               {boardName?.trim() || BOARD_KIND_LABELS[boardKind]} - id {boardId}
             </div>
           </div>
-          <button className="bom-close" onClick={onClose} aria-label="Close">
+          <button className="bom-close" onClick={onClose} aria-label={t('ui.close', 'Close')}>
             &times;
           </button>
         </div>
@@ -189,7 +189,7 @@ export const BoardOptionsModal = ({
               <section className="bom-section">
                 <h4 className="bom-section-title">Memory</h4>
                 <div className="bom-row">
-                  <label className="bom-label">Partition Scheme</label>
+                  <label className="bom-label">{t('ui.boardOptions.partitionScheme', 'Partition Scheme')}</label>
                   <div className="bom-control">
                     <select
                       className="bom-select"
@@ -209,7 +209,7 @@ export const BoardOptionsModal = ({
                   </div>
                 </div>
                 <div className="bom-row">
-                  <label className="bom-label">Flash Size</label>
+                  <label className="bom-label">{t('ui.boardOptions.flashSize', 'Flash Size')}</label>
                   <div className="bom-control">
                     <select
                       className="bom-select"
@@ -225,7 +225,7 @@ export const BoardOptionsModal = ({
                       ))}
                     </select>
                     {draft.flashSize !== '4MB' && (
-                      <span className="bom-badge bom-badge-warn">QEMU image grows</span>
+                      <span className="bom-badge bom-badge-warn">{t('ui.boardOptions.qemuGrows', 'QEMU image grows')}</span>
                     )}
                   </div>
                 </div>
@@ -234,7 +234,7 @@ export const BoardOptionsModal = ({
               <section className="bom-section">
                 <h4 className="bom-section-title">Speed</h4>
                 <div className="bom-row">
-                  <label className="bom-label">CPU Frequency</label>
+                  <label className="bom-label">{t('ui.boardOptions.cpuFreq', 'CPU Frequency')}</label>
                   <div className="bom-control">
                     <select
                       className="bom-select"
@@ -254,7 +254,7 @@ export const BoardOptionsModal = ({
                   </div>
                 </div>
                 <div className="bom-row">
-                  <label className="bom-label">Flash Frequency</label>
+                  <label className="bom-label">{t('ui.boardOptions.flashFreq', 'Flash Frequency')}</label>
                   <div className="bom-control">
                     <select
                       className="bom-select"
@@ -278,7 +278,7 @@ export const BoardOptionsModal = ({
               <section className="bom-section">
                 <h4 className="bom-section-title">Flash</h4>
                 <div className="bom-row">
-                  <label className="bom-label">Flash Mode</label>
+                  <label className="bom-label">{t('ui.boardOptions.flashMode', 'Flash Mode')}</label>
                   <div className="bom-control">
                     <select
                       className="bom-select"
@@ -315,7 +315,7 @@ export const BoardOptionsModal = ({
                           update({ psram: e.target.value as ESP32BoardOptions['psram'] })
                         }
                       >
-                        <option value="disabled">Disabled</option>
+                        <option value="disabled">{t('ui.disabled', 'Disabled')}</option>
                         <option value="enabled">Enabled</option>
                         {showOpi && <option value="opi">OPI PSRAM</option>}
                       </select>
@@ -327,7 +327,7 @@ export const BoardOptionsModal = ({
               <section className="bom-section">
                 <h4 className="bom-section-title">Debug</h4>
                 <div className="bom-row">
-                  <label className="bom-label">Core Debug Level</label>
+                  <label className="bom-label">{t('ui.boardOptions.coreDebug', 'Core Debug Level')}</label>
                   <div className="bom-control">
                     <select
                       className="bom-select"
@@ -350,9 +350,9 @@ export const BoardOptionsModal = ({
               </section>
 
               <section className="bom-section">
-                <h4 className="bom-section-title">Concurrency</h4>
+                <h4 className="bom-section-title">{t('ui.boardOptions.concurrency', 'Concurrency')}</h4>
                 <div className="bom-row">
-                  <label className="bom-label">Events Run On</label>
+                  <label className="bom-label">{t('ui.boardOptions.eventsCore', 'Events Run On')}</label>
                   <div className="bom-control">
                     <select
                       className="bom-select"
@@ -370,7 +370,7 @@ export const BoardOptionsModal = ({
                   </div>
                 </div>
                 <div className="bom-row">
-                  <label className="bom-label">Arduino Runs On</label>
+                  <label className="bom-label">{t('ui.boardOptions.arduinoCore', 'Arduino Runs On')}</label>
                   <div className="bom-control">
                     <select
                       className="bom-select"
@@ -397,7 +397,7 @@ export const BoardOptionsModal = ({
               <section className="bom-section">
                 <h4 className="bom-section-title">Tools</h4>
                 <div className="bom-row">
-                  <label className="bom-label">Erase Flash on Upload</label>
+                  <label className="bom-label">{t('ui.boardOptions.eraseFlash', 'Erase Flash on Upload')}</label>
                   <div className="bom-control">
                     <input
                       className="bom-check"

@@ -256,7 +256,8 @@ export class Esp32Bridge {
    * explicitly remaps via `Serial.setPins()`.
    */
   private uart0TxPin(): number {
-    switch (this.boardKind) {
+    // Overlay kinds (esp32-c6, …) are outside the BoardKind union.
+    switch (this.boardKind as string) {
       case 'esp32-s3':
       case 'xiao-esp32-s3':
       case 'arduino-nano-esp32':

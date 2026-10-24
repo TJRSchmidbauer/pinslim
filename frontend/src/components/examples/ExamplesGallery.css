@@ -551,3 +551,69 @@
     margin-left: 0;
   }
 }
+
+/* ── Pinslim: collection switch + school topic headings ─────────────────── */
+.examples-collection {
+  max-width: var(--examples-max);
+  margin: 0 auto 14px auto;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.examples-collection-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border-default);
+  background: var(--wb-3);
+  color: var(--wb-12);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.examples-collection-btn:hover {
+  background: var(--color-wash-hover);
+  color: var(--wb-13);
+}
+
+.examples-collection-btn.active {
+  background: var(--color-action-primary);
+  border-color: var(--color-action-primary);
+  color: var(--color-action-primary-fg);
+}
+
+.examples-collection-count {
+  font-size: 12px;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+.examples-topic {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--color-border-default);
+}
+
+.examples-topic:first-child {
+  margin-top: 0;
+}
+
+.examples-topic h2 {
+  margin: 0;
+  font-size: 18px;
+  color: var(--wb-13);
+}
+
+.examples-topic span {
+  font-size: 13px;
+  color: var(--wb-10);
+}

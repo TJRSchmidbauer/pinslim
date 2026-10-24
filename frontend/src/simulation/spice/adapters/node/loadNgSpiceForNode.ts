@@ -35,11 +35,14 @@ import path from 'node:path';
  * build adds plenty more, but we only depend on these.
  */
 export interface NgSpiceEmscriptenModule {
+  // The wrapper's real signature depends on the C function; callers state
+  // it at the binding site (see NgSpiceNodeAdapter.bindApi).
   cwrap: (
     name: string,
     returnType: string | null,
     argTypes: readonly string[],
-  ) => (...args: unknown[]) => unknown;
+  ) => // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (...args: any[]) => any;
   addFunction: (fn: (...args: unknown[]) => unknown, signature: string) => number;
   removeFunction: (ptr: number) => void;
   UTF8ToString: (ptr: number) => string;

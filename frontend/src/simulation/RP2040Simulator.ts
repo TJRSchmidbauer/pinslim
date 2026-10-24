@@ -89,10 +89,13 @@ export class IdleSpinDetector {
   private iters = 0;
   private gpioAtLastIter = -1;
 
-  constructor(
-    private readonly threshold = 32,
-    private readonly maxStride = 256,
-  ) {}
+  private readonly threshold: number;
+  private readonly maxStride: number;
+
+  constructor(threshold = 32, maxStride = 256) {
+    this.threshold = threshold;
+    this.maxStride = maxStride;
+  }
 
   /**
    * @param pc   program counter about to execute
@@ -781,7 +784,7 @@ export class RP2040Simulator {
     if (!baud || baud <= 0) return;
 
     const txPin = this.rp2040UartTxPin(uartIdx);
-    const dataBits = uart.bitsPerChar;
+    const dataBits = uart.wordLength ?? 8;
     const clk = (this.rp2040 as unknown as { clock?: { nanos: number } }).clock;
     const startMs = clk ? clk.nanos / 1_000_000 : 0;
     const bitMs = 1000 / baud;
@@ -1266,7 +1269,9 @@ export class RP2040Simulator {
   step(): number {
     if (!this.rp2040) return 0;
     const core = this.rp2040.core;
-    const clock = this.rp2040.clock;
+    const clock = this.rp2040.clock as unknown as
+      | { tick(deltaNanos: number): void; nanosToNextAlarm: number }
+      | undefined;
     if (core.waiting) {
       // CPU is in WFE/WFI — advance clock to the next alarm so an
       // interrupt can wake it.  Without this, single-stepping a

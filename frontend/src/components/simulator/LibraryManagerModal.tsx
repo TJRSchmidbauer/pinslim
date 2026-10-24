@@ -406,8 +406,8 @@ export const LibraryManagerModal: React.FC<LibraryManagerModalProps> = ({ isOpen
               <span
                 title={
                   isMpy
-                    ? 'MicroPython: a library is a .py file in this board\'s workspace'
-                    : 'Libraries apply to this board (its libraries.json = compile scope)'
+                    ? t('ui.lib.mpyHint', "MicroPython: a library is a .py file in this board's workspace")
+                    : t('ui.lib.scopeHint', 'Libraries apply to this board (its libraries.json = compile scope)')
                 }
                 style={{
                   marginLeft: 8,
@@ -502,14 +502,14 @@ export const LibraryManagerModal: React.FC<LibraryManagerModalProps> = ({ isOpen
                     <div className="lib-item-actions">
                       {row.version && <span className="lib-item-version">{row.version}</span>}
                       {row.builtin ? (
-                        <span className="lib-item-version" title="No install needed — just import it">
+                        <span className="lib-item-version" title={t('ui.lib.noInstall', 'No install needed — just import it')}>
                           import {row.name}
                         </span>
                       ) : row.inProject ? (
                         <span
                           className="lib-uninstall-btn"
                           style={{ color: 'var(--color-feedback-success)', borderColor: '#2e7d32', cursor: 'default' }}
-                          title="Its .py file is in the workspace — edit or delete it from the file explorer"
+                          title={t('ui.lib.pyInWorkspace', 'Its .py file is in the workspace — edit or delete it from the file explorer')}
                         >
                           In project ✓
                         </span>
@@ -550,7 +550,7 @@ export const LibraryManagerModal: React.FC<LibraryManagerModalProps> = ({ isOpen
                       ? t('editor.libraryManager.noResultsFor', { query: searchQuery })
                       : t('editor.libraryManager.noResults')}
                 </p>
-                {browsing && <p className="lib-empty-sub">Search above to find and add a library.</p>}
+                {browsing && <p className="lib-empty-sub">{t('ui.lib.searchHint', 'Search above to find and add a library.')}</p>}
               </div>
             )}
             {!isMpy && rows.map((row, i) => {
@@ -602,7 +602,7 @@ export const LibraryManagerModal: React.FC<LibraryManagerModalProps> = ({ isOpen
                         className="lib-uninstall-btn"
                         style={{ color: 'var(--color-feedback-success)', borderColor: '#2e7d32' }}
                         onClick={() => removeFromManifest(row.name)}
-                        title="Remove from this board (libraries.json)"
+                        title={t('ui.lib.removeFromBoard', 'Remove from this board (libraries.json)')}
                       >
                         In project ✓
                       </button>
@@ -611,7 +611,7 @@ export const LibraryManagerModal: React.FC<LibraryManagerModalProps> = ({ isOpen
                         className="lib-install-btn"
                         onClick={() => addToProject(row)}
                         disabled={busy}
-                        title="Install if needed and add to this board"
+                        title={t('ui.lib.installAndAdd', 'Install if needed and add to this board')}
                       >
                         {busy ? '…' : '+ Add to project'}
                       </button>
@@ -625,7 +625,7 @@ export const LibraryManagerModal: React.FC<LibraryManagerModalProps> = ({ isOpen
                         className="lib-uninstall-btn"
                         onClick={() => removeCustom(row.name)}
                         disabled={busy}
-                        title="Remove your custom upload"
+                        title={t('ui.lib.removeUpload', 'Remove your custom upload')}
                       >
                         {busy ? '…' : 'Remove'}
                       </button>

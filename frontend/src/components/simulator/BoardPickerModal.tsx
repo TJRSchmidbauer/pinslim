@@ -1,10 +1,10 @@
-import React from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import type { BoardKind } from '../../types/board';
 import { BOARD_KIND_LABELS } from '../../types/board';
 import { isProBoardKind } from '../../lib/proBoardGate';
 import { VelxioDevExklusivBadge } from '../common/VelxioDevExklusivBadge';
+import { trPart } from '../../i18n/content';
 
 /** Neutral chip glyph for overlay-registered boards without a bespoke icon. */
 const PRO_FALLBACK_ICON = (
@@ -15,7 +15,7 @@ const PRO_FALLBACK_ICON = (
 );
 
 
-const BOARD_DESCRIPTIONS: Record<BoardKind, string> = {
+const BOARD_DESCRIPTIONS: Partial<Record<BoardKind, string>> = {
   'arduino-uno': '8-bit AVR, 32KB flash, 14 digital I/O',
   'arduino-nano': 'Compact 8-bit AVR, same as Uno',
   'arduino-mega': '8-bit AVR, 256KB flash, 54 digital I/O',
@@ -30,7 +30,7 @@ const BOARD_DESCRIPTIONS: Record<BoardKind, string> = {
   'stm32-blackpill': 'STM32F411CE Cortex-M4, 512KB flash, 50 GPIO (QEMU)',
 };
 
-const BOARD_ICON: Record<BoardKind, string> = {
+const BOARD_ICON: Partial<Record<BoardKind, string>> = {
   'arduino-uno': '⬤',
   'arduino-nano': '▪',
   'arduino-mega': '▬',
@@ -142,7 +142,7 @@ export const BoardPickerModal = ({ isOpen, onClose, onSelectBoard }: BoardPicker
                   {isProBoardKind(kind) && <VelxioDevExklusivBadge style={{ position: 'static' }} />}
                 </div>
                 <div style={{ fontSize: 11, color: 'var(--wb-10)', marginTop: 2 }}>
-                  {BOARD_DESCRIPTIONS[kind]}
+                  {trPart(BOARD_DESCRIPTIONS[kind])}
                 </div>
               </div>
             </button>

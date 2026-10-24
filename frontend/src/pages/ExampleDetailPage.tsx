@@ -16,6 +16,7 @@ import { exampleProjects, subscribeProExamples, getProExamplesVersion } from '..
 import { AppHeader } from '../components/layout/AppHeader';
 import { ExampleThumbnail } from '../components/examples/ExampleThumbnail';
 import { useSEO } from '../utils/useSEO';
+import { localizeExample } from '../i18n/content';
 
 const DOMAIN = 'https://velxio.dev';
 
@@ -157,7 +158,7 @@ export const ExampleDetailPage: React.FC = () => {
             Examples
           </Link>
           {' / '}
-          <span style={{ color: 'var(--wb-11)' }}>{example.title}</span>
+          <span style={{ color: 'var(--wb-11)' }}>{localizeExample(example).title}</span>
         </nav>
 
         {/* Card */}
@@ -246,12 +247,12 @@ export const ExampleDetailPage: React.FC = () => {
               lineHeight: 1.3,
             }}
           >
-            {example.title}
+            {localizeExample(example).title}
           </h1>
 
           {/* Description */}
           <p style={{ fontSize: 16, color: 'var(--wb-11)', lineHeight: 1.7, margin: '0 0 32px' }}>
-            {example.description}
+            {localizeExample(example).description}
           </p>
 
           {/* What you'll learn section */}

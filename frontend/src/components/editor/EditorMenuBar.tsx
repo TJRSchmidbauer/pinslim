@@ -37,6 +37,12 @@ import {
 } from '../../lib/editorCommands';
 import { AboutPinslimModal } from './AboutPinslimModal';
 import { ExamplesModal } from './ExamplesModal';
+import {
+  PINSLIM_DOCS_URL,
+  PINSLIM_ISSUES_URL,
+  PINSLIM_REPO_URL,
+  VELXIO_REPO_URL,
+} from '../../lib/pinslimLinks';
 import './EditorMenuBar.css';
 
 type Item =
@@ -56,17 +62,6 @@ type Item =
     }
   | { kind: 'link'; href: string; label: string }
   | { kind: 'separator' };
-
-// Same links the desktop app's Help menu opens (pro/desktop menu.rs) — the
-// web editor mirrors that structure so both feel like one product. They
-// replace the marketing nav this header no longer shows, opening in a new
-// tab so the editor (and any unsaved work) stays put.
-const GITHUB_URL = 'https://github.com/davidmonterocrespo24/velxio';
-const DISCORD_URL = 'https://discord.gg/3mARjJrh4E';
-// In the OSS build the marketing pages live on velxio.dev, not in this app
-// (the overlay registers them only in pro builds) — link absolute, exactly
-// like the desktop app's Help menu does.
-const SITE = import.meta.env.VITE_PRO_BUILD ? '' : 'https://velxio.dev';
 
 export const EditorMenuBar: React.FC = () => {
   const { t } = useTranslation();
@@ -160,19 +155,6 @@ export const EditorMenuBar: React.FC = () => {
       label: t('header.auth.signIn', 'Sign in'),
       optional: true,
     },
-  ];
-
-  const helpItems: Item[] = [
-    { kind: 'link', href: `${SITE}/docs`, label: t('header.nav.documentation', 'Documentation') },
-    { kind: 'link', href: '/examples', label: t('header.nav.examples', 'Examples') },
-    { kind: 'link', href: `${SITE}/pricing`, label: t('header.nav.pricing', 'Pricing') },
-    { kind: 'separator' },
-    { kind: 'link', href: SITE || '/', label: t('editor.menu.home', 'Velxio Home') },
-    { kind: 'link', href: `${SITE}/blog/`, label: t('header.nav.blog', 'Blog') },
-    { kind: 'link', href: `${SITE}/about`, label: t('editor.menu.about', 'About Velxio') },
-    { kind: 'separator' },
-    { kind: 'link', href: DISCORD_URL, label: t('editor.menu.discord', 'Discord Community') },
-    { kind: 'link', href: GITHUB_URL, label: t('editor.menu.github', 'GitHub Repository') },
   ];
 
   // Edit is undo/redo only (they render specially, with live history state);
@@ -420,7 +402,7 @@ export const EditorMenuBar: React.FC = () => {
               <a
                 role="menuitem"
                 className="emb-item"
-                href="https://velxio.dev/docs/"
+                href={PINSLIM_DOCS_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => setOpen(null)}
@@ -446,18 +428,38 @@ export const EditorMenuBar: React.FC = () => {
                   setShowAboutModal(true);
                 }}
               >
-                <span>About Pinslim</span>
+                <span>{t('editor.menu.aboutPinslim', 'About Pinslim')}</span>
               </button>
               <div className="emb-separator" />
               <a
                 role="menuitem"
                 className="emb-item"
-                href={GITHUB_URL}
+                href={PINSLIM_REPO_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => setOpen(null)}
               >
-                <span>GitHub Repository</span>
+                <span>{t('editor.menu.pinslimRepo', 'Pinslim on GitHub')}</span>
+              </a>
+              <a
+                role="menuitem"
+                className="emb-item"
+                href={PINSLIM_ISSUES_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setOpen(null)}
+              >
+                <span>{t('editor.menu.reportIssue', 'Report a problem')}</span>
+              </a>
+              <a
+                role="menuitem"
+                className="emb-item"
+                href={VELXIO_REPO_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setOpen(null)}
+              >
+                <span>{t('editor.menu.upstreamProject', 'Original project: Velxio')}</span>
               </a>
             </>
           )}

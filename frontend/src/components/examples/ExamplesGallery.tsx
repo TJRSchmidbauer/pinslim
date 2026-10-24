@@ -8,6 +8,7 @@ import React, { useState, useCallback, useSyncExternalStore } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   exampleProjects,
+  schoolExamples,
   subscribeProExamples,
   getProExamplesVersion,
   type ExampleProject,
@@ -18,6 +19,20 @@ import { BOARD_KIND_LABELS } from '../../types/board';
 import { ExampleThumbnail } from './ExampleThumbnail';
 import { VelxioDevExklusivBadge } from '../common/VelxioDevExklusivBadge';
 import './ExamplesGallery.css';
+import { localizeExample } from '../../i18n/content';
+import { SCHOOL_TOPICS } from '../../data/examples-school';
+
+/** Which collection the gallery shows; remembered per browser. */
+type Collection = 'general' | 'school';
+const COLLECTION_KEY = 'pinslim_examples_collection';
+
+function readCollection(): Collection {
+  try {
+    return localStorage.getItem(COLLECTION_KEY) === 'general' ? 'general' : 'school';
+  } catch {
+    return 'school';
+  }
+}
 
 interface ExamplesGalleryProps {
   onLoadExample: (example: ExampleProject) => void;
@@ -80,6 +95,21 @@ export const ExamplesGallery: React.FC<ExamplesGalleryProps> = ({ onLoadExample 
   >('all');
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [search, setSearch] = useState<string>('');
+  const [collection, setCollectionState] = useState<Collection>(readCollection);
+  const setCollection = (next: Collection) => {
+    setCollectionState(next);
+    try {
+      localStorage.setItem(COLLECTION_KEY, next);
+    } catch {
+      /* storage denied — the choice holds for this visit */
+    }
+  };
+  // The school collection is curated and ordered by topic; the general one
+  // is everything else in the gallery.
+  const collectionExamples =
+    collection === 'school' ? schoolExamples : exampleProjects.filter((e) => !e.schoolTopic);
+  const topicOrder = (e: ExampleProject) =>
+    SCHOOL_TOPICS.findIndex((topic) => topic.id === e.schoolTopic);
 
   // Overlay boards and their examples register asynchronously — re-derive the
   // filter options when either lands, so a pro board's tab appears without a
@@ -131,6 +161,9 @@ export const ExamplesGallery: React.FC<ExamplesGalleryProps> = ({ onLoadExample 
     [
       example.title,
       example.description,
+      // Search the translated text too, so German queries find examples.
+      localizeExample(example).title,
+      localizeExample(example).description,
       example.category,
       example.difficulty,
       getBoardFilter(example),
@@ -140,7 +173,7 @@ export const ExamplesGallery: React.FC<ExamplesGalleryProps> = ({ onLoadExample 
       .join(' ')
       .toLowerCase();
 
-  const filteredExamples = exampleProjects.filter((example) => {
+  const filteredExamples = collectionExamples.filter((example) => {
     const boardMatch =
       selectedBoard === 'all' ||
       (selectedBoard === 'retro' ? isRetro(example) : getBoardFilter(example) === selectedBoard);
@@ -152,6 +185,9 @@ export const ExamplesGallery: React.FC<ExamplesGalleryProps> = ({ onLoadExample 
     return searchTokens.every((tok) => hay.includes(tok));
   })
     .sort((a, b) => {
+      // School collection: topic order, then the curated order within it
+      // (Array.prototype.sort is stable).
+      if (collection === 'school') return topicOrder(a) - topicOrder(b);
       // Order by board following the boardTabs order (so Arduino Uno comes
       // first), then alphabetically by title within each board.
       const ra = boardTabs.findIndex((t) => t.id === getBoardFilter(a));
@@ -162,10 +198,10 @@ export const ExamplesGallery: React.FC<ExamplesGalleryProps> = ({ onLoadExample 
 
   // Count per board for tab badges
   const boardCounts: Record<string, number> = {
-    all: exampleProjects.length,
-    retro: exampleProjects.filter(isRetro).length,
+    all: collectionExamples.length,
+    retro: collectionExamples.filter(isRetro).length,
   };
-  exampleProjects.forEach((ex) => {
+  collectionExamples.forEach((ex) => {
     const b = getBoardFilter(ex);
     boardCounts[b] = (boardCounts[b] ?? 0) + 1;
   });
@@ -317,6 +353,31 @@ export const ExamplesGallery: React.FC<ExamplesGalleryProps> = ({ onLoadExample 
         <p>{t('examples.subtitle')}</p>
       </div>
 
+      <div className="examples-collection" role="radiogroup" aria-label={t('examples.collection.label', 'Collection')}>
+        <button
+          type="button"
+          role="radio"
+          aria-checked={collection === 'school'}
+          className={`examples-collection-btn${collection === 'school' ? ' active' : ''}`}
+          onClick={() => setCollection('school')}
+        >
+          {t('examples.collection.school', 'School (by topic)')}
+          <span className="examples-collection-count">{schoolExamples.length}</span>
+        </button>
+        <button
+          type="button"
+          role="radio"
+          aria-checked={collection === 'general'}
+          className={`examples-collection-btn${collection === 'general' ? ' active' : ''}`}
+          onClick={() => setCollection('general')}
+        >
+          {t('examples.collection.general', 'All examples')}
+          <span className="examples-collection-count">
+            {exampleProjects.length - schoolExamples.length}
+          </span>
+        </button>
+      </div>
+
       {/* Compact toolbar: search + three dropdowns + live count.
           Replaces the old search row + 16 board tabs + two filter rows. */}
       <div className="examples-toolbar">
@@ -429,10 +490,23 @@ export const ExamplesGallery: React.FC<ExamplesGalleryProps> = ({ onLoadExample 
 
       {/* Examples Grid */}
       <div className="examples-grid">
-        {filteredExamples.map((example) => {
+        {filteredExamples.map((example, index) => {
           const boardBadge = getBoardBadge(example);
+          // School collection: a heading wherever a new topic starts.
+          const topic =
+            collection === 'school' &&
+            (index === 0 || filteredExamples[index - 1].schoolTopic !== example.schoolTopic)
+              ? SCHOOL_TOPICS.find((x) => x.id === example.schoolTopic)
+              : undefined;
           return (
-            <div key={example.id} className="example-card" onClick={() => onLoadExample(example)}>
+            <React.Fragment key={example.id}>
+            {topic && (
+              <div className="examples-topic">
+                <h2>{topic.title}</h2>
+                <span>{topic.subject}</span>
+              </div>
+            )}
+            <div className="example-card" onClick={() => onLoadExample(example)}>
               <div className="example-thumbnail" style={{ position: 'relative' }}>
                 {(isProBoardKind(getBoardFilter(example)) || (example as any).isPro || (example as any).isOnline) && (
                   <VelxioDevExklusivBadge style={{ top: 8, right: 8 }} />
@@ -446,17 +520,17 @@ export const ExamplesGallery: React.FC<ExamplesGalleryProps> = ({ onLoadExample 
                 />
               </div>
               <div className="example-info">
-                <h3 className="example-title">{example.title}</h3>
-                <p className="example-description">{example.description}</p>
+                <h3 className="example-title">{localizeExample(example).title}</h3>
+                <p className="example-description">{localizeExample(example).description}</p>
                 <div className="example-meta">
                   <span
                     className="example-difficulty"
                     style={{ backgroundColor: getDifficultyColor(example.difficulty) }}
                   >
-                    {example.difficulty}
+                    {t(`examples.filters.difficulty.${example.difficulty}`)}
                   </span>
                   <span className="example-category">
-                    {getCategoryIcon(example.category)} {example.category}
+                    {getCategoryIcon(example.category)} {t(`examples.filters.category.${example.category}`)}
                   </span>
                   {boardBadge && (
                     <span
@@ -511,6 +585,7 @@ export const ExamplesGallery: React.FC<ExamplesGalleryProps> = ({ onLoadExample 
                 </div>
               </div>
             </div>
+            </React.Fragment>
           );
         })}
       </div>

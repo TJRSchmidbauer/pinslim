@@ -37,10 +37,12 @@ import { useProjectStore } from '../../store/useProjectStore';
 import { useEditorStore } from '../../store/useEditorStore';
 import { getLocaleFromPath, localizedPath } from '../../i18n/path';
 import { loadExample } from '../../utils/loadExample';
+import type { ExampleProject } from '../../data/examples';
 import { ExampleThumbnail } from '../examples/ExampleThumbnail';
 import { trackSelectBoard } from '../../utils/analytics';
 import { VelxioDevExklusivBadge } from '../common/VelxioDevExklusivBadge';
 import './NewProjectDialog.css';
+import { trPart } from '../../i18n/content';
 
 interface NewProjectDialogProps {
   isOpen: boolean;
@@ -368,7 +370,7 @@ export const NewProjectDialog: React.FC<NewProjectDialogProps> = ({ isOpen, onCl
                         {isProBoardKind(kind) && <ProPill />}
                         <span className="new-project-card-info">
                           <span className="new-project-card-name">{label}</span>
-                          <span className="new-project-card-desc">{blurb}</span>
+                          <span className="new-project-card-desc">{trPart(blurb)}</span>
                         </span>
                       </button>
                     );

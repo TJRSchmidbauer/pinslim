@@ -27,7 +27,7 @@
     "shareProject": "Share project"
   },
   "footer": {
-    "about": "Velxio is a free, open-source circuit and microcontroller simulator that runs entirely in your browser. Arduino, ESP32, RP2040 and ATtiny85, with SPICE-accurate analog co-simulation. Built for makers, students and embedded engineers learning by doing. AGPLv3."
+    "about": "Pinslim is a free, open-source circuit and microcontroller simulator that runs entirely in your browser. Arduino, ESP32, RP2040 and ATtiny85, with SPICE-accurate analog co-simulation. Built for makers, students and embedded engineers learning by doing. AGPLv3."
   },
   "landing": {
     "hero": {
@@ -160,7 +160,7 @@
   },
   "pricing": {
     "title": "Pricing",
-    "selfHosted": "This Velxio instance is self-hosted from the open-source image — all features are free for everyone using it.",
+    "selfHosted": "This Pinslim instance is self-hosted from the open-source image — all features are free for everyone using it.",
     "hostedVersion": "The hosted version at <link>velxio.dev</link> offers an optional Pro tier that helps fund development.",
     "sourceCode": "Source code is <link>MIT-licensed on GitHub</link>."
   },
@@ -382,7 +382,7 @@
   "auth": {
     "login": {
       "title": "Sign in",
-      "subtitle": "to continue to Velxio",
+      "subtitle": "to continue to Pinslim",
       "email": "Email",
       "password": "Password",
       "signIn": "Sign in",

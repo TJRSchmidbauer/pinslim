@@ -21,6 +21,7 @@ import { microsdExamples } from './examples-storage-microsd';
 import { esp32MqttExamples } from './examples-esp32-mqtt';
 import { esp32s3TftExamples } from './examples-esp32s3-tft';
 import { jsemuChipExamples } from './examples-jsemu-chips';
+import { buildSchoolExamples } from './examples-school';
 
 /** Per-board setup for multi-board examples */
 export interface ExampleBoard {
@@ -103,6 +104,8 @@ export interface ExampleProject {
   thumbnail?: string;
   /** Arduino libraries required by this example (auto-installed when loading). */
   libraries?: string[];
+  /** Pinslim school collection: the teaching topic this example belongs to. */
+  schoolTopic?: string;
 }
 
 const legacyExamples: ExampleProject[] = [
@@ -2245,7 +2248,7 @@ void loop() {
     title: 'STM32: Stepper Motor',
     description:
       'Rotate a stepper motor with the four-pin full-step sequence driven by GPIO pins (PA0-PA3) on the STM32 Blue Pill. Pure digital output: the firmware energizes coils A+, B+, A-, B- in order to step the rotor.',
-    category: 'motors',
+    category: 'robotics',
     difficulty: 'intermediate',
     boardFilter: 'stm32-bluepill',
     boards: [
@@ -2317,7 +2320,7 @@ void loop() {
     title: 'Arduino Uno: Stepper + A4988',
     description:
       'Spin a bipolar stepper motor from an Arduino Uno through an A4988 driver. The MCU only pulses STEP and sets DIR; the A4988 drives the coils. The rotor turns continuously.',
-    category: 'motors',
+    category: 'robotics',
     difficulty: 'intermediate',
     boardFilter: 'arduino-uno',
     boards: [
@@ -2395,7 +2398,7 @@ void loop() {
     title: 'ESP32: Stepper + A4988',
     description:
       'Spin a bipolar stepper motor from an ESP32 through an A4988 driver (STEP = GPIO26, DIR = GPIO27).',
-    category: 'motors',
+    category: 'robotics',
     difficulty: 'intermediate',
     boardFilter: 'esp32',
     boards: [
@@ -2473,7 +2476,7 @@ void loop() {
     title: 'Raspberry Pi Pico: Stepper + A4988',
     description:
       'Spin a bipolar stepper motor from a Raspberry Pi Pico through an A4988 driver (STEP = GP3, DIR = GP4).',
-    category: 'motors',
+    category: 'robotics',
     difficulty: 'intermediate',
     boardFilter: 'raspberry-pi-pico',
     boards: [
@@ -11590,7 +11593,7 @@ except KeyboardInterrupt:
 // electromechanical) plus the board-less analog SPICE suite. Declared after
 // all arrays exist so the export is a single immutable value — safe from
 // tree-shaking quirks.
-export const exampleProjects: ExampleProject[] = [
+const galleryExamples: ExampleProject[] = [
   ...legacyExamples,
   ...circuitExamples,
   ...analogExamples,
@@ -11605,6 +11608,11 @@ export const exampleProjects: ExampleProject[] = [
   ...esp32s3TftExamples,
   ...jsemuChipExamples,
 ];
+
+/** Pinslim school collection, built from the circuits above. */
+export const schoolExamples: ExampleProject[] = buildSchoolExamples(galleryExamples);
+
+export const exampleProjects: ExampleProject[] = [...galleryExamples, ...schoolExamples];
 
 // Get examples by category
 export function getExamplesByCategory(category: ExampleProject['category']): ExampleProject[] {
