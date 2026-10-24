@@ -46,7 +46,7 @@ const ESP32C3_FIXTURE_DIR = join(__dirname, 'fixtures/esp32c3-blink');
 // ── Helper: create a mock File from bytes ────────────────────────────────────
 function mockFile(name: string, content: Uint8Array | string): File {
   const buf = typeof content === 'string' ? new TextEncoder().encode(content) : content;
-  const blob = new Blob([buf]);
+  const blob = new Blob([buf as Uint8Array<ArrayBuffer>]);
   return new File([blob], name);
 }
 

@@ -251,7 +251,7 @@ describe('NetlistBuilder — aux supply rails (off-voltage supply pins, B16)', (
   // Boards built exactly the way storeAdapter builds them, so these tests
   // exercise the real BOARD_PIN_GROUPS tables.
   const boardFromGroup = (id: string, kind: keyof typeof BOARD_PIN_GROUPS): BoardForSpice => {
-    const g = BOARD_PIN_GROUPS[kind];
+    const g = BOARD_PIN_GROUPS[kind] ?? BOARD_PIN_GROUPS.default;
     return {
       id,
       boardKind: kind,

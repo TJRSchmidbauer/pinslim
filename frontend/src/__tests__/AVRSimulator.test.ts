@@ -189,7 +189,7 @@ describe('AVRSimulator — PWM OCR monitoring', () => {
     const cbs: Record<number, ReturnType<typeof vi.fn>> = {};
     PWM_MAP.forEach(({ pin }) => {
       cbs[pin] = vi.fn();
-      pm.onPwmChange(pin, cbs[pin]);
+      pm.onPwmChange(pin, cbs[pin] as never);
     });
 
     const cpu = (sim as any).cpu;

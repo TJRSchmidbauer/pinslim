@@ -174,7 +174,7 @@ function setupTwoPicosWithSerial1Crossover(): { picoA: string; picoB: string } {
       signalType: 'digital' as const,
     },
   ];
-  useSimulatorStore.setState({ wires });
+  useSimulatorStore.setState({ wires: wires.map((w) => ({ ...w, waypoints: [] })) });
 
   return { picoA, picoB };
 }

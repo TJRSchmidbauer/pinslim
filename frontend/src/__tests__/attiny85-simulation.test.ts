@@ -46,6 +46,7 @@ import { join } from 'path';
 import { avrInstruction } from 'avr8js';
 import { AVRSimulator } from '../simulation/AVRSimulator';
 import { PinManager } from '../simulation/PinManager';
+import { BOARD_KIND_FQBN } from '../types/board';
 
 // ─── RAF stubs ─────────────────────────────────────────────────────────────────
 // Depth-limited: calls cb once synchronously, prevents re-entrancy loops.
@@ -96,7 +97,6 @@ const TINY85_PB0_HEX = ':0A0000000FEF07BB01E008BBFFCFC4\n' + ':00000001FF\n';
  *   word = 1011 1 10 1 0000 1000 = 0xBD08 → bytes 0x08 0xBD
  * Checksum: 0xBB
  */
-const TINY85_PWM_HEX = ':0A0000000FEF07BB00E808BDFFCFBB\n' + ':00000001FF\n';
 
 // ─── Lifecycle ────────────────────────────────────────────────────────────────
 
@@ -321,7 +321,7 @@ describe('ATtiny85 — PWM monitoring', () => {
     const uniquePins = [...new Set(TINY85_PWM_MAP.map((m) => m.pin))];
     uniquePins.forEach((pin) => {
       cbs[pin] = vi.fn();
-      pm.onPwmChange(pin, cbs[pin]);
+      pm.onPwmChange(pin, cbs[pin] as never);
     });
 
     const cpu = (sim as any).cpu;
@@ -387,7 +387,8 @@ describe('ATtiny85 — boardPinMapping', () => {
 // ─── End-to-end: arduino-cli compilation (skipped if ATTinyCore not installed) ─
 
 describe('ATtiny85 — end-to-end compilation', () => {
-  const FQBN = 'ATTinyCore:avr:attinyx5:chip=85,clock=internal16mhz';
+  // The FQBN the app itself compiles with — not a copy that can drift.
+  const FQBN = BOARD_KIND_FQBN.attiny85!;
 
   function isATTinyCoreAvailable(): boolean {
     const cliCheck = spawnSync('arduino-cli', ['version'], { encoding: 'utf8' });

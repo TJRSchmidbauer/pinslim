@@ -10,7 +10,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import { componentToSpice } from '../simulation/spice/componentToSpice';
-import type { PlacedComponent } from '../simulation/spice/types';
+import type { ComponentForSpice as PlacedComponent } from '../simulation/spice/types';
 
 function netLookupStub(_pin: string): string {
   return 'net_dummy';

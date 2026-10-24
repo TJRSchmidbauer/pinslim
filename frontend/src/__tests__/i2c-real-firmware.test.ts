@@ -223,7 +223,12 @@ function runUntil(sim: AVRSimulator, budget: number, predicate: () => boolean): 
 
 // ─── EEPROM-demo tests (compile + load + run) ────────────────────────────────
 
-describe.runIf(ARDUINO_CLI_AVAILABLE)(
+// The sketch sources live outside the published tree in some checkouts
+// (test/test_custom_chips/ is not part of every fork); without them the
+// compile flow has nothing to compile, which is not a firmware regression.
+const EEPROM_SKETCH_PRESENT = existsSync(sketchSourcePath('i2c_eeprom_demo'));
+
+describe.runIf(ARDUINO_CLI_AVAILABLE && EEPROM_SKETCH_PRESENT)(
   'I2C E2E — Wire master at 0x50 (full Velxio compile flow)',
   () => {
     let HEX: string;
@@ -305,7 +310,7 @@ describe.runIf(ARDUINO_CLI_AVAILABLE)(
 
 // ─── LCD-I2C tests (need the LiquidCrystal_I2C library installed) ────────────
 
-describe.runIf(LIQUID_CRYSTAL_I2C_AVAILABLE)(
+describe.runIf(LIQUID_CRYSTAL_I2C_AVAILABLE && existsSync(sketchSourcePath('lcd_i2c_hello')))(
   'I2C E2E — LiquidCrystal_I2C → HD44780 decoder (full Velxio compile flow)',
   () => {
     let HEX: string;

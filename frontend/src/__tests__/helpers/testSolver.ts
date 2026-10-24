@@ -113,7 +113,7 @@ export async function runNetlist(netlist: string): Promise<SpiceTestResult> {
   // For .tran, find the time axis among the read vectors.
   if (analysis.kind === 'tran') {
     const tVec = result.vectors.get('time');
-    if (tVec) result.timeAxis = tVec.real;
+    if (tVec) result.timeAxis = tVec.real as Float64Array<ArrayBuffer>;
   }
 
   const find = (name: string): number => {

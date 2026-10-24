@@ -92,5 +92,7 @@ describe.skipIf(!have)('chipbus Phase 3 — typing on the Galaksija', () => {
     expect(cellLit(fb!, 1, 1), 'the "A" glyph is at the input column').toBeGreaterThan(6);
 
     z80.dispose(); kbd.dispose(); disp.dispose();
-  }, 60_000);
+    // ~180 M emulated Z80 cycles: ~25 s on a fast desktop, ~75 s on a
+    // 2-core VM or CI runner. 60 s made it fail on slow hardware alone.
+  }, 240_000);
 });

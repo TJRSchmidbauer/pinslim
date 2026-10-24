@@ -27,7 +27,7 @@ import { BOARD_PIN_GROUPS } from '../simulation/spice/boardPinGroups';
 import { runNetlist } from './helpers/testSolver';
 import type { BuildNetlistInput } from '../simulation/spice/types';
 
-const GROUP = BOARD_PIN_GROUPS['esp32-c3'];
+const GROUP = BOARD_PIN_GROUPS['esp32-c3']!;
 
 function buildIssue247(switchValue: 0 | 1): BuildNetlistInput {
   return {

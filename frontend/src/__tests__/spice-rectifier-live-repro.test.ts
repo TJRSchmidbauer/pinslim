@@ -28,7 +28,7 @@
  * and writes ADCH/ADCL into r20/r21. By polling ADCH across simulated time,
  * we can prove whether the rectified waveform is reaching the MCU.
  */
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { buildInputFromStore } from '../simulation/spice/storeAdapter';
 import { buildNetlist } from '../simulation/spice/NetlistBuilder';
 import { solveInput } from './helpers/solveInput';

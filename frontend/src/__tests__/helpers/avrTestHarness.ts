@@ -37,7 +37,7 @@ export class AVRTestHarness {
   ports!: { B: AVRIOPort; C: AVRIOPort; D: AVRIOPort };
   adc!: AVRADC;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private timers: any[] = [];
+  timers: any[] = [];
 
   loadProgram(words: Uint16Array): void {
     const program = new Uint16Array(0x8000 / 2);

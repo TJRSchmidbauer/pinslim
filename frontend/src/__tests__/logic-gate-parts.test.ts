@@ -84,7 +84,7 @@ describe('logic-gate-and — truth table', () => {
   it('starts LOW (0,0 → 0)', () => {
     const sim = makeSimulator();
     const logic = PartSimulationRegistry.get('logic-gate-and')!;
-    logic.attachEvents(makeElement(), sim as any, pinMap({ A: 1, B: 2, Y: 3 }));
+    logic.attachEvents!(makeElement(), sim as any, pinMap({ A: 1, B: 2, Y: 3 }), 'test-part');
     // Initial call sets Y LOW (false AND false)
     expect(sim.setPinState).toHaveBeenLastCalledWith(3, false);
   });
@@ -92,7 +92,7 @@ describe('logic-gate-and — truth table', () => {
   it('1,0 → 0', () => {
     const sim = makeSimulator();
     const logic = PartSimulationRegistry.get('logic-gate-and')!;
-    logic.attachEvents(makeElement(), sim as any, pinMap({ A: 1, B: 2, Y: 3 }));
+    logic.attachEvents!(makeElement(), sim as any, pinMap({ A: 1, B: 2, Y: 3 }), 'test-part');
     firePin(sim, 0, true); // A = 1
     expect(sim.setPinState).toHaveBeenLastCalledWith(3, false);
   });
@@ -100,7 +100,7 @@ describe('logic-gate-and — truth table', () => {
   it('0,1 → 0', () => {
     const sim = makeSimulator();
     const logic = PartSimulationRegistry.get('logic-gate-and')!;
-    logic.attachEvents(makeElement(), sim as any, pinMap({ A: 1, B: 2, Y: 3 }));
+    logic.attachEvents!(makeElement(), sim as any, pinMap({ A: 1, B: 2, Y: 3 }), 'test-part');
     firePin(sim, 1, true); // B = 1
     expect(sim.setPinState).toHaveBeenLastCalledWith(3, false);
   });
@@ -108,7 +108,7 @@ describe('logic-gate-and — truth table', () => {
   it('1,1 → 1', () => {
     const sim = makeSimulator();
     const logic = PartSimulationRegistry.get('logic-gate-and')!;
-    logic.attachEvents(makeElement(), sim as any, pinMap({ A: 1, B: 2, Y: 3 }));
+    logic.attachEvents!(makeElement(), sim as any, pinMap({ A: 1, B: 2, Y: 3 }), 'test-part');
     firePin(sim, 0, true); // A = 1
     firePin(sim, 1, true); // B = 1
     expect(sim.setPinState).toHaveBeenLastCalledWith(3, true);
@@ -120,7 +120,7 @@ describe('logic-gate-and — truth table', () => {
     const unsub2 = vi.fn();
     sim.pinManager.onPinChange.mockReturnValueOnce(unsub1).mockReturnValueOnce(unsub2);
     const logic = PartSimulationRegistry.get('logic-gate-and')!;
-    const cleanup = logic.attachEvents(makeElement(), sim as any, pinMap({ A: 1, B: 2, Y: 3 }));
+    const cleanup = logic.attachEvents!(makeElement(), sim as any, pinMap({ A: 1, B: 2, Y: 3 }), 'test-part');
     cleanup();
     expect(unsub1).toHaveBeenCalled();
     expect(unsub2).toHaveBeenCalled();
@@ -129,7 +129,7 @@ describe('logic-gate-and — truth table', () => {
   it('no-pin fallback returns no-op', () => {
     const sim = makeSimulator();
     const logic = PartSimulationRegistry.get('logic-gate-and')!;
-    const cleanup = logic.attachEvents(makeElement(), sim as any, () => null);
+    const cleanup = logic.attachEvents!(makeElement(), sim as any, () => null, 'test-part');
     expect(sim.setPinState).not.toHaveBeenCalled();
     expect(() => cleanup()).not.toThrow();
   });
@@ -141,7 +141,7 @@ describe('logic-gate-nand — truth table', () => {
   function attach() {
     const sim = makeSimulator();
     const logic = PartSimulationRegistry.get('logic-gate-nand')!;
-    logic.attachEvents(makeElement(), sim as any, pinMap({ A: 1, B: 2, Y: 3 }));
+    logic.attachEvents!(makeElement(), sim as any, pinMap({ A: 1, B: 2, Y: 3 }), 'test-part');
     return sim;
   }
 
@@ -170,7 +170,7 @@ describe('logic-gate-or — truth table', () => {
   function attach() {
     const sim = makeSimulator();
     const logic = PartSimulationRegistry.get('logic-gate-or')!;
-    logic.attachEvents(makeElement(), sim as any, pinMap({ A: 1, B: 2, Y: 3 }));
+    logic.attachEvents!(makeElement(), sim as any, pinMap({ A: 1, B: 2, Y: 3 }), 'test-part');
     return sim;
   }
 
@@ -205,7 +205,7 @@ describe('logic-gate-nor — truth table', () => {
   function attach() {
     const sim = makeSimulator();
     const logic = PartSimulationRegistry.get('logic-gate-nor')!;
-    logic.attachEvents(makeElement(), sim as any, pinMap({ A: 1, B: 2, Y: 3 }));
+    logic.attachEvents!(makeElement(), sim as any, pinMap({ A: 1, B: 2, Y: 3 }), 'test-part');
     return sim;
   }
 
@@ -234,7 +234,7 @@ describe('logic-gate-xor — truth table', () => {
   function attach() {
     const sim = makeSimulator();
     const logic = PartSimulationRegistry.get('logic-gate-xor')!;
-    logic.attachEvents(makeElement(), sim as any, pinMap({ A: 1, B: 2, Y: 3 }));
+    logic.attachEvents!(makeElement(), sim as any, pinMap({ A: 1, B: 2, Y: 3 }), 'test-part');
     return sim;
   }
 
@@ -269,14 +269,14 @@ describe('logic-gate-not — truth table', () => {
   it('initial state: A=0 → Y=1', () => {
     const sim = makeSimulator();
     const logic = PartSimulationRegistry.get('logic-gate-not')!;
-    logic.attachEvents(makeElement(), sim as any, pinMap({ A: 1, Y: 2 }));
+    logic.attachEvents!(makeElement(), sim as any, pinMap({ A: 1, Y: 2 }), 'test-part');
     expect(sim.setPinState).toHaveBeenCalledWith(2, true);
   });
 
   it('A=1 → Y=0', () => {
     const sim = makeSimulator();
     const logic = PartSimulationRegistry.get('logic-gate-not')!;
-    logic.attachEvents(makeElement(), sim as any, pinMap({ A: 1, Y: 2 }));
+    logic.attachEvents!(makeElement(), sim as any, pinMap({ A: 1, Y: 2 }), 'test-part');
     firePin(sim, 0, true);
     expect(sim.setPinState).toHaveBeenLastCalledWith(2, false);
   });
@@ -284,7 +284,7 @@ describe('logic-gate-not — truth table', () => {
   it('A=0 → Y=1 (after toggle)', () => {
     const sim = makeSimulator();
     const logic = PartSimulationRegistry.get('logic-gate-not')!;
-    logic.attachEvents(makeElement(), sim as any, pinMap({ A: 1, Y: 2 }));
+    logic.attachEvents!(makeElement(), sim as any, pinMap({ A: 1, Y: 2 }), 'test-part');
     firePin(sim, 0, true);
     firePin(sim, 0, false);
     expect(sim.setPinState).toHaveBeenLastCalledWith(2, true);
@@ -295,7 +295,7 @@ describe('logic-gate-not — truth table', () => {
     const unsub = vi.fn();
     sim.pinManager.onPinChange.mockReturnValueOnce(unsub);
     const logic = PartSimulationRegistry.get('logic-gate-not')!;
-    const cleanup = logic.attachEvents(makeElement(), sim as any, pinMap({ A: 1, Y: 2 }));
+    const cleanup = logic.attachEvents!(makeElement(), sim as any, pinMap({ A: 1, Y: 2 }), 'test-part');
     cleanup();
     expect(unsub).toHaveBeenCalled();
   });
@@ -303,7 +303,7 @@ describe('logic-gate-not — truth table', () => {
   it('no-pin fallback returns no-op', () => {
     const sim = makeSimulator();
     const logic = PartSimulationRegistry.get('logic-gate-not')!;
-    const cleanup = logic.attachEvents(makeElement(), sim as any, () => null);
+    const cleanup = logic.attachEvents!(makeElement(), sim as any, () => null, 'test-part');
     expect(sim.setPinState).not.toHaveBeenCalled();
     expect(() => cleanup()).not.toThrow();
   });

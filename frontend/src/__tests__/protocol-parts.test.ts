@@ -153,7 +153,7 @@ describe('ssd1306 — I2C device', () => {
   it('calls addI2CDevice with address 0x3C', () => {
     const sim = makeI2CSim();
     const logic = PartSimulationRegistry.get('ssd1306')!;
-    logic.attachEvents!(makeElement(), sim as any, noPins);
+    logic.attachEvents!(makeElement(), sim as any, noPins, 'test-part');
     expect(sim.addI2CDevice).toHaveBeenCalledOnce();
     const device = sim.addI2CDevice.mock.calls[0][0];
     expect(device.address).toBe(0x3c);
@@ -162,7 +162,7 @@ describe('ssd1306 — I2C device', () => {
   it('cleanup calls removeDevice on i2cBus', () => {
     const sim = makeI2CSim();
     const logic = PartSimulationRegistry.get('ssd1306')!;
-    const cleanup = logic.attachEvents!(makeElement(), sim as any, noPins);
+    const cleanup = logic.attachEvents!(makeElement(), sim as any, noPins, 'test-part');
     cleanup();
     expect(sim.i2cBus.removeDevice).toHaveBeenCalledWith(0x3c);
   });
@@ -170,7 +170,7 @@ describe('ssd1306 — I2C device', () => {
   it('decodes horizontal addressing: write data bytes into buffer correctly', () => {
     const sim = makeI2CSim();
     const logic = PartSimulationRegistry.get('ssd1306')!;
-    logic.attachEvents!(makeElement(), sim as any, noPins);
+    logic.attachEvents!(makeElement(), sim as any, noPins, 'test-part');
     const device = sim.addI2CDevice.mock.calls[0][0];
     // Set column address 0–127, page address 0–7 (via commands)
     device.writeByte(0x00); // control: command stream
@@ -192,7 +192,7 @@ describe('ssd1306 — I2C device', () => {
   it('readByte returns 0xFF (read not supported)', () => {
     const sim = makeI2CSim();
     const logic = PartSimulationRegistry.get('ssd1306')!;
-    logic.attachEvents!(makeElement(), sim as any, noPins);
+    logic.attachEvents!(makeElement(), sim as any, noPins, 'test-part');
     const device = sim.addI2CDevice.mock.calls[0][0];
     expect(device.readByte()).toBe(0xff);
   });
@@ -201,7 +201,7 @@ describe('ssd1306 — I2C device', () => {
     const sim = { ...makeI2CSim(), addI2CDevice: undefined };
     const logic = PartSimulationRegistry.get('ssd1306')!;
     expect(() => {
-      const c = logic.attachEvents!(makeElement(), sim as any, noPins);
+      const c = logic.attachEvents!(makeElement(), sim as any, noPins, 'test-part');
       c();
     }).not.toThrow();
   });
@@ -212,7 +212,7 @@ describe('ssd1306 — I2C device', () => {
 describe('ssd1306 — protocol auto-detect', () => {
   it('runs I2C when neither CS nor DC is wired', () => {
     const sim = makeI2CSim();
-    PartSimulationRegistry.get('ssd1306')!.attachEvents!(makeElement(), sim as any, noPins);
+    PartSimulationRegistry.get('ssd1306')!.attachEvents!(makeElement(), sim as any, noPins, 'test-part');
     expect(sim.addI2CDevice).toHaveBeenCalledOnce();
     expect(sim.spi).toBeNull();
   });
@@ -223,6 +223,7 @@ describe('ssd1306 — protocol auto-detect', () => {
       makeElement(),
       sim as any,
       pinMap({ CS: 5 }),
+      'test-part',
     );
     // SPI decoder hooks spi.onByte; the I2C path would call addI2CDevice instead.
     expect(typeof sim.spi.onByte).toBe('function');
@@ -235,6 +236,7 @@ describe('ssd1306 — protocol auto-detect', () => {
       makeElement(),
       sim as any,
       pinMap({ DC: 4 }),
+      'test-part',
     );
     expect(sim.addI2CDevice).toHaveBeenCalledOnce();
   });
@@ -267,7 +269,7 @@ describe('ds1307 — I2C RTC', () => {
   it('calls addI2CDevice with address 0x68', () => {
     const sim = makeI2CSim();
     const logic = PartSimulationRegistry.get('ds1307')!;
-    logic.attachEvents!(makeElement(), sim as any, noPins);
+    logic.attachEvents!(makeElement(), sim as any, noPins, 'test-part');
     const dev = sim.addI2CDevice.mock.calls[0][0];
     expect(dev.address).toBe(0x68);
   });
@@ -275,7 +277,7 @@ describe('ds1307 — I2C RTC', () => {
   it('readByte returns valid BCD for seconds (register 0)', () => {
     const sim = makeI2CSim();
     const logic = PartSimulationRegistry.get('ds1307')!;
-    logic.attachEvents!(makeElement(), sim as any, noPins);
+    logic.attachEvents!(makeElement(), sim as any, noPins, 'test-part');
     const dev = sim.addI2CDevice.mock.calls[0][0];
     dev.writeByte(0x00); // set register pointer to 0 (seconds)
     const seconds = dev.readByte();
@@ -289,7 +291,7 @@ describe('ds1307 — I2C RTC', () => {
   it('cleanup removes device from i2cBus', () => {
     const sim = makeI2CSim();
     const logic = PartSimulationRegistry.get('ds1307')!;
-    const cleanup = logic.attachEvents!(makeElement(), sim as any, noPins);
+    const cleanup = logic.attachEvents!(makeElement(), sim as any, noPins, 'test-part');
     cleanup();
     expect(sim.i2cBus.removeDevice).toHaveBeenCalledWith(0x68);
   });
@@ -301,7 +303,7 @@ describe('mpu6050 — I2C IMU', () => {
   it('calls addI2CDevice with address 0x68 (AD0=0)', () => {
     const sim = makeI2CSim();
     const logic = PartSimulationRegistry.get('mpu6050')!;
-    logic.attachEvents!(makeElement(), sim as any, noPins);
+    logic.attachEvents!(makeElement(), sim as any, noPins, 'test-part');
     const dev = sim.addI2CDevice.mock.calls[0][0];
     expect(dev.address).toBe(0x68);
   });
@@ -309,7 +311,7 @@ describe('mpu6050 — I2C IMU', () => {
   it('uses address 0x69 when element.ad0 is true', () => {
     const sim = makeI2CSim();
     const logic = PartSimulationRegistry.get('mpu6050')!;
-    logic.attachEvents!(makeElement({ ad0: true }), sim as any, noPins);
+    logic.attachEvents!(makeElement({ ad0: true }), sim as any, noPins, 'test-part');
     const dev = sim.addI2CDevice.mock.calls[0][0];
     expect(dev.address).toBe(0x69);
   });
@@ -317,7 +319,7 @@ describe('mpu6050 — I2C IMU', () => {
   it('WHO_AM_I register (0x75) returns 0x68', () => {
     const sim = makeI2CSim();
     const logic = PartSimulationRegistry.get('mpu6050')!;
-    logic.attachEvents!(makeElement(), sim as any, noPins);
+    logic.attachEvents!(makeElement(), sim as any, noPins, 'test-part');
     const dev = sim.addI2CDevice.mock.calls[0][0];
     dev.writeByte(0x75); // set register pointer
     expect(dev.readByte()).toBe(0x68);
@@ -326,7 +328,7 @@ describe('mpu6050 — I2C IMU', () => {
   it('ACCEL_ZOUT reports +1g (0x40, 0x00)', () => {
     const sim = makeI2CSim();
     const logic = PartSimulationRegistry.get('mpu6050')!;
-    logic.attachEvents!(makeElement(), sim as any, noPins);
+    logic.attachEvents!(makeElement(), sim as any, noPins, 'test-part');
     const dev = sim.addI2CDevice.mock.calls[0][0];
     dev.writeByte(0x3f); // ACCEL_ZOUT_H
     expect(dev.readByte()).toBe(0x40);
@@ -336,7 +338,7 @@ describe('mpu6050 — I2C IMU', () => {
   it('cleanup removes device', () => {
     const sim = makeI2CSim();
     const logic = PartSimulationRegistry.get('mpu6050')!;
-    const cleanup = logic.attachEvents!(makeElement(), sim as any, noPins);
+    const cleanup = logic.attachEvents!(makeElement(), sim as any, noPins, 'test-part');
     cleanup();
     expect(sim.i2cBus.removeDevice).toHaveBeenCalledWith(0x68);
   });
@@ -348,14 +350,14 @@ describe('dht22 — single-wire sensor', () => {
   it('sets DATA pin HIGH (idle) on attach', () => {
     const sim = makePinSim();
     const logic = PartSimulationRegistry.get('dht22')!;
-    logic.attachEvents!(makeElement(), sim as any, pinMap({ DATA: 7 }));
+    logic.attachEvents!(makeElement(), sim as any, pinMap({ DATA: 7 }), 'test-part');
     expect(sim.setPinState).toHaveBeenCalledWith(7, true);
   });
 
   it('registers onPinChange for DATA pin', () => {
     const sim = makePinSim();
     const logic = PartSimulationRegistry.get('dht22')!;
-    logic.attachEvents!(makeElement(), sim as any, pinMap({ DATA: 7 }));
+    logic.attachEvents!(makeElement(), sim as any, pinMap({ DATA: 7 }), 'test-part');
     expect(sim.pinManager.onPinChange).toHaveBeenCalledWith(7, expect.any(Function));
   });
 
@@ -366,6 +368,7 @@ describe('dht22 — single-wire sensor', () => {
       makeElement({ temperature: 25.0, humidity: 50.0 }),
       sim as any,
       pinMap({ DATA: 7 }),
+      'test-part',
     );
 
     const cb = sim.pinManager.onPinChange.mock.calls[0][1] as (pin: number, state: boolean) => void;
@@ -383,7 +386,7 @@ describe('dht22 — single-wire sensor', () => {
     const sim = makePinSim();
     const logic = PartSimulationRegistry.get('dht22')!;
     expect(() => {
-      const c = logic.attachEvents!(makeElement(), sim as any, noPins);
+      const c = logic.attachEvents!(makeElement(), sim as any, noPins, 'test-part');
       c();
     }).not.toThrow();
     expect(sim.pinManager.onPinChange).not.toHaveBeenCalled();
@@ -392,7 +395,7 @@ describe('dht22 — single-wire sensor', () => {
   it('cleanup drives DATA HIGH', () => {
     const sim = makePinSim();
     const logic = PartSimulationRegistry.get('dht22')!;
-    const cleanup = logic.attachEvents!(makeElement(), sim as any, pinMap({ DATA: 7 }));
+    const cleanup = logic.attachEvents!(makeElement(), sim as any, pinMap({ DATA: 7 }), 'test-part');
     sim.setPinState.mockClear();
     cleanup();
     expect(sim.setPinState).toHaveBeenCalledWith(7, true);
@@ -405,14 +408,14 @@ describe('hx711 — load cell amplifier', () => {
   it('drives DOUT LOW (ready) on attach', () => {
     const sim = makePinSim();
     const logic = PartSimulationRegistry.get('hx711')!;
-    logic.attachEvents!(makeElement(), sim as any, pinMap({ SCK: 2, DOUT: 3 }));
+    logic.attachEvents!(makeElement(), sim as any, pinMap({ SCK: 2, DOUT: 3 }), 'test-part');
     expect(sim.setPinState).toHaveBeenCalledWith(3, false);
   });
 
   it('registers onPinChange for SCK pin', () => {
     const sim = makePinSim();
     const logic = PartSimulationRegistry.get('hx711')!;
-    logic.attachEvents!(makeElement(), sim as any, pinMap({ SCK: 2, DOUT: 3 }));
+    logic.attachEvents!(makeElement(), sim as any, pinMap({ SCK: 2, DOUT: 3 }), 'test-part');
     expect(sim.pinManager.onPinChange).toHaveBeenCalledWith(2, expect.any(Function));
   });
 
@@ -420,7 +423,7 @@ describe('hx711 — load cell amplifier', () => {
     const sim = makePinSim();
     const logic = PartSimulationRegistry.get('hx711')!;
     // weight=100 → raw = 100000 = 0x0186A0
-    logic.attachEvents!(makeElement({ weight: 100 }), sim as any, pinMap({ SCK: 2, DOUT: 3 }));
+    logic.attachEvents!(makeElement({ weight: 100 }), sim as any, pinMap({ SCK: 2, DOUT: 3 }), 'test-part');
     const cb = sim.pinManager.onPinChange.mock.calls[0][1] as (p: number, s: boolean) => void;
     sim.setPinState.mockClear();
 
@@ -443,7 +446,7 @@ describe('hx711 — load cell amplifier', () => {
   it('drives DOUT HIGH after 25 rising edges (gain select done)', () => {
     const sim = makePinSim();
     const logic = PartSimulationRegistry.get('hx711')!;
-    logic.attachEvents!(makeElement(), sim as any, pinMap({ SCK: 2, DOUT: 3 }));
+    logic.attachEvents!(makeElement(), sim as any, pinMap({ SCK: 2, DOUT: 3 }), 'test-part');
     const cb = sim.pinManager.onPinChange.mock.calls[0][1] as (p: number, s: boolean) => void;
     // 24 data bits + 1 gain pulse
     for (let i = 0; i < 25; i++) {
@@ -461,7 +464,7 @@ describe('hx711 — load cell amplifier', () => {
     const sim = makePinSim();
     const logic = PartSimulationRegistry.get('hx711')!;
     expect(() => {
-      const c = logic.attachEvents!(makeElement(), sim as any, noPins);
+      const c = logic.attachEvents!(makeElement(), sim as any, noPins, 'test-part');
       c();
     }).not.toThrow();
     expect(sim.pinManager.onPinChange).not.toHaveBeenCalled();
@@ -470,7 +473,7 @@ describe('hx711 — load cell amplifier', () => {
   it('cleanup drives DOUT HIGH', () => {
     const sim = makePinSim();
     const logic = PartSimulationRegistry.get('hx711')!;
-    const cleanup = logic.attachEvents!(makeElement(), sim as any, pinMap({ SCK: 2, DOUT: 3 }));
+    const cleanup = logic.attachEvents!(makeElement(), sim as any, pinMap({ SCK: 2, DOUT: 3 }), 'test-part');
     sim.setPinState.mockClear();
     cleanup();
     expect(sim.setPinState).toHaveBeenCalledWith(3, true);
@@ -483,7 +486,7 @@ describe('ir-receiver — NEC click simulation', () => {
   it('sets OUT pin HIGH (idle) on attach', () => {
     const sim = makePinSim();
     const logic = PartSimulationRegistry.get('ir-receiver')!;
-    logic.attachEvents!(makeElement(), sim as any, pinMap({ OUT: 5 }));
+    logic.attachEvents!(makeElement(), sim as any, pinMap({ OUT: 5 }), 'test-part');
     expect(sim.setPinState).toHaveBeenCalledWith(5, true);
   });
 
@@ -491,7 +494,7 @@ describe('ir-receiver — NEC click simulation', () => {
     const sim = makePinSim();
     const el = makeElement();
     const logic = PartSimulationRegistry.get('ir-receiver')!;
-    logic.attachEvents!(el, sim as any, pinMap({ OUT: 5 }));
+    logic.attachEvents!(el, sim as any, pinMap({ OUT: 5 }), 'test-part');
     expect(el.addEventListener).toHaveBeenCalledWith('click', expect.any(Function));
   });
 
@@ -499,7 +502,7 @@ describe('ir-receiver — NEC click simulation', () => {
     const sim = makePinSim();
     const el = makeElement();
     const logic = PartSimulationRegistry.get('ir-receiver')!;
-    logic.attachEvents!(el, sim as any, pinMap({ OUT: 5 }));
+    logic.attachEvents!(el, sim as any, pinMap({ OUT: 5 }), 'test-part');
 
     const clickCb = (el.addEventListener as ReturnType<typeof vi.fn>).mock.calls.find(
       ([event]) => event === 'click',
@@ -518,7 +521,7 @@ describe('ir-receiver — NEC click simulation', () => {
     const sim = makePinSim();
     const el = makeElement();
     const logic = PartSimulationRegistry.get('ir-receiver')!;
-    logic.attachEvents!(el, sim as any, pinMap({ OUT: 5 }));
+    logic.attachEvents!(el, sim as any, pinMap({ OUT: 5 }), 'test-part');
 
     const clickCb = (el.addEventListener as ReturnType<typeof vi.fn>).mock.calls.find(
       ([ev]) => ev === 'click',
@@ -536,7 +539,7 @@ describe('ir-receiver — NEC click simulation', () => {
     const sim = makePinSim();
     const el = makeElement();
     const logic = PartSimulationRegistry.get('ir-receiver')!;
-    const cleanup = logic.attachEvents!(el, sim as any, pinMap({ OUT: 5 }));
+    const cleanup = logic.attachEvents!(el, sim as any, pinMap({ OUT: 5 }), 'test-part');
     sim.setPinState.mockClear();
     cleanup();
     expect(el.removeEventListener).toHaveBeenCalledWith('click', expect.any(Function));
@@ -547,7 +550,7 @@ describe('ir-receiver — NEC click simulation', () => {
     const sim = makePinSim();
     const logic = PartSimulationRegistry.get('ir-receiver')!;
     expect(() => {
-      const c = logic.attachEvents!(makeElement(), sim as any, noPins);
+      const c = logic.attachEvents!(makeElement(), sim as any, noPins, 'test-part');
       c();
     }).not.toThrow();
   });
@@ -560,7 +563,7 @@ describe('ir-remote — button dispatch', () => {
     const sim = makePinSim();
     const el = makeElement();
     const logic = PartSimulationRegistry.get('ir-remote')!;
-    logic.attachEvents!(el, sim as any, noPins);
+    logic.attachEvents!(el, sim as any, noPins, 'test-part');
     const events = (el.addEventListener as ReturnType<typeof vi.fn>).mock.calls.map(([e]) => e);
     expect(events).toContain('button-press');
   });
@@ -569,7 +572,7 @@ describe('ir-remote — button dispatch', () => {
     const sim = makePinSim();
     const el = makeElement();
     const logic = PartSimulationRegistry.get('ir-remote')!;
-    logic.attachEvents!(el, sim as any, noPins);
+    logic.attachEvents!(el, sim as any, noPins, 'test-part');
 
     const onButtonPress = (el.addEventListener as ReturnType<typeof vi.fn>).mock.calls.find(
       ([ev]) => ev === 'button-press',
@@ -589,7 +592,7 @@ describe('ir-remote — button dispatch', () => {
     const sim = makePinSim();
     const el = makeElement();
     const logic = PartSimulationRegistry.get('ir-remote')!;
-    logic.attachEvents!(el, sim as any, pinMap({ IR: 4 }));
+    logic.attachEvents!(el, sim as any, pinMap({ IR: 4 }), 'test-part');
 
     const onButtonPress = (el.addEventListener as ReturnType<typeof vi.fn>).mock.calls.find(
       ([ev]) => ev === 'button-press',
@@ -606,7 +609,7 @@ describe('ir-remote — button dispatch', () => {
     const sim = makePinSim();
     const el = makeElement();
     const logic = PartSimulationRegistry.get('ir-remote')!;
-    const cleanup = logic.attachEvents!(el, sim as any, noPins);
+    const cleanup = logic.attachEvents!(el, sim as any, noPins, 'test-part');
     cleanup();
     expect(el.removeEventListener).toHaveBeenCalledTimes(2);
   });
@@ -618,14 +621,14 @@ describe('microsd-card — SPI init handshake', () => {
   it('hooks into simulator.spi.onByte', () => {
     const sim = makeSPISim();
     const logic = PartSimulationRegistry.get('microsd-card')!;
-    logic.attachEvents!(makeElement(), sim as any, noPins);
+    logic.attachEvents!(makeElement(), sim as any, noPins, 'test-part');
     expect(sim.spi.onByte).toBeTypeOf('function');
   });
 
   it('CMD0 (0x40 + 4 zeroes + CRC) returns R1=0x01 (idle)', () => {
     const sim = makeSPISim();
     const logic = PartSimulationRegistry.get('microsd-card')!;
-    logic.attachEvents!(makeElement(), sim as any, noPins);
+    logic.attachEvents!(makeElement(), sim as any, noPins, 'test-part');
 
     const tx = sim.spi.onByte as (b: number) => void;
     // Send CMD0: [0x40, 0x00, 0x00, 0x00, 0x00, 0x95]
@@ -641,7 +644,7 @@ describe('microsd-card — SPI init handshake', () => {
   it('CMD8 returns R7 with echo-back 0x1AA', () => {
     const sim = makeSPISim();
     const logic = PartSimulationRegistry.get('microsd-card')!;
-    logic.attachEvents!(makeElement(), sim as any, noPins);
+    logic.attachEvents!(makeElement(), sim as any, noPins, 'test-part');
 
     const tx = sim.spi.onByte as (b: number) => void;
     // CMD8: [0x48, 0x00, 0x00, 0x01, 0xAA, 0x87]
@@ -659,7 +662,7 @@ describe('microsd-card — SPI init handshake', () => {
   it('ACMD41 (CMD55 + CMD41) returns R1=0x00 (ready)', () => {
     const sim = makeSPISim();
     const logic = PartSimulationRegistry.get('microsd-card')!;
-    logic.attachEvents!(makeElement(), sim as any, noPins);
+    logic.attachEvents!(makeElement(), sim as any, noPins, 'test-part');
 
     const tx = sim.spi.onByte as (b: number) => void;
     [0x77, 0x00, 0x00, 0x00, 0x00, 0x65].forEach((b) => tx(b)); // CMD55
@@ -676,7 +679,7 @@ describe('microsd-card — SPI init handshake', () => {
   it('0xFF clock bytes return 0xFF (idle) when no pending response', () => {
     const sim = makeSPISim();
     const logic = PartSimulationRegistry.get('microsd-card')!;
-    logic.attachEvents!(makeElement(), sim as any, noPins);
+    logic.attachEvents!(makeElement(), sim as any, noPins, 'test-part');
 
     const tx = sim.spi.onByte as (b: number) => void;
     tx(0xff);
@@ -686,7 +689,7 @@ describe('microsd-card — SPI init handshake', () => {
   it('cleanup restores previous onByte and is callable without SPI', () => {
     const sim = makeSPISim();
     const logic = PartSimulationRegistry.get('microsd-card')!;
-    const cleanup = logic.attachEvents!(makeElement(), sim as any, noPins);
+    const cleanup = logic.attachEvents!(makeElement(), sim as any, noPins, 'test-part');
     expect(() => cleanup()).not.toThrow();
     expect(sim.spi.onByte).toBeNull();
   });
@@ -695,7 +698,7 @@ describe('microsd-card — SPI init handshake', () => {
     const sim = { ...makeSPISim(), spi: null };
     const logic = PartSimulationRegistry.get('microsd-card')!;
     expect(() => {
-      const c = logic.attachEvents!(makeElement(), sim as any, noPins);
+      const c = logic.attachEvents!(makeElement(), sim as any, noPins, 'test-part');
       c();
     }).not.toThrow();
   });
@@ -712,7 +715,7 @@ describe('ssd1306 — ESP32 relay path', () => {
   it('registers sensor with type ssd1306 and virtual pin 260 (200+0x3C)', () => {
     const sim = makeEsp32Sim();
     const logic = PartSimulationRegistry.get('ssd1306')!;
-    logic.attachEvents!(makeElement(), sim as any, noPins);
+    logic.attachEvents!(makeElement(), sim as any, noPins, 'test-part');
     expect(sim.registerSensor).toHaveBeenCalledWith(
       'ssd1306',
       260,
@@ -723,7 +726,7 @@ describe('ssd1306 — ESP32 relay path', () => {
   it('adds I2C transaction listener for addr 0x3C', () => {
     const sim = makeEsp32Sim();
     const logic = PartSimulationRegistry.get('ssd1306')!;
-    logic.attachEvents!(makeElement(), sim as any, noPins);
+    logic.attachEvents!(makeElement(), sim as any, noPins, 'test-part');
     expect(sim.addI2CTransactionListener).toHaveBeenCalledWith(0x3c, expect.any(Function));
   });
 
@@ -731,7 +734,7 @@ describe('ssd1306 — ESP32 relay path', () => {
     const el = makeElement();
     const sim = makeEsp32Sim();
     const logic = PartSimulationRegistry.get('ssd1306')!;
-    logic.attachEvents!(el, sim as any, noPins);
+    logic.attachEvents!(el, sim as any, noPins, 'test-part');
     // Send a command-mode control byte + set-page command — should not throw
     expect(() => {
       sim._fireTransaction(0x3c, [0x00, 0xb0]);
@@ -741,7 +744,7 @@ describe('ssd1306 — ESP32 relay path', () => {
   it('cleanup calls unregisterSensor(260) and removeI2CTransactionListener(0x3C)', () => {
     const sim = makeEsp32Sim();
     const logic = PartSimulationRegistry.get('ssd1306')!;
-    const cleanup = logic.attachEvents!(makeElement(), sim as any, noPins);
+    const cleanup = logic.attachEvents!(makeElement(), sim as any, noPins, 'test-part');
     cleanup();
     expect(sim.unregisterSensor).toHaveBeenCalledWith(260);
     expect(sim.removeI2CTransactionListener).toHaveBeenCalledWith(0x3c);
@@ -754,7 +757,7 @@ describe('ds1307 — ESP32 path', () => {
   it('registers sensor with type ds1307 and virtual pin 304 (200+0x68)', () => {
     const sim = makeEsp32Sim();
     const logic = PartSimulationRegistry.get('ds1307')!;
-    logic.attachEvents!(makeElement(), sim as any, noPins);
+    logic.attachEvents!(makeElement(), sim as any, noPins, 'test-part');
     expect(sim.registerSensor).toHaveBeenCalledWith(
       'ds1307',
       304,
@@ -765,14 +768,14 @@ describe('ds1307 — ESP32 path', () => {
   it('does NOT add I2C transaction listener (read-only: backend handles reads)', () => {
     const sim = makeEsp32Sim();
     const logic = PartSimulationRegistry.get('ds1307')!;
-    logic.attachEvents!(makeElement(), sim as any, noPins);
+    logic.attachEvents!(makeElement(), sim as any, noPins, 'test-part');
     expect(sim.addI2CTransactionListener).not.toHaveBeenCalled();
   });
 
   it('cleanup calls unregisterSensor(304)', () => {
     const sim = makeEsp32Sim();
     const logic = PartSimulationRegistry.get('ds1307')!;
-    const cleanup = logic.attachEvents!(makeElement(), sim as any, noPins);
+    const cleanup = logic.attachEvents!(makeElement(), sim as any, noPins, 'test-part');
     cleanup();
     expect(sim.unregisterSensor).toHaveBeenCalledWith(304);
   });
@@ -849,7 +852,7 @@ describe('ds3231 — ESP32 path', () => {
   it('registers sensor with type ds3231 and virtual pin 304 (200+0x68)', () => {
     const sim = makeEsp32Sim();
     const logic = PartSimulationRegistry.get('ds3231')!;
-    logic.attachEvents!(makeElement(), sim as any, noPins);
+    logic.attachEvents!(makeElement(), sim as any, noPins, 'test-part');
     expect(sim.registerSensor).toHaveBeenCalledWith(
       'ds3231',
       304,
@@ -860,7 +863,7 @@ describe('ds3231 — ESP32 path', () => {
   it('forwards initial temperature from element.temperature', () => {
     const sim = makeEsp32Sim();
     const logic = PartSimulationRegistry.get('ds3231')!;
-    logic.attachEvents!(makeElement({ temperature: '28.5' }), sim as any, noPins);
+    logic.attachEvents!(makeElement({ temperature: '28.5' }), sim as any, noPins, 'test-part');
     const [, , props] = sim.registerSensor.mock.calls[0];
     expect(props.temperature).toBeCloseTo(28.5);
   });
@@ -868,7 +871,7 @@ describe('ds3231 — ESP32 path', () => {
   it('cleanup calls unregisterSensor(304)', () => {
     const sim = makeEsp32Sim();
     const logic = PartSimulationRegistry.get('ds3231')!;
-    const cleanup = logic.attachEvents!(makeElement(), sim as any, noPins);
+    const cleanup = logic.attachEvents!(makeElement(), sim as any, noPins, 'test-part');
     cleanup();
     expect(sim.unregisterSensor).toHaveBeenCalledWith(304);
   });
@@ -922,7 +925,7 @@ describe('pcf8574 — ESP32 relay path', () => {
   it('registers sensor with type pcf8574 and virtual pin 239 (200+0x27)', () => {
     const sim = makeEsp32Sim();
     const logic = PartSimulationRegistry.get('pcf8574')!;
-    logic.attachEvents!(makeElement(), sim as any, noPins);
+    logic.attachEvents!(makeElement(), sim as any, noPins, 'test-part');
     expect(sim.registerSensor).toHaveBeenCalledWith(
       'pcf8574',
       239,
@@ -933,7 +936,7 @@ describe('pcf8574 — ESP32 relay path', () => {
   it('adds I2C transaction listener for addr 0x27', () => {
     const sim = makeEsp32Sim();
     const logic = PartSimulationRegistry.get('pcf8574')!;
-    logic.attachEvents!(makeElement(), sim as any, noPins);
+    logic.attachEvents!(makeElement(), sim as any, noPins, 'test-part');
     expect(sim.addI2CTransactionListener).toHaveBeenCalledWith(0x27, expect.any(Function));
   });
 
@@ -941,7 +944,7 @@ describe('pcf8574 — ESP32 relay path', () => {
     const el = makeElement();
     const sim = makeEsp32Sim();
     const logic = PartSimulationRegistry.get('pcf8574')!;
-    logic.attachEvents!(el, sim as any, noPins);
+    logic.attachEvents!(el, sim as any, noPins, 'test-part');
     // Fire a transaction: MCU wrote byte 0xAB to I2C address 0x27
     sim._fireTransaction(0x27, [0xab]);
     expect((el as any).value).toBe(0xab);
@@ -951,7 +954,7 @@ describe('pcf8574 — ESP32 relay path', () => {
     const el = makeElement();
     const sim = makeEsp32Sim();
     const logic = PartSimulationRegistry.get('pcf8574')!;
-    logic.attachEvents!(el, sim as any, noPins);
+    logic.attachEvents!(el, sim as any, noPins, 'test-part');
     sim._fireTransaction(0x20, [0xff]); // wrong address
     expect((el as any).value).toBeUndefined();
   });
@@ -959,7 +962,7 @@ describe('pcf8574 — ESP32 relay path', () => {
   it('cleanup calls unregisterSensor(239) and removeI2CTransactionListener(0x27)', () => {
     const sim = makeEsp32Sim();
     const logic = PartSimulationRegistry.get('pcf8574')!;
-    const cleanup = logic.attachEvents!(makeElement(), sim as any, noPins);
+    const cleanup = logic.attachEvents!(makeElement(), sim as any, noPins, 'test-part');
     cleanup();
     expect(sim.unregisterSensor).toHaveBeenCalledWith(239);
     expect(sim.removeI2CTransactionListener).toHaveBeenCalledWith(0x27);
@@ -973,7 +976,7 @@ describe('microsd-card — SD-over-SPI storage', () => {
     const replies: number[] = [];
     sim.spi.completeTransfer = vi.fn((r: number) => replies.push(r));
     const logic = PartSimulationRegistry.get('microsd-card')!;
-    const cleanup = logic.attachEvents!(makeElement(props), sim as any, noPins);
+    const cleanup = logic.attachEvents!(makeElement(props), sim as any, noPins, 'test-part');
     const send = (bytes: number[]) => {
       for (const b of bytes) sim.spi.onByte!(b);
     };

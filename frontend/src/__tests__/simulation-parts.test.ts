@@ -277,7 +277,7 @@ describe('Pushbutton — attachEvents', () => {
     const logic = PartSimulationRegistry.get('pushbutton')!;
     const el = makeElement({ pressed: false });
     const sim = makeSimulator();
-    logic.attachEvents!(el, sim as any, pinHelper(7));
+    logic.attachEvents!(el, sim as any, pinHelper(7), 'test-part');
 
     const events = (el.addEventListener as ReturnType<typeof vi.fn>).mock.calls.map(
       (c: unknown[]) => c[0],
@@ -298,7 +298,7 @@ describe('Pushbutton — attachEvents', () => {
       },
     );
 
-    logic.attachEvents!(el, sim as any, pinHelper(7));
+    logic.attachEvents!(el, sim as any, pinHelper(7), 'test-part');
     pressHandler();
 
     expect(sim.setPinState).toHaveBeenCalledWith(7, false);
@@ -317,7 +317,7 @@ describe('Pushbutton — attachEvents', () => {
       },
     );
 
-    logic.attachEvents!(el, sim as any, pinHelper(7));
+    logic.attachEvents!(el, sim as any, pinHelper(7), 'test-part');
     releaseHandler();
 
     expect(sim.setPinState).toHaveBeenCalledWith(7, true);
@@ -328,7 +328,7 @@ describe('Pushbutton — attachEvents', () => {
     const logic = PartSimulationRegistry.get('pushbutton')!;
     const el = makeElement();
     const sim = makeSimulator();
-    const cleanup = logic.attachEvents!(el, sim as any, pinHelper(2));
+    const cleanup = logic.attachEvents!(el, sim as any, pinHelper(2), 'test-part');
     cleanup();
     expect(
       (el.removeEventListener as ReturnType<typeof vi.fn>).mock.calls.length,
@@ -339,7 +339,7 @@ describe('Pushbutton — attachEvents', () => {
     const logic = PartSimulationRegistry.get('pushbutton')!;
     const el = makeElement();
     const sim = makeSimulator();
-    expect(() => logic.attachEvents!(el, sim as any, noPins)()).not.toThrow();
+    expect(() => logic.attachEvents!(el, sim as any, noPins, 'test-part')()).not.toThrow();
   });
 });
 
@@ -358,7 +358,7 @@ describe('Pushbutton-6mm — attachEvents', () => {
       },
     );
 
-    logic.attachEvents!(el, sim as any, pinHelper(4));
+    logic.attachEvents!(el, sim as any, pinHelper(4), 'test-part');
     pressHandler();
     expect(sim.setPinState).toHaveBeenCalledWith(4, false);
     expect((el as any).pressed).toBe(true);
@@ -372,7 +372,7 @@ describe('Slide-switch — attachEvents', () => {
     const logic = PartSimulationRegistry.get('slide-switch')!;
     const el = makeElement({ value: 1 });
     const sim = makeSimulator();
-    logic.attachEvents!(el, sim as any, pinHelper(5));
+    logic.attachEvents!(el, sim as any, pinHelper(5), 'test-part');
     expect(sim.setPinState).toHaveBeenCalledWith(5, true);
   });
 
@@ -380,7 +380,7 @@ describe('Slide-switch — attachEvents', () => {
     const logic = PartSimulationRegistry.get('slide-switch')!;
     const el = makeElement({ value: 0 });
     const sim = makeSimulator();
-    logic.attachEvents!(el, sim as any, pinHelper(5));
+    logic.attachEvents!(el, sim as any, pinHelper(5), 'test-part');
     expect(sim.setPinState).toHaveBeenCalledWith(5, false);
   });
 
@@ -396,7 +396,7 @@ describe('Slide-switch — attachEvents', () => {
       },
     );
 
-    logic.attachEvents!(el, sim as any, pinHelper(6));
+    logic.attachEvents!(el, sim as any, pinHelper(6), 'test-part');
     (el as any).value = 1;
     changeHandler();
 
@@ -407,7 +407,7 @@ describe('Slide-switch — attachEvents', () => {
     const logic = PartSimulationRegistry.get('slide-switch')!;
     const el = makeElement({ value: 0 });
     const sim = makeSimulator();
-    expect(() => logic.attachEvents!(el, sim as any, noPins)()).not.toThrow();
+    expect(() => logic.attachEvents!(el, sim as any, noPins, 'test-part')()).not.toThrow();
   });
 });
 
@@ -430,7 +430,7 @@ describe('DIP-switch-8 — attachEvents', () => {
       '7A': 8,
       '8A': 9,
     });
-    logic.attachEvents!(el, sim as any, helper);
+    logic.attachEvents!(el, sim as any, helper, 'test-part');
 
     expect(sim.setPinState.mock.calls.length).toBe(8);
     expect(sim.setPinState).toHaveBeenCalledWith(2, true); // switch 1 ON
@@ -451,7 +451,7 @@ describe('DIP-switch-8 — attachEvents', () => {
     );
 
     const helper = pinMap({ '1A': 2 });
-    logic.attachEvents!(el, sim as any, helper);
+    logic.attachEvents!(el, sim as any, helper, 'test-part');
 
     (el as any).values = [1, 0, 0, 0, 0, 0, 0, 0];
     changeHandler();
@@ -472,7 +472,7 @@ describe('LED-bar-graph — attachEvents', () => {
       return isNaN(idx) || idx < 1 || idx > 10 ? null : idx + 1;
     };
 
-    logic.attachEvents!(el, sim as any, helper);
+    logic.attachEvents!(el, sim as any, helper, 'test-part');
     expect(sim.pinManager.onPinChange.mock.calls.length).toBe(10);
   });
 
@@ -489,7 +489,7 @@ describe('LED-bar-graph — attachEvents', () => {
       },
     );
 
-    logic.attachEvents!(el, sim as any, pinMap({ A1: 2 }));
+    logic.attachEvents!(el, sim as any, pinMap({ A1: 2 }), 'test-part');
     callbacks[0](2, true);
     expect((el as any).values[0]).toBe(1);
   });
@@ -506,7 +506,7 @@ describe('LED-bar-graph — attachEvents', () => {
       return isNaN(idx) ? null : idx;
     };
 
-    const cleanup = logic.attachEvents!(el, sim as any, helper);
+    const cleanup = logic.attachEvents!(el, sim as any, helper, 'test-part');
     cleanup();
     expect(unsubMock).toHaveBeenCalledTimes(10);
   });
@@ -521,7 +521,7 @@ describe('7segment — attachEvents', () => {
     const sim = makeSimulator();
 
     const helper = pinMap({ A: 2, B: 3, C: 4, D: 5, E: 6, F: 7, G: 8, DP: 9 });
-    logic.attachEvents!(el, sim as any, helper);
+    logic.attachEvents!(el, sim as any, helper, 'test-part');
 
     expect(sim.pinManager.onPinChange.mock.calls.length).toBe(8);
   });
@@ -539,7 +539,7 @@ describe('7segment — attachEvents', () => {
       },
     );
 
-    logic.attachEvents!(el, sim as any, pinMap({ A: 2 }));
+    logic.attachEvents!(el, sim as any, pinMap({ A: 2 }), 'test-part');
     segACallback(2, true);
     expect((el as any).values[0]).toBe(1); // 'A' is index 0
   });
@@ -552,7 +552,7 @@ describe('7segment — attachEvents', () => {
     sim.pinManager.onPinChange.mockReturnValue(unsubMock);
 
     const helper = pinMap({ A: 2, B: 3, C: 4, D: 5, E: 6, F: 7, G: 8, DP: 9 });
-    const cleanup = logic.attachEvents!(el, sim as any, helper);
+    const cleanup = logic.attachEvents!(el, sim as any, helper, 'test-part');
     cleanup();
     expect(unsubMock).toHaveBeenCalledTimes(8);
   });
@@ -574,7 +574,7 @@ describe('7segment — attachEvents', () => {
 
     // First attach while digits=1 (mid-build): subscribes COM pins only.
     const pins1 = pinMap({ 'COM.1': 30, 'COM.2': 31, DIG1: 10, DIG2: 11, DIG3: 12, DIG4: 13, A: 2 });
-    const cleanup1 = logic.attachEvents!(el, sim as any, pins1);
+    const cleanup1 = logic.attachEvents!(el, sim as any, pins1, 'test-part');
     expect(subscribed).toContain(30); // COM.1 (single-digit mode)
     expect(subscribed).not.toContain(10); // DIG1 not subscribed yet
     cleanup1();
@@ -590,7 +590,7 @@ describe('7segment — attachEvents', () => {
         return () => {};
       },
     );
-    logic.attachEvents!(el, sim as any, pins1);
+    logic.attachEvents!(el, sim as any, pins1, 'test-part');
     expect(subscribed).toEqual(expect.arrayContaining([10, 11, 12, 13])); // DIG1..4
 
     // And the display actually lights: segment A high + DIG1 enabled.
@@ -614,7 +614,7 @@ describe('7segment — attachEvents', () => {
         return () => {};
       },
     );
-    logic.attachEvents!(el, sim as any, pinMap({ A: 2, CLN: 10 }));
+    logic.attachEvents!(el, sim as any, pinMap({ A: 2, CLN: 10 }), 'test-part');
     clnCallback(10, true);
     expect((el as any).colon).toBe(true);
     expect((el as any).colonValue).toBe(true);
@@ -637,7 +637,7 @@ describe('RGB LED — attachEvents', () => {
     const el = makeElement({ ledRed: 0, ledGreen: 0, ledBlue: 0 });
     const sim = makeSimulator();
 
-    logic.attachEvents!(el, sim as any, pinMap({ R: 9, G: 10, B: 11 }));
+    logic.attachEvents!(el, sim as any, pinMap({ R: 9, G: 10, B: 11 }), 'test-part');
 
     expect(sim.pinManager.onPinChange.mock.calls.length).toBe(3);
     expect(sim.pinManager.onPwmChange.mock.calls.length).toBe(3);
@@ -657,7 +657,7 @@ describe('RGB LED — attachEvents', () => {
     );
     sim.pinManager.onPwmChange.mockReturnValue(() => {});
 
-    logic.attachEvents!(el, sim as any, pinMap({ R: 9 }));
+    logic.attachEvents!(el, sim as any, pinMap({ R: 9 }), 'test-part');
     digitalCbs[9](9, true);
     expect((el as any).ledRed).toBe(255);
     digitalCbs[9](9, false);
@@ -678,7 +678,7 @@ describe('RGB LED — attachEvents', () => {
       },
     );
 
-    logic.attachEvents!(el, sim as any, pinMap({ G: 10 }));
+    logic.attachEvents!(el, sim as any, pinMap({ G: 10 }), 'test-part');
     pwmCbs[10](10, 0.5);
     expect((el as any).ledGreen).toBe(128); // Math.round(0.5 * 255)
   });
@@ -697,7 +697,7 @@ describe('RGB LED — attachEvents', () => {
       },
     );
 
-    logic.attachEvents!(el, sim as any, pinMap({ B: 11 }));
+    logic.attachEvents!(el, sim as any, pinMap({ B: 11 }), 'test-part');
     pwmCbs[11](11, 1.0);
     expect((el as any).ledBlue).toBe(255);
   });
@@ -710,7 +710,7 @@ describe('RGB LED — attachEvents', () => {
     sim.pinManager.onPinChange.mockReturnValue(unsubMock);
     sim.pinManager.onPwmChange.mockReturnValue(unsubMock);
 
-    const cleanup = logic.attachEvents!(el, sim as any, pinMap({ R: 9, G: 10, B: 11 }));
+    const cleanup = logic.attachEvents!(el, sim as any, pinMap({ R: 9, G: 10, B: 11 }), 'test-part');
     cleanup();
     expect(unsubMock).toHaveBeenCalledTimes(6);
   });
@@ -732,7 +732,7 @@ describe('Potentiometer — attachEvents', () => {
       },
     );
 
-    logic.attachEvents!(el, sim as any, pinMap({ SIG: 14 })); // A0 = pin 14
+    logic.attachEvents!(el, sim as any, pinMap({ SIG: 14 }), 'test-part'); // A0 = pin 14
     inputHandler();
 
     expect(adc.channelValues[0]).toBeCloseTo(2.5, 1); // channel 0 = A0
@@ -751,7 +751,7 @@ describe('Potentiometer — attachEvents', () => {
       },
     );
 
-    logic.attachEvents!(el, sim as any, pinMap({ SIG: 14 }));
+    logic.attachEvents!(el, sim as any, pinMap({ SIG: 14 }), 'test-part');
     inputHandler();
 
     expect(adc.channelValues[0]).toBeCloseTo(0, 5);
@@ -770,7 +770,7 @@ describe('Potentiometer — attachEvents', () => {
       },
     );
 
-    logic.attachEvents!(el, sim as any, pinMap({ SIG: 14 }));
+    logic.attachEvents!(el, sim as any, pinMap({ SIG: 14 }), 'test-part');
     inputHandler();
 
     expect(adc.channelValues[0]).toBeCloseTo(5.0, 2);
@@ -780,7 +780,7 @@ describe('Potentiometer — attachEvents', () => {
     const logic = PartSimulationRegistry.get('potentiometer')!;
     const el = makeElement({ value: '100' });
     const sim = makeSimulator(makeADC());
-    expect(() => logic.attachEvents!(el, sim as any, noPins)()).not.toThrow();
+    expect(() => logic.attachEvents!(el, sim as any, noPins, 'test-part')()).not.toThrow();
   });
 });
 
@@ -800,7 +800,7 @@ describe('Slide-potentiometer — attachEvents', () => {
       },
     );
 
-    logic.attachEvents!(el, sim as any, pinMap({ SIG: 14 }));
+    logic.attachEvents!(el, sim as any, pinMap({ SIG: 14 }), 'test-part');
     inputHandler();
 
     expect(adc.channelValues[0]).toBeCloseTo(2.5, 1);
@@ -816,7 +816,7 @@ describe('Photoresistor-sensor — attachEvents', () => {
     const el = makeElement();
     const sim = makeSimulator(adc);
 
-    logic.attachEvents!(el, sim as any, pinMap({ AO: 14 }));
+    logic.attachEvents!(el, sim as any, pinMap({ AO: 14 }), 'test-part');
     expect(adc.channelValues[0]).toBeCloseTo(2.5, 1);
   });
 
@@ -833,7 +833,7 @@ describe('Photoresistor-sensor — attachEvents', () => {
       },
     );
 
-    logic.attachEvents!(el, sim as any, pinMap({ AO: 14 }));
+    logic.attachEvents!(el, sim as any, pinMap({ AO: 14 }), 'test-part');
     inputHandler();
     expect(adc.channelValues[0]).toBeCloseTo(5.0, 1);
   });
@@ -843,7 +843,7 @@ describe('Photoresistor-sensor — attachEvents', () => {
     const el = makeElement({ ledDO: false });
     const sim = makeSimulator(makeADC());
 
-    logic.attachEvents!(el, sim as any, pinMap({ AO: 14, DO: 4 }));
+    logic.attachEvents!(el, sim as any, pinMap({ AO: 14, DO: 4 }), 'test-part');
     expect(sim.pinManager.onPinChange.mock.calls.length).toBeGreaterThanOrEqual(1);
   });
 });
@@ -857,7 +857,7 @@ describe('Analog-joystick — attachEvents', () => {
     const el = makeElement();
     const sim = makeSimulator(adc);
 
-    logic.attachEvents!(el, sim as any, pinMap({ VRX: 14, VRY: 15 }));
+    logic.attachEvents!(el, sim as any, pinMap({ VRX: 14, VRY: 15 }), 'test-part');
 
     expect(adc.channelValues[0]).toBeCloseTo(2.5, 1); // A0 = X
     expect(adc.channelValues[1]).toBeCloseTo(2.5, 1); // A1 = Y
@@ -875,7 +875,7 @@ describe('Analog-joystick — attachEvents', () => {
       },
     );
 
-    logic.attachEvents!(el, sim as any, pinMap({ SW: 2 }));
+    logic.attachEvents!(el, sim as any, pinMap({ SW: 2 }), 'test-part');
     pressHandler();
     expect(sim.setPinState).toHaveBeenCalledWith(2, false);
     expect((el as any).pressed).toBe(true);
@@ -893,7 +893,7 @@ describe('Analog-joystick — attachEvents', () => {
       },
     );
 
-    logic.attachEvents!(el, sim as any, pinMap({ SW: 2 }));
+    logic.attachEvents!(el, sim as any, pinMap({ SW: 2 }), 'test-part');
     releaseHandler();
     expect(sim.setPinState).toHaveBeenCalledWith(2, true);
     expect((el as any).pressed).toBe(false);
@@ -915,7 +915,7 @@ describe('Analog-joystick — attachEvents', () => {
       },
     );
 
-    logic.attachEvents!(el, sim as any, pinMap({ VRX: 14, VRY: 15 }));
+    logic.attachEvents!(el, sim as any, pinMap({ VRX: 14, VRY: 15 }), 'test-part');
     moveHandler();
 
     expect(adc.channelValues[0]).toBeCloseTo(0.0, 1); // X = -1 → 0V (full left)
@@ -932,7 +932,7 @@ describe('Servo — attachEvents', () => {
     const sim = makeSimulator();
     const rafSpy = vi.spyOn(globalThis, 'requestAnimationFrame');
 
-    logic.attachEvents!(el, sim as any, noPins);
+    logic.attachEvents!(el, sim as any, noPins, 'test-part');
     expect(rafSpy).toHaveBeenCalled();
   });
 
@@ -951,7 +951,7 @@ describe('Servo — attachEvents', () => {
     sim.cpu.data[0x86] = 40000 & 0xff; // ICR1L
     sim.cpu.data[0x87] = (40000 >> 8) & 0xff; // ICR1H
 
-    logic.attachEvents!(el, sim as any, noPins);
+    logic.attachEvents!(el, sim as any, noPins, 'test-part');
     expect((el as any).angle).toBe(90);
   });
 
@@ -965,7 +965,7 @@ describe('Servo — attachEvents', () => {
     sim.cpu.data[0x87] = (40000 >> 8) & 0xff;
     // OCR1A = 0 (default)
 
-    logic.attachEvents!(el, sim as any, noPins);
+    logic.attachEvents!(el, sim as any, noPins, 'test-part');
     expect((el as any).angle).toBe(0);
   });
 
@@ -981,7 +981,7 @@ describe('Servo — attachEvents', () => {
     sim.cpu.data[0x86] = 40000 & 0xff;
     sim.cpu.data[0x87] = (40000 >> 8) & 0xff;
 
-    logic.attachEvents!(el, sim as any, noPins);
+    logic.attachEvents!(el, sim as any, noPins, 'test-part');
     expect((el as any).angle).toBe(180);
   });
 
@@ -991,7 +991,7 @@ describe('Servo — attachEvents', () => {
     const sim = makeSimulator();
     const cancelSpy = vi.spyOn(globalThis, 'cancelAnimationFrame');
 
-    const cleanup = logic.attachEvents!(el, sim as any, noPins);
+    const cleanup = logic.attachEvents!(el, sim as any, noPins, 'test-part');
     cleanup();
     expect(cancelSpy).toHaveBeenCalled();
   });
@@ -1042,7 +1042,7 @@ describe('Buzzer — attachEvents', () => {
     const el = makeElement({ playing: false });
     const sim = makeSimulator();
 
-    logic.attachEvents!(el, sim as any, pinMap({ '1': 3 }));
+    logic.attachEvents!(el, sim as any, pinMap({ '1': 3 }), 'test-part');
 
     expect(sim.pinManager.onPwmChange.mock.calls.length).toBeGreaterThanOrEqual(1);
     expect(sim.pinManager.onPinChange.mock.calls.length).toBeGreaterThanOrEqual(1);
@@ -1072,7 +1072,7 @@ describe('Buzzer — attachEvents', () => {
     TrackingCtx.prototype = Object.create(PrevMock.prototype);
     vi.stubGlobal('AudioContext', TrackingCtx);
 
-    logic.attachEvents!(el, sim as any, pinMap({ '1': 3 }));
+    logic.attachEvents!(el, sim as any, pinMap({ '1': 3 }), 'test-part');
     pwmCallback(3, 0.5); // 50% duty cycle → should start tone
 
     expect(audioCtxCreated).toBe(true);
@@ -1086,7 +1086,7 @@ describe('Buzzer — attachEvents', () => {
     sim.pinManager.onPwmChange.mockReturnValue(unsubMock);
     sim.pinManager.onPinChange.mockReturnValue(unsubMock);
 
-    const cleanup = logic.attachEvents!(el, sim as any, pinMap({ '1': 3 }));
+    const cleanup = logic.attachEvents!(el, sim as any, pinMap({ '1': 3 }), 'test-part');
     cleanup();
     expect(unsubMock).toHaveBeenCalledTimes(2);
   });
@@ -1095,7 +1095,7 @@ describe('Buzzer — attachEvents', () => {
     const logic = PartSimulationRegistry.get('buzzer')!;
     const el = makeElement({ playing: false });
     const sim = makeSimulator();
-    expect(() => logic.attachEvents!(el, sim as any, noPins)()).not.toThrow();
+    expect(() => logic.attachEvents!(el, sim as any, noPins, 'test-part')()).not.toThrow();
   });
 });
 
@@ -1109,7 +1109,7 @@ describe('LCD1602 — attachEvents', () => {
     const el = makeElement({ characters: null, cursor: false, blink: false });
     const sim = makeSimulator();
 
-    logic.attachEvents!(el, sim as any, LCD_PINS);
+    logic.attachEvents!(el, sim as any, LCD_PINS, 'test-part');
     expect(sim.pinManager.onPinChange.mock.calls.length).toBe(6);
   });
 
@@ -1120,7 +1120,7 @@ describe('LCD1602 — attachEvents', () => {
     const sim = makeSimulator();
     sim.pinManager.onPinChange.mockReturnValue(unsubMock);
 
-    const cleanup = logic.attachEvents!(el, sim as any, LCD_PINS);
+    const cleanup = logic.attachEvents!(el, sim as any, LCD_PINS, 'test-part');
     cleanup();
     expect(unsubMock).toHaveBeenCalledTimes(6);
   });
@@ -1130,7 +1130,7 @@ describe('LCD1602 — attachEvents', () => {
     const el = makeElement({ characters: null });
     // Simulator without pinManager
     const sim = { getADC: vi.fn(), setPinState: vi.fn(), cpu: { data: new Uint8Array(512) } };
-    expect(() => logic.attachEvents!(el, sim as any, LCD_PINS)()).not.toThrow();
+    expect(() => logic.attachEvents!(el, sim as any, LCD_PINS, 'test-part')()).not.toThrow();
   });
 });
 
@@ -1143,7 +1143,7 @@ describe('LCD2004 — attachEvents', () => {
     const sim = makeSimulator();
 
     const pins = pinMap({ RS: 2, E: 3, D4: 4, D5: 5, D6: 6, D7: 7 });
-    logic.attachEvents!(el, sim as any, pins);
+    logic.attachEvents!(el, sim as any, pins, 'test-part');
     expect(sim.pinManager.onPinChange.mock.calls.length).toBe(6);
   });
 });
