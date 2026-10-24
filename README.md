@@ -36,6 +36,26 @@ docker compose up -d --build
 
 Then open **<http://localhost:3082>** in your browser.
 
+### Native install (without Docker)
+
+On Debian/Ubuntu, `scripts/setup-native.sh` installs the toolchains the Docker
+image bundles — arduino-cli with the AVR, RP2040 and ATtiny cores, ESP-IDF 4.4.7
+with arduino-esp32 2.0.17, and QEMU for ESP32 / ESP32-C3 emulation (built from
+lcgamboa's public `picsimlab-esp32` branch; ESP32-S3 and ESP32-CAM need Velxio's
+own QEMU tree, see [docs/BUILD-QEMU.md](docs/BUILD-QEMU.md)):
+
+```bash
+scripts/setup-native.sh          # or: arduino | espidf | qemu
+```
+
+Point the backend at the result with `IDF_PATH=/opt/pinslim/esp-idf`,
+`IDF_TOOLS_PATH=/opt/pinslim/espressif`, `ARDUINO_ESP32_PATH=/opt/pinslim/arduino-esp32`,
+`QEMU_ESP32_LIB=/opt/pinslim/qemu/libqemu-xtensa.so` and
+`QEMU_RISCV32_LIB=/opt/pinslim/qemu/libqemu-riscv32.so`, with `~/.local/bin`
+(arduino-cli) on `PATH`. The first ESP32 compile builds all of ESP-IDF and can
+take longer than one 10-minute compile window on small machines — compile again
+and it resumes where it stopped.
+
 ### Portainer & Traefik Deployment
 
 When deploying Pinslim as a Stack in **Portainer** directly from the Git repository:

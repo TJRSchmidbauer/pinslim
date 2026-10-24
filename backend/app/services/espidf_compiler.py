@@ -1248,7 +1248,13 @@ class ESPIDFCompiler:
             candidates.append(base / 'libraries')
 
         for c in candidates:
-            if c.is_dir():
+            # Probing /root/... as a non-root user (native, non-Docker
+            # installs) raises PermissionError instead of returning False.
+            try:
+                found = c.is_dir()
+            except OSError:
+                continue
+            if found:
                 logger.info(f'[espidf] Arduino libraries dir: {c}')
                 return c
         logger.warning('[espidf] Arduino libraries dir not found')
