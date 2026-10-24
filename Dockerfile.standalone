@@ -123,11 +123,10 @@ WORKDIR /app
 COPY frontend/ frontend/
 COPY scripts/ scripts/
 WORKDIR /app/frontend
-# Lock files aren't committed in this repo (they're gitignored) — see the
-# note in .gitignore. The `rm -f` below is defense-in-depth in case
-# someone runs `docker build .` from a tree where a local lock exists.
-RUN rm -f package-lock.json \
- && npm install --include=optional \
+# frontend/package-lock.json is committed (see .gitignore): `npm ci`
+# installs exactly the locked tree; frontend/.npmrc supplies
+# legacy-peer-deps.
+RUN npm ci --include=optional \
  && npm run build:docker
 
 

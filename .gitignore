@@ -3,13 +3,16 @@ node_modules/
 */node_modules/
 **/node_modules/
 
-# npm lock files. We deliberately do NOT commit these — they pin
-# platform-specific native binaries (Rollup, esbuild, swc) and a lock
-# generated on Windows breaks the Linux Docker build (and vice versa). The
-# Docker image always does a fresh `npm install` so reproducibility is
-# pinned by package.json's version ranges + the image tag. See npm/cli#4828.
+# npm lock files. Pinslim commits frontend/package-lock.json so installs
+# are reproducible (`npm ci`). Current npm records the optional native
+# binaries of EVERY platform (Rollup, esbuild, …) in the lock, so a lock
+# generated on Linux also installs on macOS/Windows — the npm/cli#4828
+# breakage that made upstream ignore lock files does not apply. Regenerate
+# it with `npm install` in frontend/ (frontend/.npmrc sets the required
+# legacy-peer-deps). Other lock files stay ignored.
 package-lock.json
 **/package-lock.json
+!frontend/package-lock.json
 
 # Python
 __pycache__/

@@ -9,7 +9,7 @@ COPY scripts/ scripts/
 COPY frontend/ frontend/
 
 WORKDIR /app/frontend
-RUN npm install && npm run build:docker
+RUN npm ci --include=optional && npm run build:docker
 
 # ---- Stage 2: Serve with nginx ----
 FROM nginx:alpine
