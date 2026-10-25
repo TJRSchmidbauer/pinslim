@@ -7,7 +7,7 @@
  *
  *   key    'velxio-theme'
  *   value  'dark' | 'light' | 'system'      ← the PREFERENCE, not the result
- *   unset  means 'dark'                      ← velxio.dev is dark by default,
+ *   unset  means 'light'                     ← Pinslim starts light (school use);
  *                                              regardless of what the OS says
  *
  * Whoever changes the preference also writes the two keys the other two
@@ -63,7 +63,7 @@ function writeKey(key: string, value: string): void {
 }
 
 /** The stored preference, falling back to the sibling sites' keys before
- *  giving up and calling it dark. */
+ *  giving up and calling it light. */
 export function readStoredMode(): ThemeMode {
   const own = readKey(THEME_STORAGE_KEY);
   if (isMode(own)) return own;
@@ -77,7 +77,7 @@ export function readStoredMode(): ThemeMode {
   const blog = readKey(MIRROR_BLOG);
   if (blog === 'dark' || blog === 'light') return blog;
 
-  return 'dark';
+  return 'light';
 }
 
 export function systemPrefers(): ResolvedTheme {

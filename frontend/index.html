@@ -133,7 +133,7 @@
           if (sl === 'auto') mode = 'system';
           else if (sl === 'dark' || sl === 'light') mode = sl;
           else if (blog === 'dark' || blog === 'light') mode = blog;
-          else mode = 'dark';
+          else mode = 'light';
         }
         var resolved = mode;
         if (mode === 'system') {
@@ -147,7 +147,7 @@
         var m = document.querySelector('meta[name="theme-color"]');
         if (m) m.setAttribute('content', resolved === 'light' ? '#f5f5f7' : '#0a0a0c');
       } catch (e) {
-        document.documentElement.setAttribute('data-theme', 'dark');
+        document.documentElement.setAttribute('data-theme', 'light');
       }
     })();
   </script>
