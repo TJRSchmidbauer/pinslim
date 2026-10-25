@@ -23,6 +23,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useSimulatorStore } from '../../store/useSimulatorStore';
 import { useOscilloscopeStore } from '../../store/useOscilloscopeStore';
+import { useLogicTableStore } from '../../store/useLogicTableStore';
 import { useEditorStore, type EditorViewMode } from '../../store/useEditorStore';
 import { useThemeMode } from '../../hooks/useTheme';
 import type { ThemeMode } from '../../lib/theme';
@@ -80,6 +81,8 @@ export const EditorMenuBar: React.FC = () => {
   const toggleSerialMonitor = useSimulatorStore((s) => s.toggleSerialMonitor);
   const scopeOpen = useOscilloscopeStore((s) => s.open);
   const toggleOscilloscope = useOscilloscopeStore((s) => s.toggleOscilloscope);
+  const logicTableOpen = useLogicTableStore((s) => s.open);
+  const toggleLogicTable = useLogicTableStore((s) => s.toggle);
   // Layout rows: the same switches as the toolbar's explorer / Code / Both /
   // Circuit toggle, which hides on a narrow bar (App.css) — the menu is then
   // the only way to reach them, so they carry live checkmarks.
@@ -259,6 +262,18 @@ export const EditorMenuBar: React.FC = () => {
               >
                 <span>{t('editor.menu.toggleScope', 'Oscilloscope / Logic Analyzer')}</span>
                 <span className="emb-shortcut">{scopeOpen ? '✓' : ''}</span>
+              </button>
+              <button
+                role="menuitemcheckbox"
+                aria-checked={logicTableOpen}
+                className="emb-item"
+                onClick={() => {
+                  setOpen(null);
+                  toggleLogicTable();
+                }}
+              >
+                <span>{t('editor.menu.toggleLogicTable', 'Truth table / timing diagram')}</span>
+                <span className="emb-shortcut">{logicTableOpen ? '✓' : ''}</span>
               </button>
               <div className="emb-separator" />
               {/* Layout: explorer pane + Code / Both / Circuit. Mirrors the

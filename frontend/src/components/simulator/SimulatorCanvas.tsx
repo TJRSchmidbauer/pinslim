@@ -78,11 +78,13 @@ import {
   triggerProUpgradePrompt,
 } from '../../lib/proBoardGate';
 import { FlashModal } from './FlashModal';
+import { flashFamilyOf } from '../../lib/flashHelp';
 import { isTauri as isTauriRuntimeFn } from '../../desktop/tauriBridge';
 import { webFlashAvailable, webFlashMpyAvailable } from '../../lib/proWebFlash';
 import { isEsp32Family } from '../../types/boardOptions';
 import { BoardOptionsModal } from './BoardOptionsModal';
 import { useOscilloscopeStore } from '../../store/useOscilloscopeStore';
+import { useLogicTableStore } from '../../store/useLogicTableStore';
 import {
   trackSelectBoard,
   trackAddComponent,
@@ -245,6 +247,8 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
 
   // Oscilloscope
   const oscilloscopeOpen = useOscilloscopeStore((s) => s.open);
+  const logicTableOpen = useLogicTableStore((s) => s.open);
+  const toggleLogicTable = useLogicTableStore((s) => s.toggle);
   const toggleOscilloscope = useOscilloscopeStore((s) => s.toggleOscilloscope);
 
   // ESP32 crash notification
@@ -2977,6 +2981,30 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
                   </svg>
                   {t('editor.canvas.scope')}
                 </button>
+
+                {/* Truth table + timing diagram (digital circuits) */}
+                <button
+                  onClick={toggleLogicTable}
+                  className={`canvas-serial-btn${logicTableOpen ? ' canvas-serial-btn-active' : ''}`}
+                  title={t('editor.canvas.toggleLogicTable', 'Truth table / timing diagram')}
+                >
+                  <svg
+                    width="22"
+                    height="22"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <rect x="3" y="4" width="18" height="16" rx="1" />
+                    <line x1="3" y1="10" x2="21" y2="10" />
+                    <line x1="9" y1="4" x2="9" y2="20" />
+                    <line x1="15" y1="4" x2="15" y2="20" />
+                  </svg>
+                  {t('editor.canvas.logicTable', 'Truth table')}
+                </button>
               </div>
 
               <div className="canvas-header-right">
@@ -3531,7 +3559,10 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
           // Flashing needs USB serial: the desktop shell always has it;
           // on the web the pro overlay may install a Web Serial flasher
           // for this board kind (no-op in pure OSS builds).
-          if (isTauriRuntime || webFlashAvailable(board.boardKind)) {
+          // Boards with a known flashable chip keep the entry even where the
+          // browser has no Web Serial (plain http://, Firefox, Safari): the
+          // dialog then says WHY, instead of the option silently missing.
+          if (isTauriRuntime || webFlashAvailable(board.boardKind) || flashFamilyOf(board.boardKind) !== null) {
             // MicroPython boards don't compile to a flash image — the store
             // keeps the 'micropython-loaded' sentinel. They flash only when
             // the overlay implements the MicroPython path (firmware install

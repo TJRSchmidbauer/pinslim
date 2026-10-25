@@ -85,3 +85,21 @@ export function resetBusNets(): void {
   inContention.clear();
   resetBusKernel();
 }
+
+/** Opaque copy of the driver registry, for {@link restoreBusNets}. */
+export type BusNetsSnapshot = Map<number, Map<string, Drive>>;
+
+/**
+ * Copy the driver registry. The registry is module-global and keyed by small
+ * integers, so a second, throw-away network (the truth-table sweep) would
+ * otherwise write into the live one. Pair with {@link restoreBusNets}.
+ */
+export function snapshotBusNets(): BusNetsSnapshot {
+  return new Map([...nets].map(([key, drivers]) => [key, new Map(drivers)]));
+}
+
+/** Put the registry back exactly as {@link snapshotBusNets} found it. */
+export function restoreBusNets(snapshot: BusNetsSnapshot): void {
+  resetBusNets();
+  for (const [key, drivers] of snapshot) nets.set(key, new Map(drivers));
+}

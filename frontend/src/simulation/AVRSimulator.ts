@@ -38,6 +38,7 @@ import { PinManager } from './PinManager';
 import { hexToUint8Array } from '../utils/hexParser';
 import { I2CBusManager, nullI2CMaster } from './I2CBusManager';
 import type { I2CDevice } from './I2CBusManager';
+import { I2cWaveform, SpiWaveform, type BusEdge, type I2cEvent } from './busWaveform';
 import { attachUsiI2c } from './UsiI2cBridge';
 
 /**
@@ -372,6 +373,8 @@ export class AVRSimulator {
     // register devices BEFORE the firmware loads.  The real AVRTWI
     // takes over via `i2cBus.attachMaster(twi)` inside loadHex.
     this.i2cBus = new I2CBusManager(nullI2CMaster());
+    // Draw hardware Wire.h traffic on SDA/SCL for the logic analyzer.
+    this.i2cBus.onBusEvent = (e) => this.emitI2cWaveform(e);
     // Seed the input register to the pull's resting level the instant the
     // firmware enables it (INPUT_PULLUP -> HIGH). Real silicon does this in
     // nanoseconds; without the seed, digitalRead returned 0 from pinMode
@@ -441,6 +444,7 @@ export class AVRSimulator {
     console.log(`Loaded ${bytes.length} bytes into program memory`);
 
     this.cpu = new CPU(this.program, sramBytes);
+    this.resetScopeWaveforms();
 
     if (this.boardVariant === 'tiny85') {
       // ATtiny85: PORTB only (PB0-PB5). Timer0 powers millis()/delay() in
@@ -514,6 +518,7 @@ export class AVRSimulator {
       this.spi.onByte = (value) => {
         this.spi!.completeTransfer(value);
       };
+      this.instrumentSpiForScope(this.spi, activeSpiConfig.SPDR);
 
       this.usart = new AVRUSART(this.cpu, activeUsart0Config, 16000000);
       this.usart.onByteTransmit = (value: number) => {
@@ -676,6 +681,94 @@ export class AVRSimulator {
     }
     // After the stop bit(s) the line is already HIGH (idle) so no trailing
     // transition is needed — the next byte will start from HIGH automatically.
+  }
+
+  // ── I²C / SPI wire-level waveforms for the logic analyzer ───────────────
+  // The TWI and SPI peripherals are emulated per byte, so no pin moves during
+  // Wire.write() / SPI.transfer(). Like emitUartTxFrame() for the serial port,
+  // these draw the bus the way real hardware would, at the configured clock.
+
+  private i2cWave = new I2cWaveform();
+  private spiWave = new SpiWaveform();
+
+  private resetScopeWaveforms(): void {
+    // The simulated clock restarts at 0 with a new CPU: drop the time cursor.
+    this.i2cWave = new I2cWaveform();
+    this.spiWave = new SpiWaveform();
+  }
+
+  /** Arduino pin numbers of the bus lines for this board (-1 = not available). */
+  private scopeBusPins(): Record<BusEdge['line'], number> {
+    switch (this.boardVariant) {
+      case 'mega':
+        return { sda: 20, scl: 21, sck: 52, mosi: 51, miso: 50 };
+      case 'tiny85': // USI: PB0 = SDA, PB2 = SCL; no SPI peripheral
+        return { sda: 0, scl: 2, sck: -1, mosi: -1, miso: -1 };
+      default: // Uno / Nano: A4 / A5, D13 / D11 / D12
+        return { sda: 18, scl: 19, sck: 13, mosi: 11, miso: 12 };
+    }
+  }
+
+  private emitBusEdges(edges: BusEdge[]): void {
+    if (!this.onPinChangeWithTime) return;
+    const pins = this.scopeBusPins();
+    for (const e of edges) {
+      const pin = pins[e.line];
+      if (pin >= 0) this.onPinChangeWithTime(pin, e.state, e.timeMs);
+    }
+  }
+
+  private emitI2cWaveform(e: I2cEvent): void {
+    if (!this.cpu || !this.onPinChangeWithTime) return;
+    const hz = this.twi?.sclFrequency;
+    const sclHz = hz && Number.isFinite(hz) && hz > 0 ? Math.min(hz, 1_000_000) : 100_000;
+    this.emitBusEdges(this.i2cWave.event(e, this.cpu.cycles / 16_000, sclHz));
+  }
+
+  /**
+   * Hook the SPI data register write (MOSI byte + start time) and the
+   * transfer completion (MISO byte). `onByte` itself is a single-listener
+   * channel that displays and chips replace, so it is left alone.
+   */
+  private instrumentSpiForScope(spi: AVRSPI, spdr: number): void {
+    const cpu = this.cpu;
+    if (!cpu) return;
+    let pending: { mosi: number; startCycle: number } | null = null;
+    const prevWrite = cpu.writeHooks[spdr];
+    cpu.writeHooks[spdr] = (value, oldValue, addr, mask) => {
+      pending = { mosi: value, startCycle: cpu.cycles };
+      return prevWrite ? prevWrite(value, oldValue, addr, mask) : false;
+    };
+    const complete = spi.completeTransfer.bind(spi);
+    spi.completeTransfer = (miso: number) => {
+      const started = pending;
+      pending = null;
+      if (!started) {
+        complete(miso);
+        return;
+      }
+      if (this.onPinChangeWithTime) {
+        this.emitBusEdges(
+          this.spiWave.frame({
+            mosi: started.mosi,
+            miso,
+            startMs: started.startCycle / 16_000,
+            sckHz: spi.spiFrequency,
+            mode: spi.spiMode,
+            lsbFirst: spi.dataOrder === 'lsbFirst',
+          }),
+        );
+      }
+      // A byte takes `transferCycles` on the wire. The handlers installed here
+      // and by display / chip parts answer at once; finishing at that moment
+      // made every transfer look instantaneous, so chip select rose while the
+      // clock was still running on the logic analyzer. Hold the SPIF flag back
+      // until the byte is really done, as the peripheral does in avr8js's own
+      // default handler.
+      const remaining = started.startCycle + spi.transferCycles - cpu.cycles;
+      if (remaining > 0) cpu.addClockEvent(() => complete(miso), remaining);
+      else complete(miso);
+    };
   }
 
   /**
@@ -943,6 +1036,7 @@ export class AVRSimulator {
       console.log('Resetting AVR CPU...');
 
       this.cpu = new CPU(this.program, sramBytes);
+      this.resetScopeWaveforms();
 
       if (this.boardVariant === 'tiny85') {
         this.portB = new AVRIOPort(this.cpu, attiny85PortBConfig as typeof portBConfig);
@@ -957,6 +1051,7 @@ export class AVRSimulator {
         this.spi.onByte = (value) => {
           this.spi!.completeTransfer(value);
         };
+        this.instrumentSpiForScope(this.spi, spiConfig.SPDR);
 
         this.usart = new AVRUSART(this.cpu, usart0Config, 16000000);
         this.usart.onByteTransmit = (value: number) => {

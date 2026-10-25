@@ -51,7 +51,7 @@ export interface DigitalWire {
  * carries `metadataId: 'logic-gate-and'` / `'led'`. Strip the vendor prefixes so
  * both resolve to the same kind.
  */
-function kindOf(c: DigitalComponent): string {
+export function kindOf(c: DigitalComponent): string {
   const raw = String(c.metadataId ?? c.type ?? '');
   return raw.replace(/^velxio-/, '').replace(/^wokwi-/, '');
 }

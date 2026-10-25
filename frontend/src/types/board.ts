@@ -103,8 +103,6 @@ export const BOARD_SUPPORTS_ESPIDF = new Set<BoardKind>([
   'xiao-esp32-c6',
   'esp32-c6',
   'aitewinrobot-esp32c3-supermini',
-  // ESP32-P4: compiles (ESP-IDF 5.5), no emulation
-  'esp32-p4',
 ]);
 
 export interface WifiStatus {

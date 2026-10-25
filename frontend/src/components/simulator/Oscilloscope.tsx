@@ -25,6 +25,16 @@ import {
 } from '../../store/useOscilloscopeStore';
 import { useSimulatorStore } from '../../store/useSimulatorStore';
 import { boardDisplayName } from '../../types/board';
+import {
+  STANDARD_BAUDS,
+  decodeI2c,
+  decodeSpi,
+  decodeUart,
+  detectBaud,
+  itemsToText,
+  type DecodedItem,
+  type SpiMode,
+} from '../../simulation/protocolDecode';
 import type { BoardKind } from '../../types/board';
 import './Oscilloscope.css';
 
@@ -33,6 +43,9 @@ const NUM_DIVS = 10;
 
 /** Time/div options shown in the selector */
 const TIME_DIV_OPTIONS: { label: string; ms: number }[] = [
+  { label: '0.01 ms', ms: 0.01 },
+  { label: '0.02 ms', ms: 0.02 },
+  { label: '0.05 ms', ms: 0.05 },
   { label: '0.1 ms', ms: 0.1 },
   { label: '0.5 ms', ms: 0.5 },
   { label: '1 ms', ms: 1 },
@@ -328,6 +341,84 @@ const RulerCanvas: React.FC<RulerCanvasProps> = ({ windowEndMs, windowMs, timeDi
   );
 };
 
+// ── Protocol decode lane ─────────────────────────────────────────────────────
+
+const DECODE_COLOR: Record<DecodedItem['kind'], string> = {
+  start: '--color-feedback-warning',
+  stop: '--color-feedback-warning',
+  addr: '--color-action-primary',
+  data: '--color-feedback-success',
+  error: '--color-feedback-error',
+};
+
+function drawDecoded(
+  canvas: HTMLCanvasElement,
+  items: DecodedItem[],
+  windowEndMs: number,
+  windowMs: number,
+): void {
+  const { width, height } = canvas;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+  ctx.clearRect(0, 0, width, height);
+  const cssW = width / window.devicePixelRatio;
+  const windowStartMs = windowEndMs - windowMs;
+  const toX = (t: number) => ((t - windowStartMs) / windowMs) * cssW;
+  const top = 8;
+  const boxH = Math.max(12, height / window.devicePixelRatio - 16);
+  ctx.font = '11px monospace';
+  ctx.textBaseline = 'middle';
+  for (const item of items) {
+    if (item.endMs < windowStartMs || item.startMs > windowEndMs) continue;
+    const x0 = Math.max(0, toX(item.startMs));
+    const x1 = Math.min(cssW, Math.max(toX(item.endMs), toX(item.startMs) + 3));
+    const color = cssVar(DECODE_COLOR[item.kind]);
+    ctx.globalAlpha = 0.22;
+    ctx.fillStyle = color;
+    ctx.fillRect(x0, top, x1 - x0, boxH);
+    ctx.globalAlpha = 1;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1;
+    ctx.strokeRect(x0 + 0.5, top + 0.5, x1 - x0 - 1, boxH - 1);
+    const w = ctx.measureText(item.label).width;
+    if (w + 6 <= x1 - x0) {
+      ctx.fillStyle = cssVar('--wb-13');
+      ctx.fillText(item.label, x0 + 3, top + boxH / 2);
+    }
+  }
+}
+
+const DecodeLane: React.FC<{ items: DecodedItem[]; windowEndMs: number; windowMs: number }> = ({
+  items,
+  windowEndMs,
+  windowMs,
+}) => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const theme = useResolvedTheme();
+
+  useLayoutEffect(() => {
+    const canvas = canvasRef.current;
+    const wrap = wrapRef.current;
+    if (!canvas || !wrap) return;
+    const { width, height } = wrap.getBoundingClientRect();
+    if (width === 0 || height === 0) return;
+    canvas.width = Math.floor(width) * window.devicePixelRatio;
+    canvas.height = Math.floor(height) * window.devicePixelRatio;
+    const ctx = canvas.getContext('2d');
+    if (ctx) ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+    drawDecoded(canvas, items, windowEndMs, windowMs);
+  }, [items, windowEndMs, windowMs, theme]);
+
+  return (
+    <div ref={wrapRef} className="osc-channel-canvas-wrap">
+      <canvas ref={canvasRef} className="osc-channel-canvas" />
+    </div>
+  );
+};
+
+type Protocol = 'off' | 'uart' | 'i2c' | 'spi';
+
 // ── Channel picker (two-step: board → pin) ───────────────────────────────────
 
 interface ChannelPickerProps {
@@ -442,6 +533,13 @@ export const Oscilloscope: React.FC = () => {
   // Any board running → oscilloscope can capture
   const anyRunning = useSimulatorStore((s) => s.boards.some((b) => b.running));
 
+  // ── Protocol decoding ───────────────────────────────────────────────────
+  const [protocol, setProtocol] = useState<Protocol>('off');
+  const [roles, setRoles] = useState<Record<string, string>>({});
+  const [baud, setBaud] = useState<'auto' | number>('auto');
+  const [spiMode, setSpiMode] = useState<SpiMode>(0);
+  const [transcriptCopied, setTranscriptCopied] = useState(false);
+
   const [showPicker, setShowPicker] = useState(false);
   const [pickerAnchor, setPickerAnchor] = useState<DOMRect | null>(null);
   const addBtnRef = useRef<HTMLButtonElement>(null);
@@ -512,6 +610,69 @@ export const Oscilloscope: React.FC = () => {
     }
   }
   windowEndMs = Math.max(windowEndMs, windowMs);
+
+  // ── Decode the selected channels ─────────────────────────────────────────
+  // Default channel per role: the first channels in the order they were
+  // added (SDA, SCL / SCK, MOSI); MISO and chip select stay off until picked.
+  const ROLE_DEFAULT: Record<string, number | null> = {
+    rx: 0, sda: 0, scl: 1, sck: 0, mosi: 1, miso: null, cs: null,
+  };
+  const roleChannel = (role: string) => {
+    const picked = roles[`${protocol}.${role}`];
+    if (picked !== undefined) return channels.find((c) => c.id === picked) ?? null;
+    const idx = ROLE_DEFAULT[role];
+    return idx == null ? null : (channels[idx] ?? null);
+  };
+  const samplesOf = (role: string) => {
+    const ch = roleChannel(role);
+    return ch ? (samples[ch.id] ?? []) : null;
+  };
+
+  let decoded: DecodedItem[] = [];
+  let shownBaud: number | null = null;
+  if (protocol === 'uart') {
+    const s = samplesOf('rx');
+    if (s) {
+      shownBaud = baud === 'auto' ? detectBaud(s) : baud;
+      if (shownBaud) decoded = decodeUart(s, { baud: shownBaud });
+    }
+  } else if (protocol === 'i2c') {
+    const sda = samplesOf('sda');
+    const scl = samplesOf('scl');
+    if (sda && scl) decoded = decodeI2c(sda, scl);
+  } else if (protocol === 'spi') {
+    const sck = samplesOf('sck');
+    const mosi = samplesOf('mosi');
+    if (sck && mosi) decoded = decodeSpi(sck, mosi, samplesOf('miso'), samplesOf('cs'), spiMode);
+  }
+
+  const copyTranscript = async () => {
+    try {
+      await navigator.clipboard.writeText(itemsToText(decoded));
+      setTranscriptCopied(true);
+      setTimeout(() => setTranscriptCopied(false), 1500);
+    } catch {
+      /* clipboard blocked */
+    }
+  };
+
+  const roleSelect = (role: string, label: string, optional = false) => (
+    <label key={role} className="osc-decode-role">
+      <span className="osc-label">{label}</span>
+      <select
+        className="osc-select"
+        value={roleChannel(role)?.id ?? ''}
+        onChange={(e) => setRoles((r) => ({ ...r, [`${protocol}.${role}`]: e.target.value }))}
+      >
+        {optional && <option value="">{t('editor.oscilloscope.roleNone', '— none —')}</option>}
+        {channels.map((c) => (
+          <option key={c.id} value={c.id}>
+            {boardShortName(c.boardId)}:{c.label}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
 
   // X fraction (0..1) of the trigger marker within the visible window.
   // null = no marker (auto mode or trigger event outside the window).
@@ -670,6 +831,88 @@ export const Oscilloscope: React.FC = () => {
         </button>
       </div>
 
+      {/* ── Protocol decoder ── */}
+      <div className="osc-decode-bar">
+        <span className="osc-label">{t('editor.oscilloscope.protocol', 'Decode protocol:')}</span>
+        <select
+          className="osc-select"
+          value={protocol}
+          onChange={(e) => {
+            const next = e.target.value as Protocol;
+            setProtocol(next);
+            // A frame lasts ~0.1 ms (UART 115200, I²C 100 kHz) or ~2 µs per
+            // byte (SPI): start on a time base where the bytes are readable.
+            if (next === 'uart' || next === 'i2c') setTimeDivMs(0.1);
+            else if (next === 'spi') setTimeDivMs(0.02);
+          }}
+        >
+          <option value="off">{t('editor.oscilloscope.protocolOff', 'Off')}</option>
+          <option value="uart">UART</option>
+          <option value="i2c">I²C</option>
+          <option value="spi">SPI</option>
+        </select>
+
+        {protocol === 'uart' && (
+          <>
+            {roleSelect('rx', 'RX/TX')}
+            <label className="osc-decode-role">
+              <span className="osc-label">{t('editor.oscilloscope.baud', 'Baud rate:')}</span>
+              <select
+                className="osc-select"
+                value={String(baud)}
+                onChange={(e) => setBaud(e.target.value === 'auto' ? 'auto' : Number(e.target.value))}
+              >
+                <option value="auto">
+                  {t('editor.oscilloscope.baudAuto', 'Auto')}
+                  {baud === 'auto' && shownBaud ? ` (${shownBaud})` : ''}
+                </option>
+                {STANDARD_BAUDS.map((b) => (
+                  <option key={b} value={b}>
+                    {b}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <span className="osc-label">8N1</span>
+          </>
+        )}
+        {protocol === 'i2c' && (
+          <>
+            {roleSelect('sda', 'SDA')}
+            {roleSelect('scl', 'SCL')}
+          </>
+        )}
+        {protocol === 'spi' && (
+          <>
+            {roleSelect('sck', 'SCK')}
+            {roleSelect('mosi', 'MOSI')}
+            {roleSelect('miso', 'MISO', true)}
+            {roleSelect('cs', 'CS', true)}
+            <label className="osc-decode-role">
+              <span className="osc-label">{t('editor.oscilloscope.spiMode', 'Mode:')}</span>
+              <select
+                className="osc-select"
+                value={spiMode}
+                onChange={(e) => setSpiMode(Number(e.target.value) as SpiMode)}
+              >
+                {[0, 1, 2, 3].map((m) => (
+                  <option key={m} value={m}>
+                    {m}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </>
+        )}
+        {protocol !== 'off' && decoded.length > 0 && (
+          <button className="osc-btn" onClick={copyTranscript}>
+            {transcriptCopied
+              ? t('editor.oscilloscope.copied', 'Copied ✓')
+              : t('editor.oscilloscope.copyDecoded', 'Copy transcript')}
+          </button>
+        )}
+      </div>
+
       {/* ── Waveforms ── */}
       {channels.length === 0 ? (
         <div className="osc-empty">
@@ -679,6 +922,23 @@ export const Oscilloscope: React.FC = () => {
       ) : (
         <>
           <div className="osc-waveforms">
+            {protocol !== 'off' && (
+              <div className="osc-decode-sticky">
+                <div className="osc-channel-row osc-decode-row">
+                  <div className="osc-channel-label">
+                    <span className="osc-channel-name">
+                      {protocol === 'uart' ? 'UART' : protocol === 'i2c' ? 'I²C' : 'SPI'}
+                    </span>
+                  </div>
+                  <DecodeLane items={decoded} windowEndMs={windowEndMs} windowMs={windowMs} />
+                </div>
+                <div className="osc-decode-text">
+                  {decoded.length === 0
+                    ? t('editor.oscilloscope.nothingDecoded', 'No frames decoded yet — start the simulation and make the board send data.')
+                    : itemsToText(decoded.slice(-40))}
+                </div>
+              </div>
+            )}
             {channels.map((ch) => (
               <div key={ch.id} className="osc-channel-row">
                 <div className="osc-channel-label">
@@ -706,6 +966,7 @@ export const Oscilloscope: React.FC = () => {
                 />
               </div>
             ))}
+
           </div>
 
           <RulerCanvas windowEndMs={windowEndMs} windowMs={windowMs} timeDivMs={timeDivMs} />

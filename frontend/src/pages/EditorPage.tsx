@@ -17,6 +17,8 @@ import { CompilationConsole } from '../components/editor/CompilationConsole';
 import { SimulatorCanvas } from '../components/simulator/SimulatorCanvas';
 import { SerialMonitor } from '../components/simulator/SerialMonitor';
 import { Oscilloscope } from '../components/simulator/Oscilloscope';
+import { LogicTablePanel } from '../components/simulator/LogicTablePanel';
+import { useLogicTableStore } from '../store/useLogicTableStore';
 import { AppHeader } from '../components/layout/AppHeader';
 import { triggerSaveAction } from '../lib/proSaveAction';
 import { useSimulatorStore } from '../store/useSimulatorStore';
@@ -87,6 +89,7 @@ export const EditorPage: React.FC = () => {
   const resizingRef = useRef(false);
   const serialMonitorOpen = useSimulatorStore((s) => s.serialMonitorOpen);
   const oscilloscopeOpen = useOscilloscopeStore((s) => s.open);
+  const logicTableOpen = useLogicTableStore((s) => s.open);
   const [consoleOpen, setConsoleOpen] = useState(false);
   // compileLogs live in a Zustand store so the velxio-pro agent overlay
   // (mounted in a separate React tree via slotMounter) can subscribe and
@@ -692,6 +695,18 @@ export const EditorPage: React.FC = () => {
               />
               <div style={{ height: bottomPanelHeight, flexShrink: 0 }}>
                 <Oscilloscope />
+              </div>
+            </>
+          )}
+          {logicTableOpen && (
+            <>
+              <div
+                onMouseDown={handleBottomPanelResizeMouseDown}
+                style={resizeHandleStyle}
+                title={t('editor.shell.dragResize')}
+              />
+              <div style={{ height: bottomPanelHeight, flexShrink: 0 }}>
+                <LogicTablePanel />
               </div>
             </>
           )}

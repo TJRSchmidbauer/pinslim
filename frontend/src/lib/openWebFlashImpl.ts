@@ -1,5 +1,7 @@
 import { ESPLoader, Transport } from 'esptool-js';
 import type { WebFlashImpl, WebFlashRequest, WebFlashResult } from './proWebFlash';
+import { FlashError, WebSerialLink, flashStk500v1 } from './avrFlash';
+import { chipMismatch, flashFamilyOf, isAvrFamily, isEspFamily } from './flashHelp';
 
 let pregrantedPort: SerialPort | null = null;
 
@@ -17,15 +19,9 @@ export const openWebFlashImpl: WebFlashImpl = {
     if (typeof navigator === 'undefined' || !('serial' in navigator)) {
       return false;
     }
-    const supported = [
-      'esp32',
-      'esp32-s3',
-      'esp32-c3',
-      'arduino-uno',
-      'arduino-nano',
-      'arduino-mega',
-    ];
-    return supported.some((kind) => boardKind.toLowerCase().includes(kind));
+    const family = flashFamilyOf(boardKind);
+    // The Mega's bootloader speaks STK500v2, which is not implemented.
+    return family !== null && family !== 'avr-mega';
   },
 
   async preparePort(): Promise<void> {
@@ -49,11 +45,10 @@ export const openWebFlashImpl: WebFlashImpl = {
       port = await navigator.serial.requestPort();
     }
 
-    const image = base64ToBytes(req.binaryBase64);
+    const family = flashFamilyOf(req.boardKind);
 
-    const isEsp = req.boardKind.toLowerCase().includes('esp32');
-
-    if (isEsp) {
+    if (isEspFamily(family)) {
+      const image = base64ToBytes(req.binaryBase64);
       req.onProgress({ phase: 'connecting', pct: 10, line: 'Opening serial transport at 115200 baud...' });
       const transport = new Transport(port);
       
@@ -77,6 +72,15 @@ export const openWebFlashImpl: WebFlashImpl = {
         req.onProgress({ phase: 'connecting', pct: 20, line: 'Connecting to ESP bootloader...' });
         const chipName = await esploader.main();
         req.onProgress({ phase: 'erasing', pct: 30, line: `Detected chip: ${chipName}` });
+
+        // Refuse before writing: an image for another chip flashes fine and
+        // then never boots, which looks like a broken board.
+        const wrong = chipMismatch(req.boardKind, chipName);
+        if (wrong) {
+          throw new Error(
+            `Chip mismatch: this project is for a ${wrong.expected} board — expects ${wrong.expected}, connected chip is ${wrong.found}`,
+          );
+        }
 
         req.onProgress({ phase: 'writing', pct: 40, line: 'Writing binary image to flash...' });
         
@@ -109,22 +113,38 @@ export const openWebFlashImpl: WebFlashImpl = {
       } finally {
         await transport.disconnect();
       }
+    } else if (isAvrFamily(family)) {
+      // Uno / Nano: STK500v1 to the Optiboot bootloader. The compiled program
+      // of an AVR board is Intel HEX text (not base64) and arrives in the same
+      // field. Old Nano clones use a slower bootloader, so try both speeds.
+      const hex = req.binaryBase64;
+      const bauds = family === 'avr-uno' ? [115200] : [115200, 57600];
+      let lastError: unknown = null;
+      for (const baud of bauds) {
+        if (req.signal.aborted) throw new DOMException('Aborted', 'AbortError');
+        req.onProgress({ phase: 'connecting', pct: 5, line: `Opening serial port at ${baud} baud...` });
+        const link = await WebSerialLink.open(port, baud);
+        try {
+          const result = await flashStk500v1(link, hex, {
+            onProgress: (pct, line) =>
+              req.onProgress({ phase: pct < 10 ? 'connecting' : 'writing', pct, line }),
+          });
+          return {
+            chipName: `${family === 'avr-uno' ? 'Arduino Uno' : 'Arduino Nano'} (signature ${result.signature.toUpperCase()})`,
+            elapsedMs: Date.now() - startTime,
+          };
+        } catch (err) {
+          lastError = err;
+          // Wrong speed → try the next one; anything else is final.
+          if (!(err instanceof FlashError) || err.code !== 'no-sync') throw err;
+          req.onProgress({ phase: 'connecting', pct: 5, line: `No answer at ${baud} baud.` });
+        } finally {
+          await link.close();
+        }
+      }
+      throw lastError ?? new FlashError('no-sync', 'The bootloader did not answer');
     } else {
-      // AVR / Arduino Web Serial Flasher fallback
-      req.onProgress({ phase: 'writing', pct: 50, line: 'Opening serial port for Arduino...' });
-      await port.open({ baudRate: 115200 });
-      req.onProgress({ phase: 'writing', pct: 80, line: 'Flashing sketch to Arduino microcontroller...' });
-      
-      // Artificial short delay for Web Serial handshake
-      await new Promise((r) => setTimeout(r, 1000));
-      await port.close();
-
-      const elapsedMs = Date.now() - startTime;
-      req.onProgress({ phase: 'writing', pct: 100, line: 'Done flashing Arduino board.' });
-      return {
-        chipName: 'Arduino (AVR)',
-        elapsedMs,
-      };
+      throw new Error(`Flashing ${req.boardKind} over Web Serial is not supported`);
     }
   },
 };

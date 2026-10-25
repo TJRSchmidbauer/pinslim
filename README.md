@@ -16,7 +16,9 @@ Write Arduino C++, MicroPython, or Python code, compile it, simulate real CPU ex
 
 - **Direct Editor Launch**: Opens directly into the interactive workspace.
 - **Light & Dark Themes**: Toggle seamlessly between Dark and Light mode via the View menu.
-- **Web Serial Hardware Flashing**: Flash compiled sketches directly to connected ESP32 or Arduino microcontrollers via Web Serial without desktop software.
+- **Web Serial Hardware Flashing**: Flash compiled sketches directly to a connected ESP32 / S3 / C3 / C6 / P4, Arduino Uno or Nano from Chrome, Edge or Opera — no desktop software. Checks that the connected chip matches the board, shows a step-by-step checklist and explains errors in plain language. Needs `https://` or `localhost` (see *HTTPS for flashing* below). The Arduino Mega is not supported yet.
+- **Logic analyzer with protocol decoding**: UART, I²C and SPI are decoded from the pins and shown as readable frames (`S 0x3C W ✓ 0x00 ✓ P`), with auto baud rate. UART works on Uno/Nano/Mega and Pico; hardware I²C and SPI are drawn on the pins for the Arduino Uno/Nano/Mega at the peripheral's real clock. (ESP32/RP2040 I²C and SPI are not drawn yet; bit-banged buses work everywhere.)
+- **Truth table & timing diagram**: for circuits made of logic gates, slide switches and LEDs — truth table (copy as text), simplified Boolean expression (∧ ∨ ¬), timing diagram, and a clocked timing diagram for flip-flop circuits.
 - **Multi-Board Simulation**: Emulates AVR8 (Arduino Uno / Nano / Mega / ATtiny85), RP2040 (Raspberry Pi Pico), and ESP32 / ESP32-S3 / ESP32-C3 / ESP32-C6 (own QEMU build; ESP32-P4 compile + flash only).
 - **Embedded Examples Modal**: Instantly search and load ready-to-run example projects from within the editor.
 - **BOM & Schematic Export**: Generate accurate Bill of Materials (CSV) and high-fidelity PNG schematic diagrams.
@@ -64,6 +66,27 @@ backend keeps resuming it on its own for up to an hour
 The Docker image (`Dockerfile.standalone`) bundles the same ESP-IDF /
 arduino-esp32 versions and builds Pinslim's QEMU from source unless
 `prebuilt/qemu/` already holds the libraries and ROMs.
+
+### HTTPS for flashing
+
+Browsers only offer USB access (Web Serial) on `https://` pages and on
+`localhost`. On a plain `http://192.168.x.x` address the *Flash to real board*
+dialog explains this instead of flashing. For a school or home server, add a
+TLS listener next to the HTTP one — a self-signed certificate is enough, each
+browser asks once to accept it:
+
+```bash
+sudo mkdir -p /etc/ssl/pinslim && cd /etc/ssl/pinslim
+sudo openssl req -x509 -newkey rsa:2048 -nodes -sha256 -days 3650 \
+  -keyout pinslim.key -out pinslim.crt -subj "/CN=pinslim.local" \
+  -addext "subjectAltName=IP:192.168.178.199,DNS:pinslim.local"
+# in the nginx server block:
+#   listen 3083 ssl;
+#   ssl_certificate     /etc/ssl/pinslim/pinslim.crt;
+#   ssl_certificate_key /etc/ssl/pinslim/pinslim.key;
+```
+
+Then open `https://<server>:3083`. (Replace the IP with the server's address.)
 
 ### Portainer & Traefik Deployment
 

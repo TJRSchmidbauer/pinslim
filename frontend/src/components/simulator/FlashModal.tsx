@@ -41,6 +41,7 @@ import {
 import { openExternal } from '../../desktop/tauriBridge';
 import { useEditorStore } from '../../store/useEditorStore';
 import { compileBoardForFlash, isCompiledProgramStale } from '../../utils/boardCompile';
+import { explainFlashError, flashFamilyOf, flashSteps, webSerialStatus } from '../../lib/flashHelp';
 
 interface Props {
   board: BoardInstance;
@@ -55,7 +56,15 @@ type ModalState =
   | { kind: 'compiling'; port: string | null; log: string[] }
   | { kind: 'flashing'; port: string; log: string[]; progress: number }
   | { kind: 'success'; port: string; elapsedMs: number; log: string[] }
-  | { kind: 'error'; port: string | null; message: string; log: string[]; stage: 'compile' | 'flash' };
+  | {
+      kind: 'error';
+      port: string | null;
+      message: string;
+      log: string[];
+      stage: 'compile' | 'flash';
+      /** Flashing is impossible here (no Web Serial …): there is nothing to retry. */
+      fatal?: boolean;
+    };
 
 export const FlashModal = ({ board: boardProp, fqbn, onClose }: Props) => {
   const { t } = useTranslation();
@@ -87,9 +96,10 @@ export const FlashModal = ({ board: boardProp, fqbn, onClose }: Props) => {
           : {
               kind: 'error',
               port: null,
-              message: t('editor.flash.needsDesktop'),
+              message: unavailableReason(board.boardKind, t),
               log: [],
               stage: 'flash',
+              fatal: true,
             },
       );
       return;
@@ -399,6 +409,7 @@ export const FlashModal = ({ board: boardProp, fqbn, onClose }: Props) => {
           <ProgressView
             state={state}
             webMode={isWebMode}
+            boardKind={board.boardKind}
             onRetry={() =>
               isWebMode
                 ? void doWebFlash()
@@ -593,6 +604,8 @@ const WebReadyView = ({ board, mpyWebOk, onFlash }: WebReadyProps) => {
         </div>
       </div>
 
+      <PrepareSteps boardKind={board.boardKind} />
+
       {isMpy && !mpyWebOk && (
         <div style={{ padding: 10, background: 'var(--color-feedback-warning-soft)', color: 'var(--color-feedback-warning)', borderRadius: 4, fontSize: 12, marginBottom: 12 }}>
           {t('editor.flash.mpyUnavailable')}
@@ -620,11 +633,12 @@ const WebReadyView = ({ board, mpyWebOk, onFlash }: WebReadyProps) => {
 // ── Progress / success / error subview ──────────────────────────────
 
 interface ProgressProps {
+  boardKind: string;
   state:
     | { kind: 'compiling'; port: string | null; log: string[] }
     | { kind: 'flashing'; port: string; log: string[]; progress: number }
     | { kind: 'success'; port: string; elapsedMs: number; log: string[] }
-    | { kind: 'error'; port: string | null; message: string; log: string[]; stage: 'compile' | 'flash' };
+    | { kind: 'error'; port: string | null; message: string; log: string[]; stage: 'compile' | 'flash'; fatal?: boolean };
   /** Web Serial backend: closing cancels the flash and there is no port picker. */
   webMode: boolean;
   onRetry: () => void;
@@ -632,7 +646,7 @@ interface ProgressProps {
   onBackToPicker: () => void;
 }
 
-const ProgressView = ({ state, webMode, onRetry, onClose, onBackToPicker }: ProgressProps) => {
+const ProgressView = ({ state, webMode, boardKind, onRetry, onClose, onBackToPicker }: ProgressProps) => {
   const { t } = useTranslation();
   const logRef = useRef<HTMLPreElement | null>(null);
   const busy = state.kind === 'compiling' || state.kind === 'flashing';
@@ -686,6 +700,7 @@ const ProgressView = ({ state, webMode, onRetry, onClose, onBackToPicker }: Prog
       {state.kind === 'error' && (
         <div style={{ padding: 12, background: 'var(--color-feedback-error-soft)', color: 'var(--color-feedback-error)', borderRadius: 4, marginBottom: 12, fontSize: 13 }}>
           {state.message}
+          <ErrorHelp message={state.message} boardKind={boardKind} />
         </div>
       )}
 
@@ -714,13 +729,15 @@ const ProgressView = ({ state, webMode, onRetry, onClose, onBackToPicker }: Prog
           <span style={{ fontSize: 11, color: 'var(--wb-9)' }}>{t('editor.flash.dontUnplug')}</span>
         ) : state.kind === 'compiling' ? (
           <span style={{ fontSize: 11, color: 'var(--wb-9)' }}>{t('editor.flash.compilingHint')}</span>
+        ) : state.kind === 'error' && state.fatal ? (
+          <span />
         ) : (
           <button type="button" onClick={onBackToPicker} style={secondaryBtnStyle}>
             {webMode ? t('editor.flash.startOver') : t('editor.flash.pickAnotherPort')}
           </button>
         )}
         <div style={{ display: 'flex', gap: 8 }}>
-          {state.kind === 'error' && (
+          {state.kind === 'error' && !state.fatal && (
             <button type="button" onClick={onRetry} style={primaryBtnStyle}>
               {state.stage === 'compile' ? t('editor.flash.retryCompile') : t('editor.flash.retry')}
             </button>
@@ -733,6 +750,78 @@ const ProgressView = ({ state, webMode, onRetry, onClose, onBackToPicker }: Prog
     </div>
   );
 };
+
+// ── Preparation checklist + plain-language error help ───────────────
+
+/** "Get your board ready" steps, tailored to the chip (BOOT button, cable, …). */
+const PrepareSteps = ({ boardKind }: { boardKind: string }) => {
+  const { t } = useTranslation();
+  const steps = flashSteps(boardKind);
+  return (
+    <div style={{ ...insetBoxStyle, padding: 12, marginBottom: 12 }}>
+      <div style={{ color: 'var(--wb-12)', fontSize: 12, fontWeight: 600, marginBottom: 6 }}>
+        {t('editor.flash.help.prepareTitle', 'Before you start')}
+      </div>
+      <ol style={{ margin: 0, paddingLeft: 18, color: 'var(--wb-11)', fontSize: 12, lineHeight: 1.55 }}>
+        {steps.map((s) => (
+          <li key={s.key}>{t(s.key, s.fallback)}</li>
+        ))}
+      </ol>
+    </div>
+  );
+};
+
+/** What the error probably means and what to do — only when we recognise it. */
+const ErrorHelp = ({ message, boardKind }: { message: string; boardKind: string }) => {
+  const { t } = useTranslation();
+  const help = explainFlashError(message, boardKind);
+  if (!help) return null;
+  return (
+    <div
+      style={{
+        marginTop: 8,
+        paddingTop: 8,
+        borderTop: '1px solid var(--color-feedback-error-border)',
+        color: 'var(--wb-13)',
+        lineHeight: 1.5,
+      }}
+    >
+      <strong>{t('editor.flash.help.whatToDo', 'What to do:')}</strong>{' '}
+      {t(help.key, help.fallback, help.params)}
+    </div>
+  );
+};
+
+/** Why the dialog cannot flash here: insecure page, wrong browser, or unsupported board. */
+function unavailableReason(boardKind: string, t: (k: string, d: string) => string): string {
+  const family = flashFamilyOf(boardKind);
+  if (family === 'avr-mega') {
+    return t(
+      'editor.flash.help.noMega',
+      'The Arduino Mega cannot be flashed from the browser yet (its bootloader uses a different protocol). Use the Arduino IDE.',
+    );
+  }
+  if (!family) {
+    return t(
+      'editor.flash.help.noBoard',
+      'This board cannot be flashed directly from the browser.',
+    );
+  }
+  switch (webSerialStatus()) {
+    case 'insecure':
+      return t(
+        'editor.flash.help.noSecure',
+        'Flashing from the browser needs a secure connection. Open Pinslim via https:// or http://localhost — on a plain http:// address the browser hides USB access.',
+      );
+    case 'unsupported-browser':
+      return t(
+        'editor.flash.help.noBrowser',
+        'This browser cannot access USB devices. Use Chrome, Edge or Opera (Firefox and Safari do not support Web Serial).',
+      );
+    default:
+      return t('editor.flash.needsDesktop', 'This board cannot be flashed from here.');
+  }
+}
 
 // ── Helpers + shared styles ─────────────────────────────────────────
 

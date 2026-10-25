@@ -214,7 +214,9 @@
         "willCompile": "Den Sketch kompilieren und auf ein echtes, per USB angeschlossenes Board flashen"
       },
       "spiceWarning": "Warnung",
-      "spiceNoConverge": "Warnung: Lösung konvergiert nicht"
+      "spiceNoConverge": "Warnung: Lösung konvergiert nicht",
+      "toggleLogicTable": "Wahrheitstabelle / Zeitdiagramm umschalten",
+      "logicTable": "Wahrheitstabelle"
     },
     "componentPicker": {
       "title": "Komponente hinzufügen",
@@ -283,7 +285,16 @@
       "clear": "Löschen",
       "noChannels": "Keine Kanäle hinzugefügt.",
       "noChannelsHint": "Klicken Sie auf „+ Kanal hinzufügen“, um einen Pin zu überwachen.",
-      "removeChannel": "{{label}} entfernen"
+      "removeChannel": "{{label}} entfernen",
+      "protocol": "Protokoll dekodieren:",
+      "protocolOff": "Aus",
+      "baud": "Baudrate:",
+      "baudAuto": "Automatisch",
+      "spiMode": "Modus:",
+      "roleNone": "— keiner —",
+      "copyDecoded": "Ablauf kopieren",
+      "copied": "Kopiert ✓",
+      "nothingDecoded": "Noch nichts dekodiert – starte die Simulation und lass das Board Daten senden."
     },
     "componentProps": {
       "close": "Schließen",
@@ -444,7 +455,8 @@
       "aboutPinslim": "Über Pinslim",
       "pinslimRepo": "Pinslim auf GitHub",
       "reportIssue": "Problem melden",
-      "upstreamProject": "Originalprojekt: Velxio"
+      "upstreamProject": "Originalprojekt: Velxio",
+      "toggleLogicTable": "Wahrheitstabelle / Zeitdiagramm"
     },
     "inspector": {
       "propertiesTab": "Eigenschaften",
@@ -493,6 +505,30 @@
         "compiling": "Sketch wird vor dem Flashen kompiliert...",
         "recompiling": "Code seit dem letzten Build geändert: wird vor dem Flashen neu kompiliert...",
         "compiled": "Build OK in {{seconds}} s. Flashen startet..."
+      },
+      "help": {
+        "prepareTitle": "Vor dem Start",
+        "whatToDo": "Was du tun kannst:",
+        "stepCable": "Board mit einem USB-Datenkabel anschließen (reine Ladekabel funktionieren nicht).",
+        "stepClose": "Alle Programme schließen, die den Port benutzen: Arduino IDE, serielle Monitore, andere Browser-Tabs.",
+        "stepAvrPins": "Alles von den Pins 0 und 1 (RX/TX) abziehen – sie werden beim Hochladen gebraucht.",
+        "stepNano": "Alte Nano-Nachbauten haben einen langsameren Bootloader: Pinslim probiert beide Geschwindigkeiten automatisch.",
+        "stepPick": "Auf den Flash-Knopf klicken und im Browser-Fenster das Board auswählen (oft „USB-SERIAL CH340“, „CP210x“ oder „USB JTAG/serial“).",
+        "stepBootClassic": "Hängt es bei „Connecting…“: die BOOT-Taste am Board gedrückt halten, bis das Hochladen beginnt.",
+        "stepBootNative": "Wird das Board nicht gefunden: BOOT gedrückt halten, kurz RESET (EN) drücken, BOOT loslassen. Das Board erscheint dann als neuer Port – wähle diesen.",
+        "errMismatch": "Der angeschlossene Chip passt nicht zu diesem Board-Typ (erwartet: {{expected}}, gefunden: {{found}}). Wähle in Pinslim das passende Board oder schließe das richtige Board an.",
+        "errNoPort": "Es wurde kein Port ausgewählt. Klicke den Flash-Knopf noch einmal und wähle dein Board im Browser-Fenster aus.",
+        "errGesture": "Der Browser öffnet die Port-Auswahl nur direkt nach einem Klick. Klicke den Flash-Knopf noch einmal.",
+        "errBusy": "Der Port ist belegt. Schließe Arduino IDE, serielle Monitore und andere Browser-Tabs, die das Board benutzen, und versuche es erneut.",
+        "errLost": "Die USB-Verbindung ist abgebrochen. Prüfe das Kabel, stecke das Board neu an und versuche es noch einmal.",
+        "errNoSync": "Der Bootloader antwortet nicht. Prüfe, ob das richtige Board gewählt ist und nichts an den Pins 0/1 hängt, und versuche es noch einmal (beim Nano klappt es manchmal erst beim zweiten Mal).",
+        "errVerify": "Das Geschriebene stimmt nicht mit dem Programm überein. Versuche es mit einem anderen USB-Kabel oder -Port und ziehe das Board beim Hochladen nicht ab.",
+        "errTooBig": "Das Programm ist für dieses Board zu groß. Entferne Code, große Texte oder Bibliotheken.",
+        "errEspConnect": "Der Chip ist nicht im Flash-Modus. Halte beim Start des Hochladens die BOOT-Taste gedrückt (S3/C3/C6/P4: BOOT halten, RESET tippen, BOOT loslassen) und nimm ein Datenkabel.",
+        "noMega": "Der Arduino Mega lässt sich noch nicht aus dem Browser flashen (sein Bootloader nutzt ein anderes Protokoll). Nimm dafür die Arduino IDE.",
+        "noBoard": "Dieses Board lässt sich nicht direkt aus dem Browser flashen.",
+        "noSecure": "Flashen aus dem Browser braucht eine gesicherte Verbindung. Öffne Pinslim über https:// oder http://localhost – unter einer normalen http://-Adresse blendet der Browser den USB-Zugriff aus.",
+        "noBrowser": "Dieser Browser kann nicht auf USB-Geräte zugreifen. Nimm Chrome, Edge oder Opera (Firefox und Safari unterstützen Web Serial nicht)."
       }
     },
     "newProject": {
@@ -649,5 +685,31 @@
     "circuitVerification": "Schaltungsprüfung",
     "boardSensorsHint": "Board neigen und Akkustand einstellen (Simulationseingaben)",
     "language": "Sprache"
+  },
+  "logicTable": {
+    "title": "Wahrheitstabelle & Zeitdiagramm",
+    "tabTable": "Wahrheitstabelle",
+    "tabTiming": "Zeitdiagramm",
+    "copy": "Tabelle kopieren",
+    "copied": "Kopiert ✓",
+    "copyTitle": "Als Text mit Tabulatoren kopieren (lässt sich in Word oder Excel einfügen)",
+    "close": "Schließen",
+    "inputs": "Eingänge:",
+    "internals": "Gatterausgänge (Zwischenergebnisse) anzeigen",
+    "cycles": "Taktperioden:",
+    "expression": "Boolescher Ausdruck",
+    "simplified": "vereinfacht",
+    "step": "Schritt",
+    "time": "Zeit",
+    "sequential": "Diese Schaltung enthält Flipflops. Sie hat ein Gedächtnis, deshalb hängt der Ausgang nicht nur von den Schaltern ab – eine Wahrheitstabelle gibt es hier nicht. Das Zeitdiagramm zeigt, wie sich die Schaltung über die Zeit verhält.",
+    "tooMany": "Zu viele Eingänge für eine Tabelle (höchstens {{max}}). Entferne oben einige Schalter; sie behalten ihre aktuelle Stellung.",
+    "pickInput": "Wähle oben mindestens einen Eingang aus.",
+    "noClock": "Kein Takt-Schalter gefunden: Verbinde einen Schiebeschalter mit dem CLK-Anschluss eines Flipflops, dann erscheint das Zeitdiagramm.",
+    "problem": {
+      "empty": "Baue eine Schaltung aus Logikgattern, Schiebeschaltern und LEDs – hier erscheint dann ihre Wahrheitstabelle.",
+      "notDigital": "Die Tabelle gibt es für reine Logikschaltungen (Gatter, Schalter, LEDs, Flipflops) ohne Mikrocontroller und ohne analoge Bauteile.",
+      "noSwitch": "Die Schaltung braucht mindestens einen Schiebeschalter als Eingang.",
+      "noOutput": "Die Schaltung braucht mindestens eine LED als Ausgang."
+    }
   }
 }

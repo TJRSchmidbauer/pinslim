@@ -16,6 +16,7 @@
  */
 
 import type { AVRTWI, TWIEventHandler } from 'avr8js';
+import type { I2cEvent } from './busWaveform';
 
 // ── Virtual I2C device interface ────────────────────────────────────────────
 
@@ -73,6 +74,13 @@ export class I2CBusManager implements TWIEventHandler {
    * responsible for routing each master event into the bus's methods.
    */
   private master: I2CMaster;
+
+  /**
+   * Called for every master-side bus event with its outcome (ACK/NACK).
+   * The scope uses it to draw SDA/SCL for hardware Wire.h traffic, which the
+   * byte-level peripheral emulation would otherwise leave invisible.
+   */
+  public onBusEvent: ((e: I2cEvent) => void) | null = null;
 
   constructor(master: I2CMaster) {
     this.master = master;
@@ -166,11 +174,13 @@ export class I2CBusManager implements TWIEventHandler {
 
   // ── TWIEventHandler implementation (master-side events from the local MCU) ──
 
-  start(_repeated: boolean): void {
+  start(repeated: boolean): void {
+    this.onBusEvent?.({ type: 'start', repeated });
     this.master.completeStart();
   }
 
   stop(): void {
+    this.onBusEvent?.({ type: 'stop' });
     if (this.activeExternal) {
       this.activeExternal.handleExternalStop();
       this.activeExternal = null;
@@ -182,12 +192,16 @@ export class I2CBusManager implements TWIEventHandler {
   }
 
   connectToSlave(addr: number, write: boolean): void {
+    const answer = (ack: boolean) => {
+      this.onBusEvent?.({ type: 'address', addr, write, ack });
+      this.master.completeConnect(ack);
+    };
     // 1. Local devices win — fastest path and what single-board sketches expect.
     const local = this.devices.get(addr);
     if (local) {
       this.activeDevice = local;
       this.activeExternal = null;
-      this.master.completeConnect(true);
+      answer(true);
       return;
     }
     // 2. Walk the bridge graph (BFS) until a peer ACKs `addr`.  The
@@ -201,34 +215,30 @@ export class I2CBusManager implements TWIEventHandler {
       if (bridge.handleExternalConnect(addr, write, visited)) {
         this.activeExternal = bridge;
         this.activeDevice = null;
-        this.master.completeConnect(true);
+        answer(true);
         return;
       }
     }
     // 3. NACK — no device anywhere in the topology knows this address.
     this.activeDevice = null;
     this.activeExternal = null;
-    this.master.completeConnect(false);
+    answer(false);
   }
 
   writeByte(value: number): void {
-    if (this.activeDevice) {
-      this.master.completeWrite(this.activeDevice.writeByte(value));
-    } else if (this.activeExternal) {
-      this.master.completeWrite(this.activeExternal.handleExternalWrite(value));
-    } else {
-      this.master.completeWrite(false);
-    }
+    let ack = false;
+    if (this.activeDevice) ack = this.activeDevice.writeByte(value);
+    else if (this.activeExternal) ack = this.activeExternal.handleExternalWrite(value);
+    this.onBusEvent?.({ type: 'write', value, ack });
+    this.master.completeWrite(ack);
   }
 
-  readByte(_ack: boolean): void {
-    if (this.activeDevice) {
-      this.master.completeRead(this.activeDevice.readByte());
-    } else if (this.activeExternal) {
-      this.master.completeRead(this.activeExternal.handleExternalRead());
-    } else {
-      this.master.completeRead(0xff);
-    }
+  readByte(ack: boolean): void {
+    let value = 0xff;
+    if (this.activeDevice) value = this.activeDevice.readByte();
+    else if (this.activeExternal) value = this.activeExternal.handleExternalRead();
+    this.onBusEvent?.({ type: 'read', value, ack });
+    this.master.completeRead(value);
   }
 
   // ── External-master inbound handlers (called by a bridged peer bus) ────
