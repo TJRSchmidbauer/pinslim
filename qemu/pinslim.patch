@@ -992,10 +992,18 @@ index 5d3e7d07..66d9640e 100644
 +    select UNIMP
 +    select PICSIMLAB_I2C
 diff --git a/hw/riscv/esp32c3_picsimlab.c b/hw/riscv/esp32c3_picsimlab.c
-index 913143ae..4eaaf6d1 100644
+index 913143ae..a0bb795c 100644
 --- a/hw/riscv/esp32c3_picsimlab.c
 +++ b/hw/riscv/esp32c3_picsimlab.c
-@@ -69,6 +69,7 @@
+@@ -40,6 +40,7 @@
+ #include "hw/timer/esp32c3_timg.h"
+ #include "hw/timer/esp32c3_systimer.h"
+ #include "hw/ssi/esp32c3_spi.h"
++#include "hw/ssi/esp32_gpspi.h"
+ #include "hw/misc/esp32c3_rtc_cntl.h"
+ #include "hw/misc/esp32c3_aes.h"
+ #include "hw/misc/esp32c3_rsa.h"
+@@ -69,6 +70,7 @@
  #include "chardev/char-fd.h"
  #endif
  #include "chardev/char-serial.h"
@@ -1003,7 +1011,15 @@ index 913143ae..4eaaf6d1 100644
  
  #define ESP32C3_IO_WARNING 0
  
-@@ -180,25 +181,7 @@ static qemu_irq *psync_irq;
+@@ -105,6 +107,7 @@ struct Esp32C3MachineState
+     ESP32C3TimgState timg[2];
+     ESP32C3SysTimerState systimer;
+     ESP32C3SpiState spi1;
++    Esp32GpSpiState spi2;
+     ESP32C3RtcCntlState rtccntl;
+     ESP32C3UsbJtagState jtag;
+     ESPRgbState rgb;
+@@ -180,25 +183,7 @@ static qemu_irq *psync_irq;
  
  static qemu_irq pin_irq[100];
  
@@ -1030,7 +1046,7 @@ index 913143ae..4eaaf6d1 100644
  
  #define QEMU_INTERNAL_STRAP 0
  #define QEMU_INTERNAL_GPIO_IN_SEL 1
-@@ -210,7 +193,7 @@ void qemu_picsimlab_uart_receive(const int id, const uint8_t *buf, int size);
+@@ -210,7 +195,7 @@ void qemu_picsimlab_uart_receive(const int id, const uint8_t *buf, int size);
  #define QEMU_INTERNAL_UART0_BAUD 7
  #define QEMU_INTERNAL_UART1_BAUD 8
  
@@ -1039,7 +1055,7 @@ index 913143ae..4eaaf6d1 100644
  {
      switch (cfg)
      {
-@@ -254,12 +237,12 @@ uint32_t *qemu_picsimlab_get_internals(int cfg)
+@@ -254,12 +239,12 @@ uint32_t *qemu_picsimlab_get_internals(int cfg)
  void uart_receive(void *opaque, const uint8_t *buf, int size);
  int uart_can_receive(void *opaque);
  
@@ -1054,7 +1070,7 @@ index 913143ae..4eaaf6d1 100644
  {
      ESP32UARTState *s = ESP32_UART(&(global_s->uart[0].parent));
  
-@@ -290,34 +273,9 @@ uint32_t qemu_picsimlab_get_TIOCM(void)
+@@ -290,34 +275,9 @@ uint32_t qemu_picsimlab_get_TIOCM(void)
      return state;
  }
  
@@ -1091,7 +1107,7 @@ index 913143ae..4eaaf6d1 100644
  {
      // qemu_mutex_lock_iothread ();
      if (value)
-@@ -331,13 +289,13 @@ void qemu_picsimlab_set_pin(int pin, int value)
+@@ -331,13 +291,13 @@ void qemu_picsimlab_set_pin(int pin, int value)
      // qemu_mutex_unlock_iothread ();
  }
  
@@ -1107,7 +1123,7 @@ index 913143ae..4eaaf6d1 100644
  {
      if (global_s->cache.flash_blk)
      {
-@@ -346,6 +304,16 @@ int qemu_picsimlab_flash_dump(int64_t offset, void *buf, int bytes)
+@@ -346,6 +306,16 @@ int qemu_picsimlab_flash_dump(int64_t offset, void *buf, int bytes)
      return 0;
  }
  
@@ -1124,7 +1140,7 @@ index 913143ae..4eaaf6d1 100644
  static void
  pout_irq_handler(void *opaque, int n, int level)
  {
-@@ -725,6 +693,7 @@ static void esp32c3_load_firmware(MachineState *machine)
+@@ -725,6 +695,7 @@ static void esp32c3_load_firmware(MachineState *machine)
  
  static void esp32c3_machine_init(MachineState *machine)
  {
@@ -1132,7 +1148,15 @@ index 913143ae..4eaaf6d1 100644
      /* First thing to do is to check if a drive format and a file ahve been passed through the command line.
       * In fact, we will emulate the SPI flash if `if=mtd` was given. To know this, we will need to use the
       * Global API's function `driver_get`. */
-@@ -839,7 +808,7 @@ static void esp32c3_machine_init(MachineState *machine)
+@@ -824,6 +795,7 @@ static void esp32c3_machine_init(MachineState *machine)
+     object_initialize_child(OBJECT(machine), "timg1", &ms->timg[1], TYPE_ESP32C3_TIMG);
+     object_initialize_child(OBJECT(machine), "systimer", &ms->systimer, TYPE_ESP32C3_SYSTIMER);
+     object_initialize_child(OBJECT(machine), "spi1", &ms->spi1, TYPE_ESP32C3_SPI);
++    object_initialize_child(OBJECT(machine), "spi2", &ms->spi2, TYPE_ESP32_GPSPI);
+     object_initialize_child(OBJECT(machine), "rtccntl", &ms->rtccntl, TYPE_ESP32C3_RTC_CNTL);
+     object_initialize_child(OBJECT(machine), "jtag", &ms->jtag, TYPE_ESP32C3_JTAG);
+     object_initialize_child(OBJECT(machine), "rgb", &ms->rgb, TYPE_ESP_RGB);
+@@ -839,7 +811,7 @@ static void esp32c3_machine_init(MachineState *machine)
      ms->i2c.model = I2C_MODEL_ESP32C3;
  
      if (qemu_find_nic_info(TYPE_ESP32C3_WIFI, false, NULL) != NULL)
@@ -1141,7 +1165,7 @@ index 913143ae..4eaaf6d1 100644
  
      /* Realize all the I/O peripherals we depend on */
  
-@@ -862,9 +831,6 @@ static void esp32c3_machine_init(MachineState *machine)
+@@ -862,9 +834,6 @@ static void esp32c3_machine_init(MachineState *machine)
          }
      }
  
@@ -1151,7 +1175,7 @@ index 913143ae..4eaaf6d1 100644
      /* USB Serial JTAG realization */
      {
          sysbus_realize(SYS_BUS_DEVICE(&ms->jtag), &error_fatal);
-@@ -944,6 +910,11 @@ static void esp32c3_machine_init(MachineState *machine)
+@@ -944,6 +913,11 @@ static void esp32c3_machine_init(MachineState *machine)
                             qdev_get_gpio_in(intmatrix_dev, ETS_EFUSE_INTR_SOURCE));
      }
  
@@ -1163,7 +1187,25 @@ index 913143ae..4eaaf6d1 100644
      /* System clock realization */
      {
          sysbus_realize(SYS_BUS_DEVICE(&ms->clock), &error_fatal);
-@@ -1186,17 +1157,17 @@ static void esp32c3_machine_init(MachineState *machine)
+@@ -1145,6 +1119,17 @@ static void esp32c3_machine_init(MachineState *machine)
+     /* Initialize I2C support */
+     esp32c3_init_i2c(ms);
+ 
++    /* General-purpose SPI master(s): the host SPI bridge is the only peripheral,
++     * so SPI.transfer() reaches the worker (displays, SD, the logic analyzer). */
++    {
++        sysbus_realize(SYS_BUS_DEVICE(&ms->spi2), &error_fatal);
++        memory_region_add_subregion_overlap(sys_mem, 0x60024000,
++            sysbus_mmio_get_region(SYS_BUS_DEVICE(&ms->spi2), 0), 1);
++        sysbus_connect_irq(SYS_BUS_DEVICE(&ms->spi2), 0,
++                           qdev_get_gpio_in(intmatrix_dev, ETS_SPI2_INTR_SOURCE));
++        ssi_create_peripheral(ms->spi2.spi, "picsimlab_spi");
++    }
++
+     esp32c3_add_unimp_device(sys_mem, "esp32c3.sensitive", DR_REG_SENSITIVE_BASE, 0x1000, 0);
+     esp32c3_add_unimp_device(sys_mem, "esp32c3.mmu", DR_REG_MMU_TABLE, 0x1000, 0);
+     esp32c3_add_unimp_device(sys_mem, "esp32c3.dedicategpio", DR_REG_DEDICATED_GPIO_BASE, 0x1000, 0);
+@@ -1186,17 +1171,17 @@ static void esp32c3_machine_init(MachineState *machine)
          qdev_connect_gpio_out_named(DEVICE(&ms->spi[3]), SSI_GPIO_CS, 2 , spi_cs_irq[6]);
      */
  
@@ -1191,10 +1233,10 @@ index 913143ae..4eaaf6d1 100644
      }
 diff --git a/hw/riscv/esp32c6_picsimlab.c b/hw/riscv/esp32c6_picsimlab.c
 new file mode 100644
-index 00000000..bb7a8fea
+index 00000000..c6853d6b
 --- /dev/null
 +++ b/hw/riscv/esp32c6_picsimlab.c
-@@ -0,0 +1,738 @@
+@@ -0,0 +1,752 @@
 +/*
 + * ESP32-C6 SoC and machine — PICSimLab variant
 + *
@@ -1245,6 +1287,7 @@ index 00000000..bb7a8fea
 +#include "hw/timer/esp32c6_timg.h"
 +#include "hw/timer/esp32c6_systimer.h"
 +#include "hw/ssi/esp32c6_spi.h"
++#include "hw/ssi/esp32_gpspi.h"
 +#include "hw/dma/esp32c6_gdma.h"
 +#include "hw/irq.h"
 +#include "hw/i2c/esp32_i2c.h"
@@ -1296,6 +1339,7 @@ index 00000000..bb7a8fea
 +    Esp32c3SarAdcState saradc;
 +    Esp32C3LEDCState ledc;
 +    Esp32I2CState i2c;
++    Esp32GpSpiState spi2;
 +};
 +
 +#define TYPE_ESP32C6_MACHINE MACHINE_TYPE_NAME("esp32c6-picsimlab")
@@ -1653,6 +1697,7 @@ index 00000000..bb7a8fea
 +    object_initialize_child(OBJECT(machine), "saradc", &ms->saradc, TYPE_ESP32C3_SARADC);
 +    object_initialize_child(OBJECT(machine), "ledc", &ms->ledc, TYPE_ESP32C3_LEDC);
 +    object_initialize_child(OBJECT(machine), "i2c", &ms->i2c, TYPE_ESP32_I2C);
++    object_initialize_child(OBJECT(machine), "spi2", &ms->spi2, TYPE_ESP32_GPSPI);
 +    ms->i2c.model = I2C_MODEL_ESP32C3;
 +
 +    /* Interrupt matrix + PLIC */
@@ -1746,6 +1791,17 @@ index 00000000..bb7a8fea
 +                           qdev_get_gpio_in(intmatrix_dev, C6_ETS_I2C_EXT0_INTR_SOURCE));
 +        I2CBus *i2c_bus = I2C_BUS(qdev_get_child_bus(DEVICE(&ms->i2c), "i2c"));
 +        i2c_slave_create_simple(i2c_bus, "picsimlab_i2c", 0x00);
++    }
++
++    /* General-purpose SPI master(s): the host SPI bridge is the only peripheral,
++     * so SPI.transfer() reaches the worker (displays, SD, the logic analyzer). */
++    {
++        sysbus_realize(SYS_BUS_DEVICE(&ms->spi2), &error_fatal);
++        memory_region_add_subregion_overlap(sys_mem, 0x60081000,
++            sysbus_mmio_get_region(SYS_BUS_DEVICE(&ms->spi2), 0), 1);
++        sysbus_connect_irq(SYS_BUS_DEVICE(&ms->spi2), 0,
++                           qdev_get_gpio_in(intmatrix_dev, C6_ETS_SPI2_INTR_SOURCE));
++        ssi_create_peripheral(ms->spi2.spi, "picsimlab_spi");
 +    }
 +
 +    /* Cache (EXTMEM) */
@@ -1948,15 +2004,208 @@ index e610daa5..2234bb2d 100644
 +        'esp32c6_picsimlab.c',
 +        'esp32c6_intmatrix.c',
 +))
+diff --git a/hw/ssi/esp32_gpspi.c b/hw/ssi/esp32_gpspi.c
+new file mode 100644
+index 00000000..64a2ff3b
+--- /dev/null
++++ b/hw/ssi/esp32_gpspi.c
+@@ -0,0 +1,180 @@
++/*
++ * ESP32-C3 / ESP32-S3 / ESP32-C6 general-purpose SPI master (see header).
++ *
++ * The register layout is identical on the three chips (checked against
++ * soc/<chip>/register/soc/spi_reg.h of ESP-IDF 5.5): only the base address and
++ * the interrupt source differ, which the machine supplies.
++ *
++ * SPDX-License-Identifier: GPL-2.0-or-later
++ */
++#include "qemu/osdep.h"
++#include "qemu/log.h"
++#include "qemu/module.h"
++#include "hw/irq.h"
++#include "hw/ssi/ssi.h"
++#include "hw/ssi/esp32_gpspi.h"
++
++#define R_CMD          (0x00 / 4)
++#define R_ADDR         (0x04 / 4)
++#define R_USER         (0x10 / 4)
++#define R_USER1        (0x14 / 4)
++#define R_USER2        (0x18 / 4)
++#define R_MS_DLEN      (0x1C / 4)
++#define R_INT_ENA      (0x34 / 4)
++#define R_INT_CLR      (0x38 / 4)
++#define R_INT_RAW      (0x3C / 4)
++#define R_INT_ST       (0x40 / 4)
++#define R_W0           (0x98 / 4)
++#define W_WORDS        16
++
++#define CMD_UPDATE     (1u << 23)
++#define CMD_USR        (1u << 24)
++#define USER_MOSI      (1u << 27)
++#define USER_MISO      (1u << 28)
++#define USER_ADDR      (1u << 30)
++#define USER_COMMAND   (1u << 31)
++#define INT_TRANS_DONE (1u << 12)
++
++static void gpspi_update_irq(Esp32GpSpiState *s)
++{
++    qemu_set_irq(s->irq, (s->regs[R_INT_RAW] & s->regs[R_INT_ENA]) != 0);
++}
++
++static uint8_t buf_get(Esp32GpSpiState *s, unsigned i)
++{
++    return (s->regs[R_W0 + i / 4] >> (8 * (i % 4))) & 0xff;
++}
++
++static void buf_put(Esp32GpSpiState *s, unsigned i, uint8_t v)
++{
++    uint32_t *w = &s->regs[R_W0 + i / 4];
++    *w = (*w & ~(0xffu << (8 * (i % 4)))) | ((uint32_t)v << (8 * (i % 4)));
++}
++
++/* Run the programmed user transaction to completion. */
++static void gpspi_transfer(Esp32GpSpiState *s)
++{
++    const uint32_t user = s->regs[R_USER];
++
++    if (user & USER_COMMAND) {
++        /* 1..16 bits, MSB aligned in the 16-bit command value */
++        unsigned bytes = (((s->regs[R_USER2] >> 28) & 0xf) + 8) / 8;
++        for (unsigned i = 0; i < bytes; i++) {
++            ssi_transfer(s->spi, (s->regs[R_USER2] >> (8 - 8 * (int)i)) & 0xff);
++        }
++    }
++    if (user & USER_ADDR) {
++        /* the HAL left-aligns the address in the 32-bit register */
++        unsigned bytes = (((s->regs[R_USER1] >> 26) & 0x3f) + 8) / 8;
++        for (unsigned i = 0; i < bytes && i < 4; i++) {
++            ssi_transfer(s->spi, (s->regs[R_ADDR] >> (24 - 8 * i)) & 0xff);
++        }
++    }
++    if (user & (USER_MOSI | USER_MISO)) {
++        unsigned bits = (s->regs[R_MS_DLEN] & 0x3ffff) + 1;
++        unsigned bytes = MIN((bits + 7) / 8, W_WORDS * 4u);
++        for (unsigned i = 0; i < bytes; i++) {
++            uint32_t out = (user & USER_MOSI) ? buf_get(s, i) : 0;
++            uint32_t in = ssi_transfer(s->spi, out);
++            if (user & USER_MISO) {
++                buf_put(s, i, in & 0xff);
++            }
++        }
++    }
++    s->regs[R_INT_RAW] |= INT_TRANS_DONE;
++    gpspi_update_irq(s);
++}
++
++static uint64_t gpspi_read(void *opaque, hwaddr addr, unsigned size)
++{
++    Esp32GpSpiState *s = opaque;
++    if (addr >= ESP32_GPSPI_REGS) {
++        return 0;
++    }
++    if (addr / 4 == R_INT_ST) {
++        return s->regs[R_INT_RAW] & s->regs[R_INT_ENA];
++    }
++    return s->regs[addr / 4];
++}
++
++static void gpspi_write(void *opaque, hwaddr addr, uint64_t value, unsigned size)
++{
++    Esp32GpSpiState *s = opaque;
++    const unsigned r = addr / 4;
++    if (addr >= ESP32_GPSPI_REGS) {
++        return;
++    }
++    switch (r) {
++    case R_CMD:
++        /* UPDATE latches the config and clears itself; USR runs and clears. */
++        s->regs[R_CMD] = value & ~(CMD_UPDATE | CMD_USR);
++        if (value & CMD_USR) {
++            gpspi_transfer(s);
++        }
++        break;
++    case R_INT_CLR:
++        s->regs[R_INT_RAW] &= ~(uint32_t)value;
++        gpspi_update_irq(s);
++        break;
++    case R_INT_RAW:
++        s->regs[R_INT_RAW] = value;
++        gpspi_update_irq(s);
++        break;
++    case R_INT_ENA:
++        s->regs[R_INT_ENA] = value;
++        gpspi_update_irq(s);
++        break;
++    case R_INT_ST:
++        break;
++    default:
++        s->regs[r] = value;
++        break;
++    }
++}
++
++static const MemoryRegionOps gpspi_ops = {
++    .read = gpspi_read,
++    .write = gpspi_write,
++    .endianness = DEVICE_LITTLE_ENDIAN,
++    .valid.min_access_size = 4,
++    .valid.max_access_size = 4,
++};
++
++static void gpspi_reset(DeviceState *dev)
++{
++    Esp32GpSpiState *s = ESP32_GPSPI(dev);
++    memset(s->regs, 0, sizeof(s->regs));
++    gpspi_update_irq(s);
++}
++
++static void gpspi_init(Object *obj)
++{
++    Esp32GpSpiState *s = ESP32_GPSPI(obj);
++    SysBusDevice *sbd = SYS_BUS_DEVICE(obj);
++
++    memory_region_init_io(&s->iomem, obj, &gpspi_ops, s, TYPE_ESP32_GPSPI, 0x1000);
++    sysbus_init_mmio(sbd, &s->iomem);
++    sysbus_init_irq(sbd, &s->irq);
++    s->spi = ssi_create_bus(DEVICE(s), "spi");
++}
++
++static void gpspi_class_init(ObjectClass *klass, void *data)
++{
++    DeviceClass *dc = DEVICE_CLASS(klass);
++    device_class_set_legacy_reset(dc, gpspi_reset);
++}
++
++static const TypeInfo gpspi_info = {
++    .name = TYPE_ESP32_GPSPI,
++    .parent = TYPE_SYS_BUS_DEVICE,
++    .instance_size = sizeof(Esp32GpSpiState),
++    .instance_init = gpspi_init,
++    .class_init = gpspi_class_init,
++};
++
++static void gpspi_register_types(void)
++{
++    type_register_static(&gpspi_info);
++}
++
++type_init(gpspi_register_types)
 diff --git a/hw/ssi/meson.build b/hw/ssi/meson.build
-index c4f4cdb9..d6c6ab58 100644
+index c4f4cdb9..bb75c6f9 100644
 --- a/hw/ssi/meson.build
 +++ b/hw/ssi/meson.build
-@@ -16,3 +16,4 @@ system_ss.add(when: 'CONFIG_XTENSA_ESP32S3', if_true: files('esp32s3_spi.c'))
+@@ -11,8 +11,9 @@ system_ss.add(when: 'CONFIG_XILINX_SPIPS', if_true: files('xilinx_spips.c'))
+ system_ss.add(when: 'CONFIG_XLNX_VERSAL', if_true: files('xlnx-versal-ospi.c'))
+ system_ss.add(when: 'CONFIG_IMX', if_true: files('imx_spi.c'))
+ system_ss.add(when: 'CONFIG_XTENSA_ESP32', if_true: files('esp32_spi.c','esp32_rmt.c','picsimlab_spi.c'))
+-system_ss.add(when: 'CONFIG_RISCV_ESP32C3', if_true: files('esp32c3_spi.c'))
+-system_ss.add(when: 'CONFIG_XTENSA_ESP32S3', if_true: files('esp32s3_spi.c'))
++system_ss.add(when: 'CONFIG_RISCV_ESP32C3', if_true: files('esp32c3_spi.c', 'esp32_gpspi.c', 'picsimlab_spi.c'))
++system_ss.add(when: 'CONFIG_XTENSA_ESP32S3', if_true: files('esp32s3_spi.c', 'esp32_gpspi.c', 'picsimlab_spi.c'))
  system_ss.add(when: 'CONFIG_IBEX', if_true: files('ibex_spi_host.c'))
  system_ss.add(when: 'CONFIG_BCM2835_SPI', if_true: files('bcm2835_spi.c'))
  system_ss.add(when: 'CONFIG_PNV_SPI', if_true: files('pnv_spi.c'))
-+system_ss.add(when: 'CONFIG_RISCV_ESP32C6', if_true: files('esp32c3_spi.c', 'esp32c6_spi.c'))
++system_ss.add(when: 'CONFIG_RISCV_ESP32C6', if_true: files('esp32c3_spi.c', 'esp32c6_spi.c', 'esp32_gpspi.c', 'picsimlab_spi.c'))
 diff --git a/hw/timer/meson.build b/hw/timer/meson.build
 index 3ae213d4..6213f07d 100644
 --- a/hw/timer/meson.build
@@ -2154,10 +2403,10 @@ index d8a199dd..82897ef3 100644
      if (dinfo) {
 diff --git a/hw/xtensa/esp32s3_picsimlab.c b/hw/xtensa/esp32s3_picsimlab.c
 new file mode 100644
-index 00000000..4f2d7b53
+index 00000000..24637661
 --- /dev/null
 +++ b/hw/xtensa/esp32s3_picsimlab.c
-@@ -0,0 +1,1233 @@
+@@ -0,0 +1,1255 @@
 +/*
 + * ESP32S3 SoC and Machine
 + *
@@ -2206,6 +2455,7 @@ index 00000000..4f2d7b53
 +#include "elf.h"
 +
 +#include "hw/ssi/esp32s3_spi.h"
++#include "hw/ssi/esp32_gpspi.h"
 +#include "hw/misc/esp32s3_cache.h"
 +#include "hw/char/esp32s3_uart.h"
 +#include "hw/misc/esp32s3_rng.h"
@@ -2304,6 +2554,8 @@ index 00000000..4f2d7b53
 +
 +    MemoryRegion cpu_specific_mem[ESP32S3_CPU_COUNT];
 +    ESP32S3SpiState spi1;
++    Esp32GpSpiState spi2;
++    Esp32GpSpiState spi3;
 +    ESP32S3CacheState cache;
 +    ESP32S3EfuseState efuse;
 +    ESP32S3ClockState clock;
@@ -2933,6 +3185,8 @@ index 00000000..4f2d7b53
 +
 +    object_initialize_child(OBJECT(ss), "extmem", &ss->cache, TYPE_ESP32S3_CACHE);
 +    object_initialize_child(OBJECT(ss), "spi1", &ss->spi1, TYPE_ESP32S3_SPI);
++    object_initialize_child(OBJECT(ss), "spi2", &ss->spi2, TYPE_ESP32_GPSPI);
++    object_initialize_child(OBJECT(ss), "spi3", &ss->spi3, TYPE_ESP32_GPSPI);
 +    object_initialize_child(OBJECT(ss), "efuse", &ss->efuse, TYPE_ESP32S3_EFUSE);
 +    object_initialize_child(OBJECT(ss), "jtag", &ss->jtag, TYPE_ESP32C3_JTAG);
 +    object_initialize_child(OBJECT(ss), "gpio", &ss->gpio, TYPE_ESP32S3_GPIO);
@@ -3242,6 +3496,23 @@ index 00000000..4f2d7b53
 +                           qdev_get_gpio_in(intmatrix_dev, ETS_I2C_EXT0_INTR_SOURCE));
 +        I2CBus *i2c_bus = I2C_BUS(qdev_get_child_bus(DEVICE(&ss->i2c), "i2c"));
 +        i2c_slave_create_simple(i2c_bus, "picsimlab_i2c", 0x00);
++    }
++
++    /* General-purpose SPI master(s): the host SPI bridge is the only peripheral,
++     * so SPI.transfer() reaches the worker (displays, SD, the logic analyzer). */
++    {
++        sysbus_realize(SYS_BUS_DEVICE(&ss->spi2), &error_fatal);
++        memory_region_add_subregion_overlap(sys_mem, 0x60024000,
++            sysbus_mmio_get_region(SYS_BUS_DEVICE(&ss->spi2), 0), 1);
++        sysbus_connect_irq(SYS_BUS_DEVICE(&ss->spi2), 0,
++                           qdev_get_gpio_in(intmatrix_dev, ETS_SPI2_INTR_SOURCE));
++        ssi_create_peripheral(ss->spi2.spi, "picsimlab_spi");
++        sysbus_realize(SYS_BUS_DEVICE(&ss->spi3), &error_fatal);
++        memory_region_add_subregion_overlap(sys_mem, 0x60025000,
++            sysbus_mmio_get_region(SYS_BUS_DEVICE(&ss->spi3), 0), 1);
++        sysbus_connect_irq(SYS_BUS_DEVICE(&ss->spi3), 0,
++                           qdev_get_gpio_in(intmatrix_dev, ETS_SPI3_INTR_SOURCE));
++        ssi_create_peripheral(ss->spi3.spi, "picsimlab_spi");
 +    }
 +
 +    
@@ -3624,3 +3895,37 @@ index 00000000..704d7ef6
 +void qemu_picsimlab_uart_receive(const int id, const uint8_t *buf, int size);
 +
 +#endif
+diff --git a/include/hw/ssi/esp32_gpspi.h b/include/hw/ssi/esp32_gpspi.h
+new file mode 100644
+index 00000000..7cd7e949
+--- /dev/null
++++ b/include/hw/ssi/esp32_gpspi.h
+@@ -0,0 +1,28 @@
++/*
++ * ESP32-C3 / ESP32-S3 / ESP32-C6 general-purpose SPI master (GP-SPI2, GP-SPI3).
++ *
++ * Pinslim: the stock models only cover SPI1 (the flash controller), so
++ * SPI.transfer() on these chips talked to unmapped registers and nothing ever
++ * reached a display or the logic analyzer. This one runs CPU-driven transfers
++ * (what Arduino's SPI.h and the IDF polling path use): command / address /
++ * data phases through the W0..W15 buffer, TRANS_DONE interrupt, UPDATE and USR
++ * bits that complete at once. DMA transfers are not modelled.
++ */
++#pragma once
++
++#include "hw/sysbus.h"
++#include "hw/ssi/ssi.h"
++
++#define TYPE_ESP32_GPSPI "ssi.esp32.gpspi"
++#define ESP32_GPSPI(obj) OBJECT_CHECK(Esp32GpSpiState, (obj), TYPE_ESP32_GPSPI)
++
++#define ESP32_GPSPI_REGS 0x100
++
++typedef struct Esp32GpSpiState {
++    SysBusDevice parent_obj;
++
++    MemoryRegion iomem;
++    SSIBus *spi;
++    qemu_irq irq;
++    uint32_t regs[ESP32_GPSPI_REGS / 4];
++} Esp32GpSpiState;

@@ -103,6 +103,8 @@ interface OscilloscopeState {
   removeChannel: (id: string) => void;
   /** Push one sample; drops the oldest if the buffer is full */
   pushSample: (channelId: string, timeMs: number, state: boolean) => void;
+  /** Many samples in one store update (bus bursts); same trigger logic as pushSample. */
+  pushSamples: (batch: { channelId: string; timeMs: number; state: boolean }[]) => void;
   clearSamples: () => void;
 
   setTriggerMode: (mode: TriggerMode) => void;
@@ -193,55 +195,70 @@ export const useOscilloscopeStore = create<OscilloscopeState>((set, get) => ({
   },
 
   pushSample: (channelId, timeMs, state) => {
+    get().pushSamples([{ channelId, timeMs, state }]);
+  },
+
+  pushSamples: (batch) => {
     const s = get();
-    if (!s.running) return;
+    if (!s.running || batch.length === 0) return;
 
-    const buf = s.samples[channelId];
-    if (!buf) return;
+    // Work on a private copy of every touched buffer (copied once per call, not
+    // once per sample) and publish with a single set(): a bus burst such as an
+    // OLED frame is tens of thousands of edges.
+    const samples = { ...s.samples };
+    const owned = new Set<string>();
+    let running: boolean = s.running;
+    let triggeredAtMs = s.triggeredAtMs;
+    let triggerStatus = s.triggerStatus;
+    let touched = false;
 
-    // Trigger detection happens BEFORE we mutate the buffer so we can
-    // peek at the previous state on the trigger channel.  Auto mode
-    // skips this entirely — the scope free-runs.
-    let nextTriggeredAtMs = s.triggeredAtMs;
-    let nextRunning: boolean = s.running;
-    let nextStatus = s.triggerStatus;
+    for (const { channelId, timeMs, state } of batch) {
+      if (!running) break; // a single-shot capture froze the scope mid-burst
+      const buf = samples[channelId];
+      if (!buf) continue;
 
-    if (s.triggerMode !== 'auto') {
-      const triggerChId = resolveTriggerChannelId(s.triggerChannelId, s.channels);
-      if (triggerChId === channelId) {
-        const triggerBuf = s.samples[triggerChId];
-        if (triggerBuf && triggerBuf.length > 0) {
-          const prevState = triggerBuf[triggerBuf.length - 1].state;
-          const single = s.triggerMode === 'single';
-          // Single-shot: once we've captured (status === 'captured'),
-          // ignore further edges until the user explicitly re-arms.
-          const captureLocked = single && s.triggerStatus === 'captured';
-          if (!captureLocked && matchesTriggerEdge(prevState, state, s.triggerEdge)) {
-            nextTriggeredAtMs = timeMs;
-            if (single) {
-              nextRunning = false;
-              nextStatus = 'captured';
-            } else {
-              nextStatus = 'triggered';
+      // Trigger detection happens BEFORE the sample is appended so we can peek
+      // at the previous state on the trigger channel. Auto mode skips it.
+      if (s.triggerMode !== 'auto') {
+        const triggerChId = resolveTriggerChannelId(s.triggerChannelId, s.channels);
+        if (triggerChId === channelId) {
+          const triggerBuf = samples[triggerChId];
+          if (triggerBuf && triggerBuf.length > 0) {
+            const prevState = triggerBuf[triggerBuf.length - 1].state;
+            const single = s.triggerMode === 'single';
+            // Single-shot: once captured, ignore edges until re-armed.
+            const captureLocked = single && triggerStatus === 'captured';
+            if (!captureLocked && matchesTriggerEdge(prevState, state, s.triggerEdge)) {
+              triggeredAtMs = timeMs;
+              if (single) {
+                running = false;
+                triggerStatus = 'captured';
+              } else {
+                triggerStatus = 'triggered';
+              }
             }
           }
         }
       }
-    }
 
-    set((cur) => {
-      const curBuf = cur.samples[channelId];
-      if (!curBuf) return cur;
-      const next = curBuf.slice();
-      if (next.length >= MAX_SAMPLES) next.shift();
-      next.push({ timeMs, state });
-      return {
-        samples: { ...cur.samples, [channelId]: next },
-        ...(nextTriggeredAtMs !== cur.triggeredAtMs ? { triggeredAtMs: nextTriggeredAtMs } : {}),
-        ...(nextRunning !== cur.running ? { running: nextRunning } : {}),
-        ...(nextStatus !== cur.triggerStatus ? { triggerStatus: nextStatus } : {}),
-      };
-    });
+      let arr = buf;
+      if (!owned.has(channelId)) {
+        arr = buf.slice();
+        samples[channelId] = arr;
+        owned.add(channelId);
+      }
+      if (arr.length >= MAX_SAMPLES) arr.shift();
+      arr.push({ timeMs, state });
+      touched = true;
+    }
+    if (!touched) return;
+
+    set((cur) => ({
+      samples,
+      ...(triggeredAtMs !== cur.triggeredAtMs ? { triggeredAtMs } : {}),
+      ...(running !== cur.running ? { running } : {}),
+      ...(triggerStatus !== cur.triggerStatus ? { triggerStatus } : {}),
+    }));
   },
 
   clearSamples: () => {

@@ -354,7 +354,7 @@ export function wireRpI2cToBus(
   },
   bus: I2CBusManager,
 ): void {
-  master.onStart = () => bus.start(false);
+  master.onStart = (restart?: boolean) => bus.start(!!restart);
   master.onConnect = (addr: number, mode?: number) =>
     bus.connectToSlave(addr, mode === undefined ? true : mode === 0);
   master.onWriteByte = (v: number) => bus.writeByte(v);

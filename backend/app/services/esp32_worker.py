@@ -12,6 +12,7 @@ stdin  line 2+: JSON commands
                {"cmd": "set_pin",          "pin": N,       "value": V}
                {"cmd": "set_adc",          "channel": N,   "millivolts": V}
                {"cmd": "set_adc_raw",      "channel": N,   "raw": V}
+               {"cmd": "bus_trace",        "enabled": true|false}
                {"cmd": "set_adc_waveform", "channel": N,   "samples_u12_b64": "<base64-LE-uint16>", "period_ns": P}
                {"cmd": "uart_send",        "uart": N,      "data": "<base64>"}
                {"cmd": "set_i2c_response", "addr": N,      "response": V}
@@ -31,6 +32,7 @@ stdout        : JSON event lines (one per line, flushed immediately)
                {"type": "ws2812_update","channel": N, "pixels": [...]}
                {"type": "i2c_event",    "bus": N, "addr": N, "event": N, "response": N}
                {"type": "spi_event",    "bus": N, "event": N, "response": N}
+               {"type": "bus_trace",    "events": [...], "pins": {...}}   # logic analyzer, see _bus_trace_*
                {"type": "error",        "message": "..."}
 
 stderr        : debug logs (never part of the JSON protocol)
@@ -1290,7 +1292,7 @@ def main() -> None:  # noqa: C901  (complexity OK for inline worker)
         0x6B: 'PWR_MGMT1', 0x68: 'SIG_RST', 0x75: 'WHO_AM_I',
     }
 
-    def _on_i2c_event(bus_id: int, addr: int, event: int) -> int:
+    def _on_i2c_event_inner(bus_id: int, addr: int, event: int) -> int:
         """Synchronous — must return immediately; called from QEMU thread."""
         slave = _i2c_slaves.get(addr)
         op    = event & 0xFF
@@ -1357,6 +1359,100 @@ def main() -> None:  # noqa: C901  (complexity OK for inline worker)
             return 1
         return resp
 
+    # ── Bus trace for the logic analyzer ─────────────────────────────────────
+    # The I2C/SPI peripherals are emulated per byte, so no GPIO ever moves while
+    # Wire / SPI run. With the scope watching, record each byte (monotonic
+    # timestamp, no I/O — this runs on the QEMU thread, where one slow call trips
+    # the firmware's interrupt watchdog) and let a timer thread ship them in
+    # batches; the browser turns them into SDA/SCL/SCK/MOSI/MISO edges.
+    _bus_trace_on  = threading.Event()
+    _bus_trace_buf: list = []
+    _bus_trace_lock = threading.Lock()
+    _BUS_TRACE_KEEP = 4000          # newest entries kept if the browser lags
+
+    def _bus_trace_add(entry: tuple) -> None:
+        with _bus_trace_lock:
+            _bus_trace_buf.append(entry)
+            if len(_bus_trace_buf) > _BUS_TRACE_KEEP * 2:
+                del _bus_trace_buf[:len(_bus_trace_buf) - _BUS_TRACE_KEEP]
+
+    def _on_i2c_event(bus_id: int, addr: int, event: int) -> int:
+        result = _on_i2c_event_inner(bus_id, addr, event)
+        if _bus_trace_on.is_set():
+            op, data, t = event & 0xFF, (event >> 8) & 0xFF, time.monotonic()
+            ack = 1 if result == 0 else 0
+            if op in (0x00, 0x01):      # START_RECV / START_SEND → address byte
+                _bus_trace_add(('a', t, bus_id, addr, 1 if op == 0x01 else 0, ack))
+            elif op == 0x05:            # byte written by the master
+                _bus_trace_add(('w', t, bus_id, data, ack))
+            elif op == 0x06:            # byte read by the master
+                _bus_trace_add(('r', t, bus_id, result & 0xFF))
+            elif op == 0x04:            # master NACKs the last byte it read
+                _bus_trace_add(('n', t, bus_id))
+            elif op == 0x03:            # FINISH → STOP
+                _bus_trace_add(('p', t, bus_id))
+        return result
+
+    # GPIO-matrix signal numbers per chip: (I2C0 SCL, SDA), (I2C1 SCL, SDA),
+    # SPI candidates (CLK out, MOSI out, MISO in). Arduino routes every bus
+    # through the matrix, so the pins can be read back whatever the sketch chose.
+    # SPI candidates: (CLK out, MOSI out, MISO in, Arduino's default MISO pad).
+    # MISO is an input; Arduino often leaves it on the IO_MUX direct path, so
+    # the matrix does not show it — fall back to the core's default pad.
+    if 's3' in machine:
+        _BUS_SIGNALS = {'i2c': [(89, 90), (91, 92)], 'spi': [(101, 103, 102, 13)]}
+    elif 'c6' in machine:
+        _BUS_SIGNALS = {'i2c': [(45, 46)], 'spi': [(63, 65, 64, 20)]}
+    elif 'c3' in machine:
+        _BUS_SIGNALS = {'i2c': [(53, 54)], 'spi': [(63, 65, 64, 5)]}
+    else:
+        _BUS_SIGNALS = {'i2c': [(29, 30), (95, 96)], 'spi': [(63, 65, 64, 19), (8, 10, 9, 12)]}
+
+    def _bus_pins() -> dict:
+        """Which GPIOs carry the I2C / SPI lines right now (from the matrix)."""
+        pins: dict = {'i2c': [], 'spi': None}
+        try:
+            out_ptr = lib.qemu_picsimlab_get_internals(2)
+            in_ptr  = lib.qemu_picsimlab_get_internals(1)
+            if not out_ptr:
+                return pins
+            n = _ledc_gpio_count
+            out_sel = (ctypes.c_uint32 * n).from_address(out_ptr)
+            out_map: dict = {}
+            for g in range(n):
+                out_map.setdefault(int(out_sel[g]) & 0x1FF, g)
+            for scl, sda in _BUS_SIGNALS['i2c']:
+                pins['i2c'].append({'scl': out_map.get(scl), 'sda': out_map.get(sda)})
+            in_sel = (ctypes.c_uint32 * 256).from_address(in_ptr) if in_ptr else None
+            for clk, mosi, miso, miso_default in _BUS_SIGNALS['spi']:
+                if clk in out_map:
+                    m = miso_default
+                    if in_sel is not None and (int(in_sel[miso]) & 0x40):
+                        m = int(in_sel[miso]) & 0x3F
+                    pins['spi'] = {'sck': out_map.get(clk), 'mosi': out_map.get(mosi), 'miso': m}
+                    break
+        except Exception:
+            pass
+        return pins
+
+    def _bus_trace_flush_loop() -> None:
+        while not _stopped.is_set():
+            _stopped.wait(0.05)
+            if _stopped.is_set() or not _bus_trace_on.is_set():
+                continue
+            with _bus_trace_lock:
+                batch = _bus_trace_buf[:]
+                _bus_trace_buf.clear()
+            if not batch:
+                continue
+            now = time.monotonic()
+            batch = batch[-_BUS_TRACE_KEEP:]
+            events = [[e[0], round((now - e[1]) * 1000.0, 3), *e[2:]] for e in batch]
+            _emit({'type': 'bus_trace', 'events': events, 'pins': _bus_pins()})
+
+    threading.Thread(target=_bus_trace_flush_loop, daemon=True,
+                     name='esp32-bus-trace-flush').start()
+
     # SPI byte batching — emitting one WS message per byte saturates the
     # uvicorn → frontend pipe and caps tft.drawRGBBitmap at < 1 fps even
     # for tiny previews. Buffer the MOSI bytes here and flush as a single
@@ -1415,7 +1511,7 @@ def main() -> None:  # noqa: C901  (complexity OK for inline worker)
         name='esp32-spi-batch-flush',
     ).start()
 
-    def _on_spi_event(bus_id: int, event: int) -> int:
+    def _on_spi_event_inner(bus_id: int, event: int) -> int:
         """Synchronous — must return immediately; called from QEMU thread.
 
         Event encoding (picsimlab — see hw/ssi/picsimlab_spi.c and the CS irq
@@ -1486,6 +1582,12 @@ def main() -> None:  # noqa: C901  (complexity OK for inline worker)
             _emit({'type': 'spi_event', 'bus': bus_id, 'event': event, 'response': resp})
         return resp
 
+    def _on_spi_event(bus_id: int, event: int) -> int:
+        resp = _on_spi_event_inner(bus_id, event)
+        if _bus_trace_on.is_set() and (event & 0xFF) == 0x00:   # a data byte
+            _bus_trace_add(('s', time.monotonic(), bus_id, (event >> 8) & 0xFF, resp & 0xFF))
+        return resp
+
     def _on_spi_batch(bus_id: int, mosi_ptr, length: int) -> None:
         """Batched write-only SPI transfer — the whole MOSI buffer arrives in a
         single call instead of one picsimlab_spi_event per byte. libqemu only
@@ -1499,6 +1601,10 @@ def main() -> None:  # noqa: C901  (complexity OK for inline worker)
             data = ctypes.string_at(mosi_ptr, length)
         except Exception:
             return
+        if _bus_trace_on.is_set():
+            t_batch = time.monotonic()
+            for mb in data[-_BUS_TRACE_KEEP:]:   # write-only: nothing on MISO
+                _bus_trace_add(('s', t_batch, bus_id, mb, 0))
         # Custom-chip SPI runtimes get first dibs (replay per byte; the chip's
         # MISO return is discarded because this transfer is write-only).
         if _chip_spi_runtimes:
@@ -2001,6 +2107,14 @@ def main() -> None:  # noqa: C901  (complexity OK for inline worker)
             ch = int(cmd['channel'])
             clamped = max(0, min(4095, raw_v))
             lib.qemu_picsimlab_set_apin(ch, clamped)
+
+        elif c == 'bus_trace':
+            if cmd.get('enabled'):
+                _bus_trace_on.set()
+            else:
+                _bus_trace_on.clear()
+                with _bus_trace_lock:
+                    _bus_trace_buf.clear()
 
         elif c == 'set_adc_raw':
             lib.qemu_picsimlab_set_apin(int(cmd['channel']),

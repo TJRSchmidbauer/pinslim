@@ -3,6 +3,7 @@ import type { RPI2C } from 'rp2040js';
 import { PinManager } from './PinManager';
 import { I2CBusManager, wireRpI2cToBus, nullI2CMaster } from './I2CBusManager';
 import type { I2CDevice } from './I2CBusManager';
+import { I2cWaveform, SpiWaveform, deliverEdges, type BusEdge, type I2cEvent } from './busWaveform';
 import { bootromB1 } from './rp2040-bootrom';
 import { loadUF2, loadUserFiles, getFirmware } from './MicroPythonLoader';
 import { type PioPeripheral, createPioPeripheral } from './PioPeripheral';
@@ -246,6 +247,8 @@ export class RP2040Simulator {
    * idles the TX line HIGH once UARTEN is asserted.
    */
   private uartTxSeeded: [boolean, boolean] = [false, false];
+  /** Simulated time (ms) at which each UART's TX line is free again. */
+  private uartTxCursorMs: [number, number] = [0, 0];
 
   /**
    * One `I2CBusManager` per hardware I2C controller (RP2040 has two:
@@ -263,6 +266,9 @@ export class RP2040Simulator {
       new I2CBusManager(nullI2CMaster()),
       new I2CBusManager(nullI2CMaster()),
     ];
+    // Draw hardware Wire.h traffic on the pad pins for the logic analyzer.
+    this.i2cBuses[0].onBusEvent = (e) => this.emitI2cWaveform(0, e);
+    this.i2cBuses[1].onBusEvent = (e) => this.emitI2cWaveform(1, e);
   }
 
   /**
@@ -314,6 +320,7 @@ export class RP2040Simulator {
 
     // 2. Create fresh RP2040 instance
     this.rp2040 = new RP2040();
+    this.instrumentBusesForScope();
     this.rp2040.logger = new ConsoleLogger(LogLevel.Error, false);
     this.rp2040.loadBootrom(bootromB1);
 
@@ -641,6 +648,7 @@ export class RP2040Simulator {
 
   private initMCU(programBytes: Uint8Array): void {
     this.rp2040 = new RP2040();
+    this.instrumentBusesForScope();
 
     // Suppress noisy internal logs (only show errors)
     this.rp2040.logger = new ConsoleLogger(LogLevel.Error, false);
@@ -785,9 +793,10 @@ export class RP2040Simulator {
 
     const txPin = this.rp2040UartTxPin(uartIdx);
     const dataBits = uart.wordLength ?? 8;
-    const clk = (this.rp2040 as unknown as { clock?: { nanos: number } }).clock;
-    const startMs = clk ? clk.nanos / 1_000_000 : 0;
     const bitMs = 1000 / baud;
+    // rp2040js hands over every byte at once; on the wire they follow one
+    // another. Without this, "ok" drew two frames on top of each other.
+    const startMs = Math.max(this.nowMs(), this.uartTxCursorMs[uartIdx]);
 
     // First frame after boot: seed an explicit idle HIGH one bit-period
     // before the start bit so the scope has a HIGH baseline to draw the
@@ -804,6 +813,7 @@ export class RP2040Simulator {
     }
     bits.push(true); // stop bit (rp2040js doesn't expose 2-stop-bit selection
                      // cleanly; default to 1 — same behaviour as 8N1 sketches)
+    this.uartTxCursorMs[uartIdx] = startMs + bits.length * bitMs;
 
     let prevState = true;
     for (let i = 0; i < bits.length; i++) {
@@ -812,6 +822,164 @@ export class RP2040Simulator {
         prevState = bits[i];
       }
     }
+  }
+
+  // ── I²C / SPI wire-level waveforms for the logic analyzer ───────────────
+  // rp2040js emulates both peripherals per byte and never drives the pads,
+  // so the scope would show flat lines. Like emitUartTxFrame() for the UARTs,
+  // draw the bus as the hardware would, on whichever pads the firmware routed
+  // the peripheral to (read from the GPIO function select).
+
+  private i2cWaves: [I2cWaveform, I2cWaveform] = [new I2cWaveform(), new I2cWaveform()];
+  private spiWaves: [SpiWaveform, SpiWaveform] = [new SpiWaveform(), new SpiWaveform()];
+
+  /** Pads each peripheral can be routed to, by line. */
+  private static readonly BUS_PADS = {
+    i2c: [
+      { sda: [0, 4, 8, 12, 16, 20, 24, 28], scl: [1, 5, 9, 13, 17, 21, 25, 29], def: [4, 5] },
+      { sda: [2, 6, 10, 14, 18, 22, 26], scl: [3, 7, 11, 15, 19, 23, 27], def: [6, 7] },
+    ],
+    spi: [
+      { miso: [0, 4, 16, 20], sck: [2, 6, 18, 22], mosi: [3, 7, 19, 23], def: [16, 18, 19] },
+      { miso: [8, 12, 24, 28], sck: [10, 14, 26], mosi: [11, 15, 27], def: [12, 14, 15] },
+    ],
+  } as const;
+
+  /** First candidate pad whose function select is `fn`, else the Arduino-Pico default. */
+  private padFor(candidates: readonly number[], fn: number, fallback: number): number {
+    const rp = this.rp2040;
+    if (!rp) return fallback;
+    for (const pin of candidates) {
+      if (rp.gpio[pin]?.functionSelect === fn) return pin;
+    }
+    return fallback;
+  }
+
+  private emitBusEdges(edges: BusEdge[], pads: Partial<Record<BusEdge['line'], number>>): void {
+    if (!this.onPinChangeWithTime) return;
+    deliverEdges(
+      this.onPinChangeWithTime,
+      edges.flatMap((e) => {
+        const pin = pads[e.line];
+        return pin !== undefined && pin >= 0 ? [{ pin, state: e.state, timeMs: e.timeMs }] : [];
+      }),
+    );
+  }
+
+  private nowMs(): number {
+    const clk = (this.rp2040 as unknown as { clock?: { nanos: number } } | null)?.clock;
+    return clk ? clk.nanos / 1_000_000 : 0;
+  }
+
+  private emitI2cWaveform(bus: 0 | 1, e: I2cEvent): void {
+    const rp = this.rp2040;
+    if (!rp || !this.onPinChangeWithTime) return;
+    const i2c = rp.i2c[bus];
+    const ticks = i2c.sclHighPeriod + i2c.sclLowPeriod;
+    const hz = ticks > 0 ? rp.clkSys / ticks : 100_000;
+    const cfg = RP2040Simulator.BUS_PADS.i2c[bus];
+    const pads = {
+      sda: this.padFor(cfg.sda, 3, cfg.def[0]),
+      scl: this.padFor(cfg.scl, 3, cfg.def[1]),
+    };
+    this.emitBusEdges(this.i2cWaves[bus].event(e, this.nowMs(), Math.min(Math.max(hz, 1_000), 3_400_000)), pads);
+  }
+
+  /**
+   * Reset the bus waveform cursors (the simulated clock restarts with a new
+   * RP2040) and hook the SPI blocks: capture the word being sent, and finish
+   * each transfer only after the time it takes on the wire — rp2040js completes
+   * instantly, which made chip select rise while the clock was still running.
+   */
+  private instrumentBusesForScope(): void {
+    const rp = this.rp2040;
+    if (!rp) return;
+    this.i2cWaves = [new I2cWaveform(), new I2cWaveform()];
+    this.spiWaves = [new SpiWaveform(), new SpiWaveform()];
+    this.uartTxCursorMs = [0, 0];
+
+    // rp2040js keeps clk_peri at a fixed 125 MHz, but the Pico SDK (and so
+    // Arduino-Pico) switches it to the 48 MHz USB PLL. UART baud rates and SPI
+    // clocks are derived from it, so Serial1.begin(9600) read back as 25000
+    // baud and every waveform here ran 2.6x too fast. Follow what the firmware
+    // writes into CLK_PERI_CTRL / CLK_PERI_DIV instead.
+    const clocks = (rp as unknown as { peripherals: Record<number, { periCtrl?: number; periDiv?: number }> })
+      .peripherals[0x40008];
+    if (clocks) {
+      Object.defineProperty(rp, 'clkPeri', {
+        configurable: true,
+        get: () => {
+          const aux = ((clocks.periCtrl ?? 0) >> 5) & 0x7;
+          // 0 clk_sys, 1 PLL sys, 2 PLL USB, 3 ROSC, 4 XOSC (the rest: pins)
+          const source = [rp.clkSys, rp.clkSys, 48e6, 6.5e6, 12e6][aux] ?? rp.clkSys;
+          const div = (clocks.periDiv ?? 0x100) / 0x100;
+          return div > 0 ? source / div : source;
+        },
+      });
+    }
+
+    ([0, 1] as const).forEach((idx) => {
+      const spi = rp.spi[idx];
+      // The sim assigns onTransmit in several places and never reads it back,
+      // so an accessor that remembers the real handler is safe here.
+      let handler = spi.onTransmit;
+      let sent: { mosi: number; startNanos: number } | null = null;
+      Object.defineProperty(spi, 'onTransmit', {
+        configurable: true,
+        get: () => (v: number) => {
+          sent = { mosi: v, startNanos: rp.clock.nanos };
+          handler(v);
+        },
+        set: (fn: (v: number) => void) => {
+          handler = fn;
+        },
+      });
+      let finish: (() => void) | null = null;
+      const alarm = rp.clock.createAlarm(() => {
+        const f = finish;
+        finish = null;
+        f?.();
+      });
+      const complete = spi.completeTransmit.bind(spi);
+      spi.completeTransmit = (miso: number) => {
+        const started = sent;
+        sent = null;
+        const hz = spi.clockFrequency;
+        if (!started || !(hz > 0) || !spi.enabled) {
+          complete(miso);
+          return;
+        }
+        const bits = spi.dataBits;
+        const ctl = (spi as unknown as { control0: number }).control0;
+        // PL022: SPO = bit 6 (clock idles high), SPH = bit 7 (sample on 2nd edge)
+        const mode = (((ctl >> 6) & 1) << 1) | ((ctl >> 7) & 1);
+        if (this.onPinChangeWithTime) {
+          const cfg = RP2040Simulator.BUS_PADS.spi[idx];
+          this.emitBusEdges(
+            this.spiWaves[idx].frame({
+              mosi: started.mosi,
+              miso,
+              startMs: started.startNanos / 1_000_000,
+              sckHz: hz,
+              mode: mode as 0 | 1 | 2 | 3,
+              bits,
+            }),
+            {
+              sck: this.padFor(cfg.sck, 1, cfg.def[1]),
+              mosi: this.padFor(cfg.mosi, 1, cfg.def[2]),
+              miso: this.padFor(cfg.miso, 1, cfg.def[0]),
+            },
+          );
+        }
+        const remaining = started.startNanos + (bits * 1e9) / hz - rp.clock.nanos;
+        if (remaining > 0) {
+          finish = () => complete(miso);
+          alarm.schedule(remaining);
+        } else {
+          complete(miso);
+        }
+      };
+    });
   }
 
   private wireI2C(bus: 0 | 1): void {
@@ -1055,6 +1223,7 @@ export class RP2040Simulator {
       if (this.micropythonMode) {
         // In MicroPython mode, restore the full flash snapshot (UF2 + LittleFS)
         this.rp2040 = new RP2040();
+        this.instrumentBusesForScope();
         this.rp2040.logger = new ConsoleLogger(LogLevel.Error, false);
         this.rp2040.loadBootrom(bootromB1);
         this.rp2040.flash.set(this.flashCopy);

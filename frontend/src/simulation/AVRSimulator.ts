@@ -38,7 +38,7 @@ import { PinManager } from './PinManager';
 import { hexToUint8Array } from '../utils/hexParser';
 import { I2CBusManager, nullI2CMaster } from './I2CBusManager';
 import type { I2CDevice } from './I2CBusManager';
-import { I2cWaveform, SpiWaveform, type BusEdge, type I2cEvent } from './busWaveform';
+import { I2cWaveform, SpiWaveform, deliverEdges, type BusEdge, type I2cEvent } from './busWaveform';
 import { attachUsiI2c } from './UsiI2cBridge';
 
 /**
@@ -712,10 +712,10 @@ export class AVRSimulator {
   private emitBusEdges(edges: BusEdge[]): void {
     if (!this.onPinChangeWithTime) return;
     const pins = this.scopeBusPins();
-    for (const e of edges) {
-      const pin = pins[e.line];
-      if (pin >= 0) this.onPinChangeWithTime(pin, e.state, e.timeMs);
-    }
+    deliverEdges(
+      this.onPinChangeWithTime,
+      edges.flatMap((e) => (pins[e.line] >= 0 ? [{ pin: pins[e.line], state: e.state, timeMs: e.timeMs }] : [])),
+    );
   }
 
   private emitI2cWaveform(e: I2cEvent): void {

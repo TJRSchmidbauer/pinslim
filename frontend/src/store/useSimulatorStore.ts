@@ -32,6 +32,7 @@ import { boardGateDecision, proBoardFeatureName, triggerProUpgradePrompt } from 
 import { getSerialTxInterceptor } from '../lib/proHardwareSerial';
 import { calculatePinPosition } from '../utils/pinPositionCalculator';
 import { useOscilloscopeStore } from './useOscilloscopeStore';
+import type { PinTimeCallback } from '../simulation/busWaveform';
 import { RaspberryPi3Bridge } from '../simulation/RaspberryPi3Bridge';
 import { Esp32Bridge } from '../simulation/Esp32Bridge';
 import { createEsp32Bridge } from '../simulation/Esp32BridgeFactory';
@@ -1332,13 +1333,27 @@ export const useSimulatorStore = create<SimulatorState>((set, get) => {
   const initialPm = new PinManager();
   pinManagerMap.set(INITIAL_BOARD_ID, initialPm);
 
-  function getOscilloscopeCallback(boardId: string) {
-    return (pin: number, state: boolean, timeMs: number) => {
+  function getOscilloscopeCallback(boardId: string): PinTimeCallback {
+    const cb: PinTimeCallback = (pin, state, timeMs) => {
       const { channels, pushSample } = useOscilloscopeStore.getState();
       for (const ch of channels) {
         if (ch.boardId === boardId && ch.pin === pin) pushSample(ch.id, timeMs, state);
       }
     };
+    // Bus bursts (I²C / SPI waveforms) arrive as one batch → one store update.
+    cb.batch = (edges) => {
+      const { channels, pushSamples } = useOscilloscopeStore.getState();
+      const wanted: { channelId: string; timeMs: number; state: boolean }[] = [];
+      for (const e of edges) {
+        for (const ch of channels) {
+          if (ch.boardId === boardId && ch.pin === e.pin) {
+            wanted.push({ channelId: ch.id, timeMs: e.timeMs, state: e.state });
+          }
+        }
+      }
+      if (wanted.length) pushSamples(wanted);
+    };
+    return cb;
   }
 
   // Create + fully wire the simulation bridge and shim for an ESP32-family
@@ -1413,6 +1428,10 @@ export const useSimulatorStore = create<SimulatorState>((set, get) => {
       }));
     };
     esp32BridgeMap.set(id, bridge);
+    // Record I²C/SPI bytes for the logic analyzer only while it watches this board.
+    bridge.setBusTrace?.(
+      useOscilloscopeStore.getState().channels?.some((c) => c.boardId === id) ?? false,
+    );
     // Provide a shim so PartSimulationRegistry components (DHT22, etc.)
     // can call setPinState / access pinManager on ESP32 boards.
     const shim = new Esp32BridgeShim(bridge, pm);
@@ -3926,3 +3945,16 @@ useSimulatorStore.subscribe((state) => {
     icUpdateWires(state.wires);
   }
 });
+
+// ── ESP32 bus trace follows the oscilloscope's channel list ──────────────
+// The worker only records Wire/SPI bytes while somebody is looking: a TFT
+// refresh is hundreds of thousands of SPI bytes.
+// (Guarded: several suites stub the store and the bridge with bare objects.)
+if (typeof useOscilloscopeStore.subscribe === 'function') {
+  useOscilloscopeStore.subscribe((state, prev) => {
+    if (state.channels === prev.channels) return;
+    for (const [boardId, bridge] of esp32BridgeMap) {
+      bridge.setBusTrace?.(state.channels.some((c) => c.boardId === boardId));
+    }
+  });
+}

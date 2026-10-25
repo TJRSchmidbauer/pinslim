@@ -426,6 +426,13 @@ class EspLibManager:
         if inst and inst.running and inst.process.returncode is None:
             self._write_cmd(inst, {'cmd': 'set_adc', 'channel': channel, 'millivolts': millivolts})
 
+    def set_bus_trace(self, client_id: str, enabled: bool) -> None:
+        """Start/stop the worker's I2C/SPI byte trace (feeds the logic analyzer)."""
+        with self._instances_lock:
+            inst = self._instances.get(client_id)
+        if inst and inst.running and inst.process.returncode is None:
+            self._write_cmd(inst, {'cmd': 'bus_trace', 'enabled': bool(enabled)})
+
     def set_adc_raw(self, client_id: str, channel: int, raw: int) -> None:
         """Set ADC channel with a 12-bit raw value (0-4095)."""
         with self._instances_lock:

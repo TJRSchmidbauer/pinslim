@@ -54,6 +54,12 @@ machine, one to two hours. Set `QEMU_WORK_DIR=<dir>` to keep the source tree
    - FUNCn_OUT_SEL resets to the "plain GPIO" signal on C3/C6/S3, and the
      LEDC model takes its channel count and `LEDC_CONF_REG` offset as
      properties (S3: 8 channels, C6: CONF at 0x1F0);
+   - `hw/ssi/esp32_gpspi.c`: a general-purpose SPI master (GP-SPI2 on the
+     C3 / C6, SPI2 + SPI3 on the S3) with the host SPI bridge as its
+     peripheral. The stock models only had the flash controller (SPI1), so
+     `SPI.transfer()` on those chips reached nothing — no display, no SD
+     card, no logic analyzer. CPU-driven transfers (Arduino `SPI.h`, IDF
+     polling); DMA transfers are not modelled;
    - the ESP32 and ESP32-C3 picsimlab machines moved onto the shared API.
 
 The libraries are linked the way lcgamboa's `build_libqemu-esp32.sh` does it
@@ -80,5 +86,7 @@ git diff -- $(git status --porcelain | awk '{print $2}' \
   WiFi 6 MAC and PHY are not modelled: its driver waits on undocumented PHY
   registers, so C6 WiFi sketches stop in `phy_init`.
 - Bluetooth is not emulated on any chip.
+- SPI on the S3 / C3 / C6 is CPU-driven only (no DMA); the hardware chip-select
+  line of GP-SPI is not driven (sketches that use `digitalWrite` for CS work).
 - `qemu-system-xtensa` without `-M` aborts ("Multiple default machines",
   an upstream lcgamboa quirk); the worker always passes `-M`.

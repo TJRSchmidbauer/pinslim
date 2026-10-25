@@ -273,6 +273,11 @@ async def simulation_websocket(websocket: WebSocket, client_id: str):
                 else:
                     esp_qemu_manager.set_pin_state(client_id, pin, state)
 
+            # ── Logic analyzer: draw I2C / SPI traffic (only while watched) ─
+            elif msg_type == 'esp32_bus_trace':
+                if _use_lib() and hasattr(esp_lib_manager, 'set_bus_trace'):
+                    esp_lib_manager.set_bus_trace(client_id, bool(msg_data.get('enabled')))
+
             # ── ESP32 ADC (analog input from potentiometer, sensor, etc.) ─
             elif msg_type == 'esp32_adc_set':
                 # Frontend sends {channel: int, millivolts: int}

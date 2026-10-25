@@ -102,9 +102,11 @@ export interface SpiFrame {
   sckHz: number;
   mode: 0 | 1 | 2 | 3;
   lsbFirst?: boolean;
+  /** Word width (default 8; the RP2040 does 4-16 bit frames). */
+  bits?: number;
 }
 
-/** SPI: eight clock pulses per byte, data valid on the sampling edge. */
+/** SPI: one clock pulse per bit, data valid on the sampling edge. */
 export class SpiWaveform {
   private mosiLevel = false;
   private misoLevel = false;
@@ -128,8 +130,9 @@ export class SpiWaveform {
       this.sckLevel = cpol;
       out.push({ line: 'sck', state: cpol, timeMs: t });
     }
-    for (let k = 0; k < 8; k++) {
-      const bit = f.lsbFirst ? k : 7 - k;
+    const bits = f.bits ?? 8;
+    for (let k = 0; k < bits; k++) {
+      const bit = f.lsbFirst ? k : bits - 1 - k;
       const o = ((f.mosi >> bit) & 1) === 1;
       const i = ((f.miso >> bit) & 1) === 1;
       const lead = !cpol; // level of the leading edge
@@ -151,4 +154,28 @@ export class SpiWaveform {
     this.cursorMs = t;
     return out;
   }
+}
+
+// ── Delivery to the scope ──────────────────────────────────────────────────
+
+export interface PinEdge {
+  pin: number;
+  state: boolean;
+  timeMs: number;
+}
+
+/** A scope pin callback that can also take a whole burst of edges at once. */
+export type PinTimeCallback = ((pin: number, state: boolean, timeMs: number) => void) & {
+  batch?: (edges: PinEdge[]) => void;
+};
+
+/**
+ * Hand edges to the scope callback: in one go when it supports batching (the
+ * store's does), else one by one. Keeps hundreds of thousands of edges per
+ * display refresh from becoming hundreds of thousands of store updates.
+ */
+export function deliverEdges(cb: PinTimeCallback | null, edges: PinEdge[]): void {
+  if (!cb || edges.length === 0) return;
+  if (cb.batch) cb.batch(edges);
+  else for (const e of edges) cb(e.pin, e.state, e.timeMs);
 }

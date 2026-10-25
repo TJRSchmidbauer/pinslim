@@ -34,6 +34,13 @@
  *     { type: 'error',         data: { message: string } }
  */
 
+import {
+  I2cWaveform,
+  SpiWaveform,
+  deliverEdges,
+  type BusEdge,
+  type PinEdge,
+} from './busWaveform';
 import type { BoardKind } from '../types/board';
 import { MicroPythonSession, type MpyProgram } from './micropythonSession';
 import { getProBoard } from '../lib/proBoardRegistry';
@@ -43,6 +50,16 @@ import { generateUUID } from '../utils/uuid';
  * Map any ESP32-family board kind to the 3 base QEMU machine types understood
  * by the backend esp_qemu_manager.
  */
+/** One `bus_trace` message from the worker (see esp32_worker.py `_bus_trace_*`). */
+interface BusTrace {
+  /** [kind, ageMs, bus, …]: 'a' address, 'w' write, 'r' read, 'n' NACK, 'p' stop, 's' SPI byte */
+  events: (string | number)[][];
+  pins?: {
+    i2c?: { scl: number | null; sda: number | null }[];
+    spi?: { sck: number | null; mosi: number | null; miso: number | null } | null;
+  };
+}
+
 export function toQemuBoardType(kind: BoardKind): 'esp32' | 'esp32-s3' | 'esp32-c3' | 'esp32-c6' {
   // Overlay-registered boards carry their base chip in the registry.
   const proFam = getProBoard(kind)?.esp32Family;
@@ -179,6 +196,8 @@ export class Esp32Bridge {
    * updates this when the firmware's `Serial.begin(N)` is observable.
    */
   uartBaudRate: number = 115200;
+  /** performance.now() time at which the synthesized UART0 TX line is idle again. */
+  private uartTxFreeAtMs = 0;
   /** Wired by the store to `makeLedcDutyHandler` which routes
    *  channel→pin via the per-board SignalRouter mirror. */
   onLedcDuty: ((duty: LedcDuty) => void) | null = null;
@@ -298,7 +317,11 @@ export class Esp32Bridge {
 
     const txPin = this.uart0TxPin();
     const bitMs = 1000 / baud;
-    const startMs = performance.now();
+    // A whole serial_output chunk arrives at once, but its bytes follow one
+    // another on the wire: queue each frame behind the previous one instead of
+    // drawing "ok" as two frames on top of each other.
+    const startMs = Math.max(performance.now(), this.uartTxFreeAtMs);
+    this.uartTxFreeAtMs = startMs + 10 * bitMs;
 
     // Seed idle HIGH right before the start bit so the scope renders the
     // start-bit transition against a HIGH baseline, matching how the line
@@ -317,6 +340,90 @@ export class Esp32Bridge {
         prev = bits[i];
       }
     }
+  }
+
+  // ── I²C / SPI on the logic analyzer ─────────────────────────────────────
+  // QEMU runs both peripherals per byte and never moves the pads. While the
+  // scope watches this board the worker records every byte; here they become
+  // SDA/SCL and SCK/MOSI/MISO edges on the pins the firmware routed the buses
+  // to (read from the GPIO matrix). Bus clocks are not visible to the host:
+  // I²C is drawn at 100 kHz and SPI at 1 MHz (mode 0) — the bytes are exact,
+  // the time base is nominal.
+
+  private busTraceWanted = false;
+  private i2cWaves: I2cWaveform[] = [new I2cWaveform(), new I2cWaveform()];
+  private i2cActive: boolean[] = [false, false];
+  private pendingRead: { bus: number; value: number; atMs: number } | null = null;
+  private spiWave = new SpiWaveform();
+
+  /** Ask the worker to record (or stop recording) I²C/SPI bytes. */
+  setBusTrace(enabled: boolean): void {
+    if (this.busTraceWanted === enabled) return;
+    this.busTraceWanted = enabled;
+    if (this._connected) this._send({ type: 'esp32_bus_trace', data: { enabled } });
+  }
+
+  private drawBusTrace(trace: BusTrace): void {
+    if (!this.onPinChangeWithTime) return;
+    const now = performance.now();
+    const out: PinEdge[] = [];
+    const put = (edges: BusEdge[], pads: Partial<Record<BusEdge['line'], number | null>>) => {
+      for (const e of edges) {
+        const pin = pads[e.line];
+        if (pin !== null && pin !== undefined) out.push({ pin, state: e.state, timeMs: e.timeMs });
+      }
+    };
+    const i2cPads = (bus: number) => {
+      const p = trace.pins?.i2c?.[bus];
+      return { sda: p?.sda ?? null, scl: p?.scl ?? null };
+    };
+    const flushRead = (ack: boolean) => {
+      const r = this.pendingRead;
+      if (!r) return;
+      this.pendingRead = null;
+      put(this.i2cWaves[r.bus].event({ type: 'read', value: r.value, ack }, r.atMs, I2C_NOMINAL_HZ), i2cPads(r.bus));
+    };
+    const I2C_NOMINAL_HZ = 100_000;
+    const SPI_NOMINAL_HZ = 1_000_000;
+
+    for (const ev of trace.events) {
+      const kind = ev[0] as string;
+      const at = now - (ev[1] as number);
+      const bus = Math.min(Number(ev[2]) || 0, 1);
+      if (kind === 's') {
+        const p = trace.pins?.spi;
+        if (!p) continue;
+        put(
+          this.spiWave.frame({ mosi: ev[3] as number, miso: ev[4] as number, startMs: at, sckHz: SPI_NOMINAL_HZ, mode: 0 }),
+          { sck: p.sck, mosi: p.mosi, miso: p.miso },
+        );
+        continue;
+      }
+      // I²C: a read byte is acknowledged unless the master NACKs right after.
+      if (kind === 'n') {
+        flushRead(false);
+        continue;
+      }
+      flushRead(true);
+      const wave = this.i2cWaves[bus];
+      const pads = i2cPads(bus);
+      if (kind === 'a') {
+        put(wave.event({ type: 'start', repeated: this.i2cActive[bus] }, at, I2C_NOMINAL_HZ), pads);
+        this.i2cActive[bus] = true;
+        put(
+          wave.event({ type: 'address', addr: ev[3] as number, write: ev[4] === 1, ack: ev[5] === 1 }, at, I2C_NOMINAL_HZ),
+          pads,
+        );
+      } else if (kind === 'w') {
+        put(wave.event({ type: 'write', value: ev[3] as number, ack: ev[4] === 1 }, at, I2C_NOMINAL_HZ), pads);
+      } else if (kind === 'r') {
+        this.pendingRead = { bus, value: ev[3] as number, atMs: at };
+      } else if (kind === 'p') {
+        put(wave.event({ type: 'stop' }, at, I2C_NOMINAL_HZ), pads);
+        this.i2cActive[bus] = false;
+      }
+    }
+    deliverEdges(this.onPinChangeWithTime, out);
   }
 
   get clientId(): string {
@@ -451,6 +558,10 @@ export class Esp32Bridge {
           this.onPinPull?.(pin, pull);
           break;
         }
+        case 'bus_trace': {
+          this.drawBusTrace(msg.data as unknown as BusTrace);
+          break;
+        }
         case 'ledc_duty': {
           this.onLedcDuty?.(msg.data as unknown as LedcDuty);
           break;
@@ -556,6 +667,10 @@ export class Esp32Bridge {
           console.log(`[Esp32Bridge:${this.boardId}] system event: ${evt}`, msg.data);
           if (evt === 'crash') {
             this.onCrash?.(msg.data);
+          }
+          // The worker only records bus bytes once asked; (re)ask after a boot.
+          if (evt === 'booted' && this.busTraceWanted) {
+            this._send({ type: 'esp32_bus_trace', data: { enabled: true } });
           }
           this.onSystemEvent?.(evt, msg.data);
           break;
