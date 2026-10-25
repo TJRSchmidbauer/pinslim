@@ -95,6 +95,7 @@ function isQemuBoardKind(kind: BoardKind | undefined): boolean {
     kind === 'arduino-nano-esp32' ||
     kind === 'xiao-esp32-c3' ||
     kind === 'xiao-esp32-c6' ||
+    kind === 'esp32-c6' ||
     kind === 'aitewinrobot-esp32c3-supermini'
   );
 }
@@ -748,6 +749,20 @@ export const EditorToolbar = ({
 
     if (activeBoardId) {
       const board = boards.find((b) => b.id === activeBoardId);
+      // ESP32-P4: there is no QEMU model for it anywhere, so it compiles and
+      // flashes to real hardware but cannot run in the simulator.
+      if (board?.boardKind === 'esp32-p4') {
+        setConsoleOpen(true);
+        addLog({
+          timestamp: new Date(),
+          type: 'info',
+          message: t(
+            'editor.toolbar.msg.p4NoEmulation',
+            'The ESP32-P4 cannot be emulated — compile the sketch and flash it to a real board.',
+          ),
+        });
+        return;
+      }
       console.log('[handleRun] active board', {
         id: board?.id,
         kind: board?.boardKind,
@@ -1168,6 +1183,7 @@ export const EditorToolbar = ({
     const refreshed = useSimulatorStore.getState().boards;
     for (const board of refreshed) {
       if (board.running) continue;
+      if (board.boardKind === 'esp32-p4') continue; // compile/flash only
       if (isQemuBoardKind(board.boardKind) || board.compiledProgram || board.languageMode === 'micropython') {
         trackRunSimulation(board.boardKind);
         reportRun(board.boardKind);

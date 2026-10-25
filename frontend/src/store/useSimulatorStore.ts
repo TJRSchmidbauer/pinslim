@@ -984,6 +984,7 @@ const ESP32_RISCV_KINDS = new Set<BoardKind>([
   'esp32-c3',
   'xiao-esp32-c3',
   'xiao-esp32-c6',
+  'esp32-c6',
   'aitewinrobot-esp32c3-supermini',
 ]);
 

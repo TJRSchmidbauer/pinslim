@@ -81,6 +81,12 @@ const ESP32_C3_KINDS: ReadonlySet<BoardKind> = new Set([
 
 const ESP32_C6_KINDS: ReadonlySet<BoardKind> = new Set([
   'xiao-esp32-c6',
+  'esp32-c6',
+]);
+
+// ESP32-P4: compile + flash only (no QEMU model); PSRAM is on-package.
+const ESP32_P4_KINDS: ReadonlySet<BoardKind> = new Set([
+  'esp32-p4',
 ]);
 
 const ESP32_XTENSA_KINDS: ReadonlySet<BoardKind> = new Set([
@@ -106,6 +112,7 @@ export function isEsp32Family(kind: BoardKind): boolean {
     ESP32_S3_KINDS.has(kind) ||
     ESP32_C3_KINDS.has(kind) ||
     ESP32_C6_KINDS.has(kind) ||
+    ESP32_P4_KINDS.has(kind) ||
     proEsp32Family(kind) !== null
   );
 }

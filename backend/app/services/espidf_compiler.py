@@ -24,6 +24,7 @@ import re
 import shutil
 import string
 import subprocess
+import time
 import tempfile
 import threading
 from dataclasses import dataclass
@@ -133,7 +134,23 @@ def _idf_version_signature() -> str:
 ProgressCallback = Callable[[str], None]
 
 
+def _idf_version_string(idf_path: str | None) -> str | None:
+    """'MAJOR.MINOR' of the ESP-IDF tree at idf_path (tools/cmake/version.cmake)."""
+    if not idf_path:
+        return None
+    try:
+        text = Path(idf_path, 'tools', 'cmake', 'version.cmake').read_text()
+    except OSError:
+        return None
+    major = re.search(r'IDF_VERSION_MAJOR\s+(\d+)', text)
+    minor = re.search(r'IDF_VERSION_MINOR\s+(\d+)', text)
+    if not (major and minor):
+        return None
+    return f'{major.group(1)}.{minor.group(1)}'
+
+
 @dataclass
+
 class _RunResult:
     """Drop-in replacement for the fields we read off subprocess.CompletedProcess."""
     returncode: int
@@ -2494,6 +2511,13 @@ class ESPIDFCompiler:
         is_idf5 = use_idf5
         env['IDF_PATH'] = idf_path
         env['IDF_TARGET'] = idf_target
+        # Managed components written for IDF 6 (esp_hosted >= 2.13, pulled in
+        # for the ESP32-P4) guard options with `$(ESP_IDF_VERSION)`, which only
+        # IDF 6's kconfgen defines; on 5.x the macro expands to nothing and the
+        # configure aborts. kconfiglib reads macros from the environment.
+        idf_version = _idf_version_string(idf_path)
+        if idf_version and 'ESP_IDF_VERSION' not in env:
+            env['ESP_IDF_VERSION'] = idf_version
 
         if arduino_mode:
             # Pick the core matching the chosen IDF major: 3.x on v5,
@@ -2737,6 +2761,13 @@ class ESPIDFCompiler:
                 if extra_paths:
                     env['PATH'] = os.pathsep.join(extra_paths) + os.pathsep + env.get('PATH', '')
 
+        # export.sh normally sets ESP_ROM_ELF_DIR; without it the configure
+        # step's gdbinit generation fails and fills the log with (harmless)
+        # CMake warnings. Point it at the installed esp-rom-elfs if present.
+        if 'ESP_ROM_ELF_DIR' not in env and env.get('IDF_TOOLS_PATH'):
+            rom_elfs = sorted(Path(env['IDF_TOOLS_PATH'], 'tools', 'esp-rom-elfs').glob('*/'))
+            if rom_elfs:
+                env['ESP_ROM_ELF_DIR'] = str(rom_elfs[-1]) + os.sep
         return env
 
     # ── Board options → sdkconfig / partition translation ───────────────
@@ -4109,6 +4140,12 @@ class ESPIDFCompiler:
         # bump to 600s so first-run cold compiles complete. Subsequent
         # builds reuse ninja's cache and finish in seconds.
         NINJA_TIMEOUT_S = 600
+        # A cold build of a new chip/variant compiles all of ESP-IDF and can
+        # need several 600 s windows on a small box. ninja is incremental, so
+        # keep resuming in-process while each window makes progress, up to a
+        # total budget (ESPIDF_BUILD_BUDGET_S, default one hour) — the user no
+        # longer has to press "compile" again and again.
+        build_budget_s = int(os.environ.get('ESPIDF_BUILD_BUDGET_S', '3600'))
 
         def _run_ninja():
             return _run_with_streaming(
@@ -4119,30 +4156,46 @@ class ESPIDFCompiler:
                 progress_callback=progress_callback,
             )
 
-        try:
-            ninja_result = await asyncio.to_thread(_run_ninja)
-        except subprocess.TimeoutExpired:
-            # Silent before — a 600s failure left no server-side trace at all,
-            # so a slow-box incident (2026-08-17: cold S3 variant, ccache
-            # missing on every object) had to be reconstructed from the
-            # variant's .ninja_log. Say where it happened and how far it got.
-            done_steps = _ninja_log_step_count(build_dir)
-            logger.error(
-                f'[espidf] ninja build timed out after {NINJA_TIMEOUT_S}s in '
-                f'{build_dir} ({done_steps} steps logged)'
-            )
-            return {
-                'success': False,
-                # ninja is incremental and the variant dir persists: the
-                # objects built so far are kept, so retrying picks up where
-                # this attempt stopped instead of starting over.
-                'error': (
-                    f'ESP-IDF build timed out ({NINJA_TIMEOUT_S}s) — the partial '
-                    f'build is kept; compile again to resume where it stopped'
-                ),
-                'stdout': '',
-                'stderr': '',
-            }
+        ninja_started = time.monotonic()
+        steps_before = _ninja_log_step_count(build_dir)
+        while True:
+            try:
+                ninja_result = await asyncio.to_thread(_run_ninja)
+                break
+            except subprocess.TimeoutExpired:
+                # Silent before — a 600s failure left no server-side trace at all,
+                # so a slow-box incident (2026-08-17: cold S3 variant, ccache
+                # missing on every object) had to be reconstructed from the
+                # variant's .ninja_log. Say where it happened and how far it got.
+                done_steps = _ninja_log_step_count(build_dir)
+                elapsed = time.monotonic() - ninja_started
+                logger.error(
+                    f'[espidf] ninja build timed out after {NINJA_TIMEOUT_S}s in '
+                    f'{build_dir} ({done_steps} steps logged, {elapsed:.0f}s total)'
+                )
+                progressed = done_steps > steps_before
+                steps_before = done_steps
+                if progressed and elapsed + NINJA_TIMEOUT_S <= build_budget_s:
+                    if progress_callback:
+                        try:
+                            progress_callback(
+                                f'[pinslim] First build for this chip — ESP-IDF is still '
+                                f'compiling ({done_steps} steps so far), continuing...')
+                        except Exception:  # noqa: BLE001
+                            pass
+                    continue
+                return {
+                    'success': False,
+                    # ninja is incremental and the variant dir persists: the
+                    # objects built so far are kept, so retrying picks up where
+                    # this attempt stopped instead of starting over.
+                    'error': (
+                        f'ESP-IDF build timed out ({elapsed:.0f}s) — the partial '
+                        f'build is kept; compile again to resume where it stopped'
+                    ),
+                    'stdout': '',
+                    'stderr': '',
+                }
 
         all_stdout = cmake_result.stdout + '\n' + ninja_result.stdout
         all_stderr = cmake_result.stderr + '\n' + ninja_result.stderr

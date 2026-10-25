@@ -24,6 +24,8 @@ const arduinoNanoEsp32SvgUrl = '/boards/arduino-nano-esp32.svg';
 const xiaoEsp32C3SvgUrl = '/boards/xiao-esp32-c3.svg';
 const xiaoEsp32C6SvgUrl = '/boards/xiao-esp32-c6.svg';
 const aitewinC3SvgUrl = '/boards/esp32c3-supermini.svg';
+const esp32C6DevkitSvgUrl = '/boards/esp32-c6-devkitc-1.svg';
+const esp32P4DevSvgUrl = '/boards/esp32-p4-dev.svg';
 
 // ─── Pin positions (mm × 5 px/mm, from board.json) ───────────────────────────
 
@@ -306,6 +308,84 @@ const PINS_ARDUINO_NANO_ESP32 = [
 const PINS_XIAO_ESP32_C3 = PINS_XIAO_ESP32_S3;
 const PINS_XIAO_ESP32_C6 = PINS_XIAO_ESP32_S3;
 
+// ESP32-C6-DevKitC-1 (Pinslim art, 128 × 272): headers J1 (left) / J3 (right)
+const PINS_ESP32_C6_DEVKITC = [
+  { name: '3V3', x: 6, y: 34 },
+  { name: 'RST', x: 6, y: 47.5 },
+  { name: '4', x: 6, y: 61 },
+  { name: '5', x: 6, y: 74.5 },
+  { name: '6', x: 6, y: 88 },
+  { name: '7', x: 6, y: 101.5 },
+  { name: '0', x: 6, y: 115 },
+  { name: '1', x: 6, y: 128.5 },
+  { name: '8', x: 6, y: 142 },
+  { name: '10', x: 6, y: 155.5 },
+  { name: '11', x: 6, y: 169 },
+  { name: '2', x: 6, y: 182.5 },
+  { name: '3', x: 6, y: 196 },
+  { name: '5V', x: 6, y: 209.5 },
+  { name: 'GND.1', x: 6, y: 223 },
+  { name: 'GND.2', x: 122, y: 34 },
+  { name: 'TX', x: 122, y: 47.5 },
+  { name: 'RX', x: 122, y: 61 },
+  { name: '15', x: 122, y: 74.5 },
+  { name: '23', x: 122, y: 88 },
+  { name: '22', x: 122, y: 101.5 },
+  { name: '21', x: 122, y: 115 },
+  { name: '20', x: 122, y: 128.5 },
+  { name: '19', x: 122, y: 142 },
+  { name: '18', x: 122, y: 155.5 },
+  { name: '9', x: 122, y: 169 },
+  { name: 'GND.3', x: 122, y: 182.5 },
+  { name: '13', x: 122, y: 196 },
+  { name: '12', x: 122, y: 209.5 },
+  { name: 'GND.4', x: 122, y: 223 },
+];
+
+// ESP32-P4 dev module (Pinslim art, 150 × 330): GPIO0-17 left, GPIO18-35 right
+const PINS_ESP32_P4_DEV = [
+  { name: '3V3', x: 6, y: 34 },
+  { name: 'GND.1', x: 6, y: 47.5 },
+  { name: '0', x: 6, y: 61 },
+  { name: '1', x: 6, y: 74.5 },
+  { name: '2', x: 6, y: 88 },
+  { name: '3', x: 6, y: 101.5 },
+  { name: '4', x: 6, y: 115 },
+  { name: '5', x: 6, y: 128.5 },
+  { name: '6', x: 6, y: 142 },
+  { name: '7', x: 6, y: 155.5 },
+  { name: '8', x: 6, y: 169 },
+  { name: '9', x: 6, y: 182.5 },
+  { name: '10', x: 6, y: 196 },
+  { name: '11', x: 6, y: 209.5 },
+  { name: '12', x: 6, y: 223 },
+  { name: '13', x: 6, y: 236.5 },
+  { name: '14', x: 6, y: 250 },
+  { name: '15', x: 6, y: 263.5 },
+  { name: '16', x: 6, y: 277 },
+  { name: '17', x: 6, y: 290.5 },
+  { name: '5V', x: 144, y: 34 },
+  { name: 'GND.2', x: 144, y: 47.5 },
+  { name: '18', x: 144, y: 61 },
+  { name: '19', x: 144, y: 74.5 },
+  { name: '20', x: 144, y: 88 },
+  { name: '21', x: 144, y: 101.5 },
+  { name: '22', x: 144, y: 115 },
+  { name: '23', x: 144, y: 128.5 },
+  { name: '24', x: 144, y: 142 },
+  { name: '25', x: 144, y: 155.5 },
+  { name: '26', x: 144, y: 169 },
+  { name: '27', x: 144, y: 182.5 },
+  { name: '28', x: 144, y: 196 },
+  { name: '29', x: 144, y: 209.5 },
+  { name: '30', x: 144, y: 223 },
+  { name: '31', x: 144, y: 236.5 },
+  { name: '32', x: 144, y: 250 },
+  { name: '33', x: 144, y: 263.5 },
+  { name: '34', x: 144, y: 277 },
+  { name: '35', x: 144, y: 290.5 },
+];
+
 // Aitewinrobot ESP32-C3 SuperMini: 18.0 mm × 24.576 mm → 90 × 123 px
 // Left col: x = 1.46 mm → 7 px  |  Right col: x = 16.70 mm → 84 px
 const PINS_AITEWIN_C3 = [
@@ -369,7 +449,7 @@ export const ESP32_ADC_PIN_MAP: Record<number, { adc: 1 | 2; ch: number; chn: nu
 // expose setChannel/setAdcChannel over ADC1).
 export type AdcPinInfo = { adc: 1 | 2; ch: number; chn: number };
 
-/** ESP32-C3 / C6: ADC1 channels 0..4 are GPIO0..4 (ADC2 is not modelled). */
+/** ESP32-C3: ADC1 channels 0..4 are GPIO0..4 (ADC2 is not modelled). */
 const RISCV_C_ADC_PIN_MAP: Record<number, AdcPinInfo> = {
   0: { adc: 1, ch: 0, chn: 0 },
   1: { adc: 1, ch: 1, chn: 1 },
@@ -377,6 +457,11 @@ const RISCV_C_ADC_PIN_MAP: Record<number, AdcPinInfo> = {
   3: { adc: 1, ch: 3, chn: 3 },
   4: { adc: 1, ch: 4, chn: 4 },
 };
+
+/** ESP32-C6: ADC1 channels 0..6 are GPIO0..6 (the C6 has no ADC2). */
+const ESP32C6_ADC_PIN_MAP: Record<number, AdcPinInfo> = Object.fromEntries(
+  Array.from({ length: 7 }, (_, ch) => [ch, { adc: 1 as const, ch, chn: ch }]),
+);
 
 /** ESP32-S3: ADC1 channels 0..9 are GPIO1..10. (ADC2 = GPIO11..20 shares the same
  *  channel indices in the engine, so it is left out rather than aliased wrongly.) */
@@ -386,7 +471,8 @@ const ESP32S3_ADC_PIN_MAP: Record<number, AdcPinInfo> = Object.fromEntries(
 
 /** The ADC map for a board kind. Unknown kinds fall back to the classic ESP32. */
 export function adcPinMapFor(boardKind: string): Record<number, AdcPinInfo> {
-  if (boardKind.includes('c3') || boardKind.includes('c6')) return RISCV_C_ADC_PIN_MAP;
+  if (boardKind.includes('c6')) return ESP32C6_ADC_PIN_MAP;
+  if (boardKind.includes('c3')) return RISCV_C_ADC_PIN_MAP;
   if (boardKind.includes('s3')) return ESP32S3_ADC_PIN_MAP;
   return ESP32_ADC_PIN_MAP;
 }
@@ -421,6 +507,8 @@ const BOARD_CONFIGS: Record<string, BoardConfig> = {
   },
   'xiao-esp32-c3': { svgUrl: xiaoEsp32C3SvgUrl, w: 91, h: 117, pins: PINS_XIAO_ESP32_C3 },
   'xiao-esp32-c6': { svgUrl: xiaoEsp32C6SvgUrl, w: 91, h: 117, pins: PINS_XIAO_ESP32_C6 },
+  'esp32-c6': { svgUrl: esp32C6DevkitSvgUrl, w: 128, h: 272, pins: PINS_ESP32_C6_DEVKITC },
+  'esp32-p4': { svgUrl: esp32P4DevSvgUrl, w: 150, h: 330, pins: PINS_ESP32_P4_DEV },
   'aitewinrobot-esp32c3-supermini': {
     svgUrl: aitewinC3SvgUrl,
     w: 90,

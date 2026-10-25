@@ -54,7 +54,7 @@ if [ -d /opt/arduino15-seed ]; then
 fi
 
 # Install missing cores.
-# ESP32 core MUST be 2.0.17 (IDF 4.4.x) — newer 3.x is incompatible with QEMU ROM bins.
+# The ESP32 core matches the bundled ESP-IDF 5.5 (arduino-esp32 3.3.12).
 arduino-cli core update-index 2>/dev/null || true
 arduino-cli core install arduino:avr 2>/dev/null || true
 arduino-cli core install rp2040:rp2040 2>/dev/null || true
@@ -72,11 +72,11 @@ else
     echo "⚠️  ESP-IDF not found — falling back to arduino-cli for ESP32"
     ESP32_VER=$(arduino-cli core list 2>/dev/null | grep esp32:esp32 | awk '{print $2}')
     if [ -z "$ESP32_VER" ]; then
-        echo "📦 Installing ESP32 core 2.0.17..."
-        arduino-cli core install esp32:esp32@2.0.17
-    elif [[ "$ESP32_VER" != 2.0.17 ]]; then
-        echo "⚠️  ESP32 core is $ESP32_VER, need 2.0.17 — reinstalling..."
-        arduino-cli core install esp32:esp32@2.0.17
+        echo "📦 Installing ESP32 core 3.3.12..."
+        arduino-cli core install esp32:esp32@3.3.12
+    elif [[ "$ESP32_VER" != 3.3.12 ]]; then
+        echo "⚠️  ESP32 core is $ESP32_VER, need 3.3.12 — reinstalling..."
+        arduino-cli core install esp32:esp32@3.3.12
     fi
 fi
 

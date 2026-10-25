@@ -17,7 +17,7 @@ Write Arduino C++, MicroPython, or Python code, compile it, simulate real CPU ex
 - **Direct Editor Launch**: Opens directly into the interactive workspace.
 - **Light & Dark Themes**: Toggle seamlessly between Dark and Light mode via the View menu.
 - **Web Serial Hardware Flashing**: Flash compiled sketches directly to connected ESP32 or Arduino microcontrollers via Web Serial without desktop software.
-- **Multi-Board Simulation**: Emulates AVR8 (Arduino Uno / Nano / Mega / ATtiny85), RP2040 (Raspberry Pi Pico), and ESP32 (QEMU backend).
+- **Multi-Board Simulation**: Emulates AVR8 (Arduino Uno / Nano / Mega / ATtiny85), RP2040 (Raspberry Pi Pico), and ESP32 / ESP32-S3 / ESP32-C3 / ESP32-C6 (own QEMU build; ESP32-P4 compile + flash only).
 - **Embedded Examples Modal**: Instantly search and load ready-to-run example projects from within the editor.
 - **BOM & Schematic Export**: Generate accurate Bill of Materials (CSV) and high-fidelity PNG schematic diagrams.
 - **Open-Source Docker Deployment**: Hardened standalone Docker setup requiring no proprietary license keys.
@@ -39,22 +39,31 @@ Then open **<http://localhost:3082>** in your browser.
 ### Native install (without Docker)
 
 On Debian/Ubuntu, `scripts/setup-native.sh` installs the toolchains the Docker
-image bundles — arduino-cli with the AVR, RP2040 and ATtiny cores, ESP-IDF 4.4.7
-with arduino-esp32 2.0.17, and QEMU for ESP32 / ESP32-C3 emulation (built from
-lcgamboa's public `picsimlab-esp32` branch; ESP32-S3 and ESP32-CAM need Velxio's
-own QEMU tree, see [docs/BUILD-QEMU.md](docs/BUILD-QEMU.md)):
+image bundles — arduino-cli with the AVR, RP2040 and ATtiny cores, **ESP-IDF
+5.5.6 with arduino-esp32 3.3.12** (ESP32, ESP32-S3, ESP32-C3, ESP32-C6 and
+ESP32-P4), and Pinslim's own QEMU build for ESP32 / ESP32-S3 / ESP32-C3 /
+ESP32-C6 emulation (see [docs/BUILD-QEMU.md](docs/BUILD-QEMU.md)). The
+ESP32-P4 has no QEMU model: P4 sketches compile and can be flashed to a real
+board over Web Serial, but they do not run in the simulator. WiFi is emulated on the
+ESP32, ESP32-S3 and ESP32-C3 (not on the C6).
 
 ```bash
 scripts/setup-native.sh          # or: arduino | espidf | qemu
 ```
 
-Point the backend at the result with `IDF_PATH=/opt/pinslim/esp-idf`,
-`IDF_TOOLS_PATH=/opt/pinslim/espressif`, `ARDUINO_ESP32_PATH=/opt/pinslim/arduino-esp32`,
+Point the backend at the result with
+`IDF_PATH=IDF5_PATH=/opt/pinslim/esp-idf-v5`, `IDF_TOOLS_PATH=/opt/pinslim/espressif`,
+`ARDUINO_ESP32_PATH=ARDUINO_ESP32_5_PATH=/opt/pinslim/arduino-esp32-3`,
 `QEMU_ESP32_LIB=/opt/pinslim/qemu/libqemu-xtensa.so` and
 `QEMU_RISCV32_LIB=/opt/pinslim/qemu/libqemu-riscv32.so`, with `~/.local/bin`
-(arduino-cli) on `PATH`. The first ESP32 compile builds all of ESP-IDF and can
-take longer than one 10-minute compile window on small machines — compile again
-and it resumes where it stopped.
+(arduino-cli) on `PATH`. The first compile per chip builds all of ESP-IDF;
+on small machines that takes longer than one 10-minute ninja window, and the
+backend keeps resuming it on its own for up to an hour
+(`ESPIDF_BUILD_BUDGET_S`).
+
+The Docker image (`Dockerfile.standalone`) bundles the same ESP-IDF /
+arduino-esp32 versions and builds Pinslim's QEMU from source unless
+`prebuilt/qemu/` already holds the libraries and ROMs.
 
 ### Portainer & Traefik Deployment
 

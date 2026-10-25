@@ -31,6 +31,8 @@ const BOARD_SHORT_LABEL: Partial<Record<string, string>> = {
   'esp32-c3': 'ESP32-C3',
   'xiao-esp32-c3': 'XIAO-C3',
   'xiao-esp32-c6': 'XIAO-C6',
+  'esp32-c6': 'ESP32-C6',
+  'esp32-p4': 'ESP32-P4',
   'aitewinrobot-esp32c3-supermini': 'C3 Mini',
   attiny85: 'ATtiny85',
 };
@@ -54,6 +56,8 @@ const BOARD_ICON: Partial<Record<string, string>> = {
   'esp32-c3': '⬡',
   'xiao-esp32-c3': '⬡',
   'xiao-esp32-c6': '⬡',
+  'esp32-c6': '⬡',
+  'esp32-p4': '⬡',
   'aitewinrobot-esp32c3-supermini': '⬡',
   attiny85: '▪',
 };
@@ -77,6 +81,8 @@ const BOARD_COLOR: Partial<Record<string, string>> = {
   'esp32-c3': 'var(--color-feedback-success)',
   'xiao-esp32-c3': 'var(--color-feedback-success)',
   'xiao-esp32-c6': 'var(--color-feedback-success)',
+  'esp32-c6': 'var(--color-feedback-success)',
+  'esp32-p4': 'var(--color-feedback-success)',
   'aitewinrobot-esp32c3-supermini': 'var(--color-feedback-success)',
   attiny85: 'var(--color-feedback-warning)',
 };

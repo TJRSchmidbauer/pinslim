@@ -140,9 +140,9 @@ _MACHINE: dict[str, str] = {
     'esp32':                          'esp32-picsimlab',
     'esp32-s3':                       'esp32s3-picsimlab',
     'esp32-c3':                       'esp32c3-picsimlab',
-    'esp32-c6':                       'esp32c3-picsimlab',
+    'esp32-c6':                       'esp32c6-picsimlab',
     'xiao-esp32-c3':                  'esp32c3-picsimlab',
-    'xiao-esp32-c6':                  'esp32c3-picsimlab',
+    'xiao-esp32-c6':                  'esp32c6-picsimlab',
     'aitewinrobot-esp32c3-supermini': 'esp32c3-picsimlab',
 }
 

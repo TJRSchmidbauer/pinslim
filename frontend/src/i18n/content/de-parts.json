@@ -119,5 +119,7 @@
   "64 white LEDs, daisy-chainable — in-browser emulation": "64 weiße LEDs, verkettbar – Emulation im Browser",
   "Round GC9A01 240x240 touch LCD + RTC - available in the online editor": "Rundes GC9A01-Touch-LCD 240×240 + Echtzeituhr – im Online-Editor verfügbar",
   "IR camera gesture sensor on a XIAO carrier: seat a XIAO on its socket and read rotate/tap/grab/pinch/swipe over I2C - available in the online editor": "IR-Kamera-Gestensensor auf XIAO-Trägerplatine: XIAO aufstecken und Drehen/Tippen/Greifen/Zoomen/Wischen per I2C auslesen – im Online-Editor verfügbar",
-  "Dual-mic array with a XIAO socket: live mic in, audio out, beamforming/AEC/NS model - online editor": "Zwei-Mikrofon-Array mit XIAO-Sockel: Live-Mikrofon, Audioausgang, Beamforming/Echo-/Rauschunterdrückung – Online-Editor"
+  "Dual-mic array with a XIAO socket: live mic in, audio out, beamforming/AEC/NS model - online editor": "Zwei-Mikrofon-Array mit XIAO-Sockel: Live-Mikrofon, Audioausgang, Beamforming/Echo-/Rauschunterdrückung – Online-Editor",
+  "Seeed XIAO ESP32-C6 (WiFi 6, BLE 5, 802.15.4 / Zigbee) (QEMU)": "Seeed XIAO ESP32-C6 (WLAN 6, BLE 5, 802.15.4 / Zigbee) (QEMU)",
+  "Seeed XIAO ESP32-C6 RISC-V, Zigbee/WiFi6 (QEMU)": "Seeed XIAO ESP32-C6, RISC-V, Zigbee/WLAN 6 (QEMU)"
 }

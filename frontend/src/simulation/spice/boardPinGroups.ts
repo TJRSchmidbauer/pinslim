@@ -159,6 +159,18 @@ export const BOARD_PIN_GROUPS: { default: BoardPinGroup } & Partial<Record<AllBo
     vcc_pins: ['3V3', '3V3.1'],
     aux: { volts: 5, pins: ['5V', 'VBUS', 'VIN'] },
   },
+  'esp32-c6': {
+    vcc: 3.3,
+    gnd: ['GND.1', 'GND.2', 'GND.3', 'GND.4'],
+    vcc_pins: ['3V3'],
+    aux: { volts: 5, pins: ['5V'] },
+  },
+  'esp32-p4': {
+    vcc: 3.3,
+    gnd: ['GND.1', 'GND.2'],
+    vcc_pins: ['3V3'],
+    aux: { volts: 5, pins: ['5V'] },
+  },
   'aitewinrobot-esp32c3-supermini': {
     vcc: 3.3,
     gnd: ['GND'],

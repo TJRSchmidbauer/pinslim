@@ -1262,5 +1262,25 @@
  "100d-wi-fi-controlled-4wd-robot-car": {
   "t": "WLAN-gesteuertes Roboterauto mit Allradantrieb",
   "d": "WLAN-gesteuertes Roboterauto mit Allradantrieb auf ESP32 (MicroPython) – nutzt Wi-Fi. Aus der Reihe „100 Days of IoT“ von Kritish Mohapatra: https://github.com/kritishmohapatra/100_Days_100_IoT_Projects"
+ },
+ "c6-blink": {
+  "t": "XIAO ESP32-C6: LED blinken lassen",
+  "d": "Eine LED an D1 (GPIO 1) des Seeed XIAO ESP32-C6 blinken lassen. Läuft im RISC-V-Backend von QEMU."
+ },
+ "c6-devkit-blink": {
+  "t": "ESP32-C6-DevKitC-1: LED blinken lassen",
+  "d": "Eine LED an GPIO 4 des ESP32-C6-DevKitC-1 blinken lassen. Läuft auf der QEMU-Maschine esp32c6-picsimlab (RISC-V)."
+ },
+ "c6-devkit-poti": {
+  "t": "ESP32-C6-DevKitC-1: Potentiometer (ADC)",
+  "d": "Ein Potentiometer an GPIO 2 (ADC1 Kanal 2) mit analogRead() einlesen und den Wert im seriellen Monitor ausgeben."
+ },
+ "p4-blink": {
+  "t": "ESP32-P4: LED blinken lassen",
+  "d": "Eine LED an GPIO 2 eines ESP32-P4-Boards blinken lassen. Für den P4 gibt es keinen Emulator: Sketch kompilieren und per USB auf ein echtes Board flashen."
+ },
+ "esp32s3-wifi-connect": {
+  "t": "ESP32-S3: WLAN verbinden",
+  "d": "Den ESP32-S3 mit dem virtuellen WLAN „Velxio-GUEST“ verbinden und die zugewiesene IP-Adresse ausgeben. Nutzt Kanal 6 für eine schnellere Verbindung."
  }
 }

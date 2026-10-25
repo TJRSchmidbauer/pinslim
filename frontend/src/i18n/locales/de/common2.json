@@ -63,7 +63,8 @@
         "noBoard": "Kein Board ausgewählt",
         "archMismatch": "Hinweis: Architektur {{detected}} erkannt, aktuelles Board ist aber {{current}}. Wird trotzdem geladen.",
         "firmwareLoaded": "Firmware geladen: {{name}}",
-        "imported": "{{name}} importiert"
+        "imported": "{{name}} importiert",
+        "p4NoEmulation": "Der ESP32-P4 lässt sich nicht emulieren – Sketch kompilieren und auf ein echtes Board flashen."
       }
     },
     "fileExplorer": {

@@ -81,7 +81,7 @@ _MACHINE: dict[str, tuple[str, str]] = {
     'esp32':    (QEMU_XTENSA,  'esp32'),
     'esp32-s3': (QEMU_XTENSA,  'esp32s3'),
     'esp32-c3': (QEMU_RISCV32, 'esp32c3'),
-    'esp32-c6': (QEMU_RISCV32, 'esp32c3'),
+    'esp32-c6': (QEMU_RISCV32, 'esp32c6'),
 }
 
 EventCallback = Callable[[str, dict], Awaitable[None]]
@@ -256,15 +256,16 @@ class EspQemuManager:
             cmd += ['-drive', f'file={firmware_path},if=mtd,format=raw']
 
         # WiFi NIC (slirp user-mode networking)
-        if wifi_enabled:
-            nic_model = 'esp32c3_wifi' if 'c3' in machine else 'esp32_wifi'
+        # (the C3 and S3 share one MAC model; the C6 has no radio model)
+        if wifi_enabled and 'c6' not in machine:
+            nic_model = 'esp32c3_wifi' if ('c3' in machine or 's3' in machine) else 'esp32_wifi'
             nic_arg = f'user,model={nic_model},net=192.168.4.0/24'
             if wifi_hostfwd_port:
                 nic_arg += f',hostfwd=tcp::{wifi_hostfwd_port}-192.168.4.15:80'
             cmd += ['-nic', nic_arg]
 
-        # Deterministic instruction counting for stable timers (required for ESP32-C3 boot)
-        if 'c3' in machine:
+        # Deterministic instruction counting for stable timers (required for the RISC-V C3/C6 boot)
+        if 'c3' in machine or 'c6' in machine:
             cmd += ['-icount', '3']
 
         logger.info('Launching ESP32 QEMU for %s: %s', inst.client_id, ' '.join(cmd))

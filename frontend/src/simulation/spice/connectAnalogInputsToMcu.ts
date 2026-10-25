@@ -92,6 +92,8 @@ const ADC_PIN_MAP: Partial<Record<BoardKind, Array<{ pinName: string; channel: n
   // XIAO ESP32-C6: only D0-D2 (GPIO0-2 → ADC1 CH0-2) reach the ADC —
   // D3-D5 are SS/SDA/SCL (GPIO21/22/23) per variants/XIAO_ESP32C6.
   'xiao-esp32-c6': adcRange('D', 0, 3),
+  // ESP32-C6-DevKitC-1: ADC1 CH0-6 = GPIO0-6.
+  'esp32-c6': adcRange('', 0, 7),
   'aitewinrobot-esp32c3-supermini': adcRange('', 0, 6),
 };
 
@@ -122,6 +124,7 @@ const ADC_PIN_TO_GPIO: Partial<Record<BoardKind, (pinName: string, channel: numb
   'esp32-c3': gpioPinFromName,
   'xiao-esp32-c3': gpioPinFromName,
   'xiao-esp32-c6': gpioPinFromName,
+  'esp32-c6': gpioPinFromName,
   'aitewinrobot-esp32c3-supermini': gpioPinFromName,
 };
 

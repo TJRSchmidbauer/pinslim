@@ -7404,6 +7404,159 @@ void loop() {
     ],
   },
 
+  // ─── ESP32-C6-DevKitC-1 / ESP32-P4 Examples ─────────────────────────────
+  {
+    id: 'c6-devkit-blink',
+    title: 'ESP32-C6-DevKitC-1: Blink LED',
+    description:
+      'Blink an LED on GPIO 4 of the ESP32-C6-DevKitC-1. Runs on the esp32c6-picsimlab QEMU machine (RISC-V).',
+    category: 'basics',
+    difficulty: 'beginner',
+    boardType: 'esp32-c6',
+    boardFilter: 'esp32-c6',
+    code: `// ESP32-C6-DevKitC-1 — Blink LED on GPIO 4
+// Runs via QEMU libqemu-riscv32 (esp32c6-picsimlab machine)
+#define LED_PIN 4
+
+void setup() {
+  pinMode(LED_PIN, OUTPUT);
+  Serial.begin(115200);
+  Serial.println("ESP32-C6-DevKitC-1 Blink bereit!");
+}
+
+void loop() {
+  digitalWrite(LED_PIN, HIGH);
+  Serial.println("LED AN");
+  delay(500);
+  digitalWrite(LED_PIN, LOW);
+  Serial.println("LED AUS");
+  delay(500);
+}`,
+    components: [
+      { type: 'wokwi-led', id: 'c6d-led1', x: 440, y: 160, properties: { color: 'green' } },
+      { type: 'wokwi-resistor', id: 'c6d-r1', x: 440, y: 240, properties: { value: '220' } },
+    ],
+    wires: [
+      {
+        id: 'c6dw1',
+        start: { componentId: 'arduino-uno', pinName: '4' },
+        end: { componentId: 'c6d-led1', pinName: 'A' },
+        color: '#22cc22',
+      },
+      {
+        id: 'c6dw2',
+        start: { componentId: 'c6d-led1', pinName: 'C' },
+        end: { componentId: 'c6d-r1', pinName: '1' },
+        color: '#888888',
+      },
+      {
+        id: 'c6dw3',
+        start: { componentId: 'c6d-r1', pinName: '2' },
+        end: { componentId: 'arduino-uno', pinName: 'GND.1' },
+        color: '#000000',
+      },
+    ],
+  },
+  {
+    id: 'c6-devkit-poti',
+    title: 'ESP32-C6-DevKitC-1: Potentiometer (ADC)',
+    description:
+      'Read a potentiometer on GPIO 2 (ADC1 channel 2) with analogRead() and print the value on the serial monitor.',
+    category: 'basics',
+    difficulty: 'beginner',
+    boardType: 'esp32-c6',
+    boardFilter: 'esp32-c6',
+    code: `// ESP32-C6-DevKitC-1 — Potentiometer on GPIO 2 (ADC1_CH2)
+#define POT_PIN 2
+
+void setup() {
+  Serial.begin(115200);
+  Serial.println("ESP32-C6 ADC bereit!");
+}
+
+void loop() {
+  int raw = analogRead(POT_PIN);            // 0 … 4095
+  int mv = analogReadMilliVolts(POT_PIN);   // calibrated millivolts
+  Serial.printf("Rohwert: %4d   Spannung: %4d mV\n", raw, mv);
+  delay(300);
+}`,
+    components: [
+      { type: 'wokwi-potentiometer', id: 'c6d-pot1', x: 420, y: 140, properties: {} },
+    ],
+    wires: [
+      {
+        id: 'c6dp1',
+        start: { componentId: 'arduino-uno', pinName: '2' },
+        end: { componentId: 'c6d-pot1', pinName: 'SIG' },
+        color: '#3388ff',
+      },
+      {
+        id: 'c6dp2',
+        start: { componentId: 'arduino-uno', pinName: '3V3' },
+        end: { componentId: 'c6d-pot1', pinName: 'VCC' },
+        color: '#ff3333',
+      },
+      {
+        id: 'c6dp3',
+        start: { componentId: 'arduino-uno', pinName: 'GND.1' },
+        end: { componentId: 'c6d-pot1', pinName: 'GND' },
+        color: '#000000',
+      },
+    ],
+  },
+  {
+    id: 'p4-blink',
+    title: 'ESP32-P4: Blink LED',
+    description:
+      'Blink an LED on GPIO 2 of an ESP32-P4 board. The P4 has no emulator: compile the sketch and flash it to a real board over USB.',
+    category: 'basics',
+    difficulty: 'beginner',
+    boardType: 'esp32-p4',
+    boardFilter: 'esp32-p4',
+    code: `// ESP32-P4 — Blink LED on GPIO 2
+// No QEMU model exists for the P4: compile + flash to real hardware.
+#define LED_PIN 2
+
+void setup() {
+  pinMode(LED_PIN, OUTPUT);
+  Serial.begin(115200);
+  Serial.println("ESP32-P4 Blink bereit!");
+}
+
+void loop() {
+  digitalWrite(LED_PIN, HIGH);
+  Serial.println("LED AN");
+  delay(500);
+  digitalWrite(LED_PIN, LOW);
+  Serial.println("LED AUS");
+  delay(500);
+}`,
+    components: [
+      { type: 'wokwi-led', id: 'p4-led1', x: 440, y: 160, properties: { color: 'green' } },
+      { type: 'wokwi-resistor', id: 'p4-r1', x: 440, y: 240, properties: { value: '220' } },
+    ],
+    wires: [
+      {
+        id: 'p4w1',
+        start: { componentId: 'arduino-uno', pinName: '2' },
+        end: { componentId: 'p4-led1', pinName: 'A' },
+        color: '#22cc22',
+      },
+      {
+        id: 'p4w2',
+        start: { componentId: 'p4-led1', pinName: 'C' },
+        end: { componentId: 'p4-r1', pinName: '1' },
+        color: '#888888',
+      },
+      {
+        id: 'p4w3',
+        start: { componentId: 'p4-r1', pinName: '2' },
+        end: { componentId: 'arduino-uno', pinName: 'GND.1' },
+        color: '#000000',
+      },
+    ],
+  },
+
   // ─── 7-Segment Display Examples ──────────────────────────────────────────
   {
     id: 'uno-7segment',
@@ -9607,6 +9760,53 @@ void setup() {
   Serial.begin(115200);
   delay(1000);
   Serial.println("ESP32-C3 WiFi Connection Demo");
+  Serial.println("=============================");
+  Serial.printf("Connecting to %s", ssid);
+
+  WiFi.begin(ssid, "", 6);  // channel 6, no password
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  Serial.println(" Connected!");
+  Serial.printf("IP Address: %s\\n", WiFi.localIP().toString().c_str());
+  Serial.printf("MAC Address: %s\\n", WiFi.macAddress().c_str());
+  Serial.printf("Signal Strength (RSSI): %d dBm\\n", WiFi.RSSI());
+}
+
+void loop() {
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.println("WiFi still connected - IP: " + WiFi.localIP().toString());
+  } else {
+    Serial.println("WiFi disconnected! Reconnecting...");
+    WiFi.begin(ssid, "", 6);
+  }
+  delay(5000);
+}
+`,
+    components: [],
+    wires: [],
+  },
+
+  {
+    id: 'esp32s3-wifi-connect',
+    title: 'ESP32-S3 WiFi Connect',
+    description:
+      'Connect the ESP32-S3 to the virtual "Velxio-GUEST" WiFi network and print the assigned IP address. Uses channel 6 for faster connection.',
+    category: 'communication',
+    difficulty: 'beginner',
+    boardType: 'esp32-s3',
+    boardFilter: 'esp32-s3',
+    code: `#include <WiFi.h>
+
+const char* ssid = "Velxio-GUEST";
+
+void setup() {
+  Serial.begin(115200);
+  delay(1000);
+  Serial.println("ESP32-S3 WiFi Connection Demo");
   Serial.println("=============================");
   Serial.printf("Connecting to %s", ssid);
 

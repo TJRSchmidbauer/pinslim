@@ -499,6 +499,36 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://velxio.dev/examples/c6-blink/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://velxio.dev/examples/c6-button-led/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://velxio.dev/examples/c6-bme680/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://velxio.dev/examples/c6-devkit-blink/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://velxio.dev/examples/c6-devkit-poti/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://velxio.dev/examples/p4-blink/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://velxio.dev/examples/uno-7segment/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -650,6 +680,11 @@
   </url>
   <url>
     <loc>https://velxio.dev/examples/esp32c3-wifi-connect/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://velxio.dev/examples/esp32s3-wifi-connect/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>

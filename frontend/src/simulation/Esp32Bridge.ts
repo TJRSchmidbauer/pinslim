@@ -50,9 +50,9 @@ export function toQemuBoardType(kind: BoardKind): 'esp32' | 'esp32-s3' | 'esp32-
   // esp32/s3/c3 only; c6 is at least mapped): reaching this bridge means the
   // JS engine was skipped for a chip that has no other path — fail loudly
   // instead of booting the wrong machine and wedging on the first register.
-  if (proFam === 'esp32-p4' || proFam === 'esp32-c5') {
+  if (kind === 'esp32-p4' || proFam === 'esp32-p4' || proFam === 'esp32-c5') {
     throw new Error(
-      `${kind}: the ${proFam} has no QEMU machine - it runs only on its in-browser engine`,
+      `${kind}: the ${proFam ?? kind} has no QEMU machine - it runs only on its in-browser engine`,
     );
   }
   if (proFam) return proFam;

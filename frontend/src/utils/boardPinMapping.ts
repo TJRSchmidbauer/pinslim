@@ -250,6 +250,8 @@ export const BOARD_COMPONENT_IDS = [
   'esp32-c3',
   'xiao-esp32-c3',
   'xiao-esp32-c6',
+  'esp32-c6',
+  'esp32-p4',
   'aitewinrobot-esp32c3-supermini',
   'stm32-bluepill',
   'stm32-blackpill',
@@ -410,9 +412,19 @@ export function boardPinToNumber(boardId: string, pinName: string): number | nul
     // classic ESP32 tops out at GPIO39, the S3 at GPIO48. A shared 39
     // rejected the S3 DevKitC's 40/41/42/45/46/47/48 pads, so seven pads
     // on that board resolved to null and a wire to them did nothing.
-    const maxGpio = boardId.startsWith('esp32-s3') ? 48 : 39;
+    const maxGpio = boardId.startsWith('esp32-s3')
+      ? 48
+      : boardId === 'esp32-p4'
+        ? 54
+        : boardId === 'esp32-c6'
+          ? 30
+          : 39;
     const num = parseInt(pinName, 10);
     if (!isNaN(num) && num >= 0 && num <= maxGpio) return num;
+    // ESP32-C6: U0TXD/U0RXD are GPIO16/17 (the classic map says 1/3).
+    if (boardId === 'esp32-c6' && (pinName === 'TX' || pinName === 'RX')) {
+      return pinName === 'TX' ? 16 : 17;
+    }
     return ESP32_PIN_MAP[pinName] ?? null;
   }
 

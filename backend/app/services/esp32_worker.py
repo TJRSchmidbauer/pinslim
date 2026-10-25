@@ -176,7 +176,18 @@ def _log(msg: str) -> None:
 # QEMU machines whose SoC model instantiates a WiFi MAC. The S3 machine does
 # not (hw/xtensa/esp32s3.c never calls qemu_find_nic_info), so it must not be
 # handed a NIC — see the radio block in start().
-_WIFI_MACHINES = {'esp32-picsimlab'}
+# Machines that model the WiFi MAC → the NIC model their SoC looks for.
+_WIFI_MACHINES = {
+    'esp32-picsimlab': 'esp32_wifi',
+    'esp32c3-picsimlab': 'esp32c3_wifi',
+    # The S3 MAC is the C3 one; Pinslim's esp32s3-picsimlab maps it.
+    'esp32s3-picsimlab': 'esp32c3_wifi',
+}
+
+
+def _is_riscv(machine: str) -> bool:
+    """ESP32-C3 / C6 machines (libqemu-riscv32)."""
+    return 'c3' in machine or 'c6' in machine
 
 
 # The classic ESP32's WiFi MAC, at its DPORT address and at the APB alias the
@@ -208,14 +219,11 @@ def wifi_nic_arg(machine: str, wifi_enabled: bool,
     `wifi_enabled` still gates the host forward, which exposes the GUEST's
     server to the host and so belongs to a sketch that actually serves.
     """
-    if 'c3' in machine:
-        # riscv32 machine is compiled with --disable-slirp (no network model)
-        return None
-    elif machine in _WIFI_MACHINES:
-        model = 'esp32_wifi'
+    if machine in _WIFI_MACHINES:
+        model = _WIFI_MACHINES[machine]
     else:
-        # The S3 machine models no radio (hw/xtensa/esp32s3.c never looks for
-        # the NIC), so handing it one would leave an unconsumed netdev.
+        # The C6 machine models no radio (WiFi 6 MAC/PHY not emulated), so
+        # handing it one would leave an unconsumed netdev.
         return None
     arg = f'user,model={model},net=192.168.4.0/24'
     if wifi_enabled and hostfwd_port:
@@ -392,6 +400,8 @@ def main() -> None:  # noqa: C901  (complexity OK for inline worker)
     # wired to the host (bank-1 named outputs in the widened esp32_gpio model).
     if 'c3' in machine:
         _build_pinmap(22)
+    elif 'c6' in machine:
+        _build_pinmap(31)
     elif 's3' in machine:
         _build_pinmap(49)
 
@@ -520,7 +530,7 @@ def main() -> None:  # noqa: C901  (complexity OK for inline worker)
     # For ESP32 (Xtensa), -icount is NOT used: the WiFi AP beacon timer
     # runs on QEMU_CLOCK_REALTIME, so decoupling virtual time from real
     # time can cause beacon delivery issues on slow/virtualized hosts.
-    if 'c3' in machine:
+    if _is_riscv(machine):
         args_list.extend([b'-icount', b'3'])
 
     # ── WiFi NIC (slirp user-mode networking) ──────────────────────────────
@@ -615,6 +625,17 @@ def main() -> None:  # noqa: C901  (complexity OK for inline worker)
         SIG_LEDC_LS_CH_LAST = sys.modules['esp32_signals'].SIG_LEDC_LS_CH_LAST
     _signal_router = SignalRouter()
 
+    # GPIO-matrix LEDC signals per chip (soc/gpio_sig_map.h, LEDC_LS_SIG_OUT0_IDX)
+    # and how many FUNCn_OUT_SEL entries the machine exposes.
+    if 'c6' in machine:
+        _ledc_sig_base, _ledc_ch_count, _ledc_gpio_count = 0, 6, 31
+    elif 'c3' in machine:
+        _ledc_sig_base, _ledc_ch_count, _ledc_gpio_count = 45, 6, 22
+    elif 's3' in machine:
+        _ledc_sig_base, _ledc_ch_count, _ledc_gpio_count = 73, 8, 49
+    else:
+        _ledc_sig_base, _ledc_ch_count, _ledc_gpio_count = None, 16, 40
+
     def _refresh_signal_routing() -> None:
         """Scan `gpio_out_sel[40]` and reconcile the SignalRouter.
 
@@ -632,16 +653,25 @@ def main() -> None:  # noqa: C901  (complexity OK for inline worker)
             out_sel_ptr = lib.qemu_picsimlab_get_internals(2)
             if not out_sel_ptr:
                 return
-            out_sel = (ctypes.c_uint32 * 40).from_address(out_sel_ptr)
+            out_sel = (ctypes.c_uint32 * _ledc_gpio_count).from_address(out_sel_ptr)
             snapshot: dict[int, int] = {}
-            for gpio_pin in range(40):
-                signal_id = int(out_sel[gpio_pin]) & 0xFF
-                # 0..71 / 88..255 are signal sources velxio doesn't
-                # model yet; include them in the snapshot only if the
-                # firmware actively routed them so future peripherals
-                # can opt in without code changes here.
-                if SIG_LEDC_HS_CH0_OUT_IDX <= signal_id <= SIG_LEDC_LS_CH_LAST:
-                    snapshot[gpio_pin] = signal_id
+            for gpio_pin in range(_ledc_gpio_count):
+                raw = int(out_sel[gpio_pin]) & 0x1FF
+                if _ledc_sig_base is None:
+                    # Classic ESP32: HS 71-78 / LS 79-86, used as-is.
+                    signal_id = raw & 0xFF
+                    if not SIG_LEDC_HS_CH0_OUT_IDX <= signal_id <= SIG_LEDC_LS_CH_LAST:
+                        continue
+                else:
+                    # C3/S3/C6 only have low-speed channels, at a chip-specific
+                    # signal index. Translate to the classic id of the same
+                    # channel number (71 + n) — the 0x5000 duty callback
+                    # reports that channel number, and the frontend's
+                    # SignalRouter resolves channel → 71 + n → pins.
+                    if not _ledc_sig_base <= raw < _ledc_sig_base + _ledc_ch_count:
+                        continue
+                    signal_id = SIG_LEDC_HS_CH0_OUT_IDX + (raw - _ledc_sig_base)
+                snapshot[gpio_pin] = signal_id
             changed, cleared = _signal_router.replace_snapshot(snapshot)
             for gpio_pin, signal_id in changed:
                 _emit({'type': 'gpio_routing',

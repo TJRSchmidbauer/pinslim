@@ -48,7 +48,7 @@ export function toFirmwareVariant(boardKind: BoardKind): 'esp32' | 'esp32-s3' | 
     return 'esp32-s3';
   }
   if (
-    boardKind === 'esp32-c6' ||
+    (boardKind as string) === 'esp32-c6' ||
     boardKind === 'xiao-esp32-c6'
   ) {
     return 'esp32-c6';

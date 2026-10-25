@@ -1,71 +1,29 @@
-# ---- Stage 0: QEMU .so + ROM binaries ----
-# The Velxio runtime needs libqemu-xtensa.so + libqemu-riscv32.so (the
-# QEMU shared libraries that simulate ESP32 / ESP32-S3 / ESP32-C3) plus
-# the matching boot ROM blobs. Three sources, tried in order:
+# ---- Stage 0: Pinslim QEMU (.so + ROM binaries) ----
+# libqemu-xtensa.so (ESP32, ESP32-S3) and libqemu-riscv32.so (ESP32-C3,
+# ESP32-C6) plus their boot ROMs, built from source by scripts/build-qemu.sh
+# (lcgamboa picsimlab-esp32 + espressif C6 models + qemu/pinslim.patch, see
+# docs/BUILD-QEMU.md). The build takes a while; to skip it, drop prebuilt
+# files into prebuilt/qemu/ (e.g. the output of `scripts/build-qemu.sh`) —
+# when both libraries are there they are used as-is.
 #
-#   1. Local prebuilt files at prebuilt/qemu/<file>.
-#      Drop your own compiled .so files in there (see docs/BUILD-QEMU.md
-#      for the full build-from-source guide) and they win — no network
-#      access required.
-#
-#   2. velxio.dev gated download endpoint, when VELXIO_LICENSE_KEY is set.
-#      Free personal-tier keys at https://velxio.dev/license/signup.
-#
-#   3. Build fails with a clear error telling you which of the two paths
-#      to pick.
-#
-# Backward compatibility: the old QEMU_RELEASE_URL ARG is still accepted
-# so forks pointing at a private mirror of the binaries keep working.
-FROM ubuntu:22.04 AS qemu-provider
+# Built on the same Debian release as the final image so the libraries link
+# against the glib/pixman/slirp versions present at runtime.
+FROM python:3.12-slim AS qemu-provider
 
-RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential git ca-certificates ninja-build pkg-config perl flex bison \
+    libglib2.0-dev libpixman-1-dev libgcrypt20-dev libslirp-dev libfdt-dev zlib1g-dev \
     && rm -rf /var/lib/apt/lists/*
 
-ARG TARGETARCH
-ARG VELXIO_LICENSE_KEY=
-ARG VELXIO_BINARY_BASE_URL=https://velxio.dev/api/pro/license/downloads
-# Legacy escape hatch — set this to keep using the old GitHub Release
-# mirror (or any other CDN you proxy from). When set, takes precedence
-# over the gated path.
-ARG QEMU_RELEASE_URL=
-
-# Copy the prebuilt directory (may contain .so+ROM files or just the .gitkeep)
-RUN mkdir -p /qemu
 COPY prebuilt/qemu/ /qemu/
-
-# Resolve which fetch path the build will use and fail-fast with a
-# friendly message if neither prebuilt files nor a key were provided.
-RUN cd /qemu \
- && for base in libqemu-xtensa libqemu-riscv32; do \
-      f="${base}.so" ; \
-      if [ ! -f "$f" ]; then \
-        if [ -n "${QEMU_RELEASE_URL}" ]; then \
-          echo "Downloading ${base}-${TARGETARCH}.so → $f (legacy URL) ..." ; \
-          curl -fSL -o "$f" "${QEMU_RELEASE_URL}/${base}-${TARGETARCH}.so" || touch "$f" ; \
-        elif [ -n "${VELXIO_LICENSE_KEY}" ]; then \
-          echo "Downloading ${base}-${TARGETARCH} → $f (velxio.dev) ..." ; \
-          curl -fSL -o "$f" "${VELXIO_BINARY_BASE_URL}/${base}-${TARGETARCH}?key=${VELXIO_LICENSE_KEY}" || touch "$f" ; \
-        else \
-          echo "[qemu-provider] Open-Source mode: creating stub for $f" ; \
-          touch "$f" ; \
-        fi ; \
-      fi ; \
-    done \
- && for f in esp32-v3-rom.bin esp32-v3-rom-app.bin esp32c3-rom.bin esp32s3_rev0_rom.bin; do \
-      asset="${f%.bin}" ; \
-      if [ ! -f "$f" ]; then \
-        if [ -n "${QEMU_RELEASE_URL}" ]; then \
-          echo "Downloading $f (legacy URL) ..." ; \
-          curl -fSL -o "$f" "${QEMU_RELEASE_URL}/$f" || touch "$f" ; \
-        elif [ -n "${VELXIO_LICENSE_KEY}" ]; then \
-          echo "Downloading $asset → $f (velxio.dev) ..." ; \
-          curl -fSL -o "$f" "${VELXIO_BINARY_BASE_URL}/${asset}?key=${VELXIO_LICENSE_KEY}" || touch "$f" ; \
-        else \
-          echo "[qemu-provider] Open-Source mode: creating stub for $f" ; \
-          touch "$f" ; \
-        fi ; \
-      fi ; \
-    done \
+COPY scripts/build-qemu.sh /src/scripts/build-qemu.sh
+COPY qemu/ /src/qemu/
+RUN if [ -s /qemu/libqemu-xtensa.so ] && [ -s /qemu/libqemu-riscv32.so ] \
+        && [ -s /qemu/esp32c6-rom.bin ]; then \
+      echo "[qemu-provider] using prebuilt/qemu/" ; \
+    else \
+      /src/scripts/build-qemu.sh /qemu ; \
+    fi \
  && ls -lh /qemu/
 
 
@@ -78,21 +36,27 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libusb-1.0-0 ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-# Install ESP-IDF 4.4.7 (matches Arduino ESP32 core 2.0.17 / lcgamboa QEMU ROM)
-RUN git clone -b v4.4.7 --recursive --depth=1 --shallow-submodules \
+# ESP-IDF 5.5.6 + arduino-esp32 3.3.12 (arduino-esp32 is built as an IDF
+# component, so the core pins the IDF version — bump both together).
+RUN git clone -b v5.5.6 --recursive --depth=1 --shallow-submodules \
     https://github.com/espressif/esp-idf.git /opt/esp-idf
 
 WORKDIR /opt/esp-idf
 
-# Install toolchains for esp32 (Xtensa) and esp32c3 (RISC-V) only
-RUN ./install.sh esp32,esp32c3
+# Toolchains for every chip Pinslim compiles: ESP32 / S3 (Xtensa) and
+# C3 / C6 / P4 (RISC-V).
+RUN ./install.sh esp32,esp32s3,esp32c3,esp32c6,esp32p4
 
-# Clean up large unnecessary files to reduce image size
+# Clean up large unnecessary files to reduce image size. The Python venv is
+# rebuilt in the final image (its interpreter differs from this stage's), and
+# the debuggers / OpenOCD are never used by the compile pipeline.
 RUN rm -rf .git docs examples \
+    && rm -rf /root/.espressif/python_env /root/.espressif/dist \
+              /root/.espressif/tools/*-gdb /root/.espressif/tools/openocd-esp32 \
     && find /root/.espressif -name '*.tar.*' -delete 2>/dev/null || true
 
 # Install Arduino-as-component for full Arduino API support in ESP-IDF builds
-RUN git clone --branch 2.0.17 --depth=1 --recursive --shallow-submodules \
+RUN git clone --branch 3.3.12 --depth=1 --recursive --shallow-submodules \
     https://github.com/espressif/arduino-esp32.git /opt/arduino-esp32 \
  && rm -rf /opt/arduino-esp32/.git
 
@@ -210,21 +174,15 @@ COPY --from=frontend-builder /app/frontend/dist /usr/share/nginx/html
 COPY docker/entrypoint.sh /app/entrypoint.sh
 RUN sed -i 's/\r$//' /app/entrypoint.sh && chmod +x /app/entrypoint.sh
 
-# ── ESP32 emulation: pre-built QEMU .so + ROM binaries ──────────────────────
-# Downloaded from GitHub Release (public — no access to qemu-lcgamboa needed)
-# libqemu-xtensa.so    → ESP32 / ESP32-S3 (Xtensa LX6/LX7)
-# libqemu-riscv32.so   → ESP32-C3 (RISC-V RV32IMC)
-# esp32-v3-rom*.bin    → boot/app ROM images required by esp32-picsimlab machine
-# esp32c3-rom.bin      → ROM image required by esp32c3-picsimlab machine
-# esp32s3_rev0_rom.bin → ROM image required by esp32s3-picsimlab machine
+# ── ESP32 emulation: Pinslim QEMU .so + ROM binaries ────────────────────────
+# libqemu-xtensa.so    → ESP32 / ESP32-S3 (machines esp32-picsimlab, esp32s3-picsimlab)
+# libqemu-riscv32.so   → ESP32-C3 / ESP32-C6 (esp32c3-picsimlab, esp32c6-picsimlab)
+# esp32-v3-rom*.bin, esp32s3_rev0_rom.bin, esp32c3-rom.bin, esp32c6-rom.bin
 # NOTE: ROM files must live in the same directory as the .so (worker passes -L
 #       to QEMU pointing at os.path.dirname(lib_path))
 RUN mkdir -p /app/lib
 COPY --from=qemu-provider /qemu/ /app/lib/
 
-# Activate ESP32 emulation
-# QEMU_ESP32_LIB    → Xtensa library (ESP32, ESP32-S3)
-# QEMU_RISCV32_LIB  → RISC-V library (ESP32-C3 and variants)
 ENV QEMU_ESP32_LIB=/app/lib/libqemu-xtensa.so
 ENV QEMU_RISCV32_LIB=/app/lib/libqemu-riscv32.so
 
@@ -247,8 +205,10 @@ RUN if [ -f /opt/esp-idf/tools/ldgen/ldgen.py ]; then \
     fi; rm -f /tmp/ldgen_cache.py
 
 ENV IDF_PATH=/opt/esp-idf
+ENV IDF5_PATH=/opt/esp-idf
 ENV IDF_TOOLS_PATH=/root/.espressif
 ENV ARDUINO_ESP32_PATH=/opt/arduino-esp32
+ENV ARDUINO_ESP32_5_PATH=/opt/arduino-esp32
 
 # ── ccache for ESP-IDF compiles ──────────────────────────────────────────────
 # ESP-IDF's build system honours IDF_CCACHE_ENABLE=1 and routes every C/C++
@@ -309,10 +269,10 @@ RUN mkdir -p /var/cache/ccache /var/lib/velxio-build /root/Arduino
 # /var/lib/velxio-build — persistent ESP-IDF build dir (one subdir per target)
 VOLUME ["/app/data", "/root/.arduino15", "/root/Arduino", "/var/cache/ccache", "/var/lib/velxio-build"]
 
-# Install ESP-IDF Python dependencies using the final image's Python
-# The requirements.txt has version constraints required by ESP-IDF 4.4.x
-RUN grep -v 'esp-windows-curses' /opt/esp-idf/requirements.txt \
-    | pip install --no-cache-dir -r /dev/stdin
+# ESP-IDF's Python environment, created with the final image's interpreter
+# (python_env/idf5.5_py3.12_env; espidf_compiler globs for it).
+RUN python3 /opt/esp-idf/tools/idf_tools.py install-python-env \
+ && rm -rf /root/.cache/pip
 
 EXPOSE 80
 

@@ -6,14 +6,23 @@
 # compile and emulate the same boards:
 #
 #   1. arduino-cli + the AVR, RP2040, ATTinyCore and STM32 cores
-#   2. ESP-IDF 4.4.7 + arduino-esp32 2.0.17 (ESP32 / ESP32-C3 compilation)
-#   3. lcgamboa QEMU shared libraries + ROMs (ESP32 emulation)
+#   2. ESP-IDF 5.5 + arduino-esp32 3.3: the toolchain for ESP32, S3, C3,
+#      C6 and P4 (arduino-esp32 is built as an ESP-IDF component, so the
+#      core pins the IDF version — bump both together)
+#   3. Pinslim's QEMU libraries + ROMs (scripts/build-qemu.sh): emulation of
+#      ESP32, ESP32-S3, ESP32-C3 and ESP32-C6. The ESP32-P4 has no QEMU model
+#      and is compile/flash only.
 #
 # Every step is idempotent: re-running skips what is already installed.
 # Usage:  scripts/setup-native.sh [arduino|espidf|qemu|all]   (default: all)
 #
-# QEMU covers ESP32 and ESP32-C3 (lcgamboa picsimlab-esp32); ESP32-S3/CAM
-# need Velxio's private QEMU tree, see docs/BUILD-QEMU.md.
+# Backend environment afterwards (systemd unit / .env):
+#   IDF_PATH=IDF5_PATH=$PINSLIM_OPT/esp-idf-v5
+#   IDF_TOOLS_PATH=$PINSLIM_OPT/espressif
+#   ARDUINO_ESP32_PATH=ARDUINO_ESP32_5_PATH=$PINSLIM_OPT/arduino-esp32-3
+#   QEMU_ESP32_LIB=$PINSLIM_OPT/qemu/libqemu-xtensa.so
+#   QEMU_RISCV32_LIB=$PINSLIM_OPT/qemu/libqemu-riscv32.so
+#   PATH including ~/.local/bin (arduino-cli)
 #
 # Paths (override via env):
 #   PINSLIM_OPT   /opt/pinslim      ESP-IDF, arduino-esp32, QEMU libs
@@ -24,9 +33,11 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 PINSLIM_OPT="${PINSLIM_OPT:-/opt/pinslim}"
-IDF_PATH="${PINSLIM_OPT}/esp-idf"
 IDF_TOOLS_PATH="${PINSLIM_OPT}/espressif"
-ARDUINO_ESP32_PATH="${PINSLIM_OPT}/arduino-esp32"
+IDF_VERSION="${IDF_VERSION:-v5.5.6}"
+ARDUINO_ESP32_VERSION="${ARDUINO_ESP32_VERSION:-3.3.12}"
+IDF_PATH="${PINSLIM_OPT}/esp-idf-v5"
+ARDUINO_ESP32_PATH="${PINSLIM_OPT}/arduino-esp32-3"
 QEMU_DIR="${PINSLIM_OPT}/qemu"
 LOCAL_BIN="${HOME}/.local/bin"
 
@@ -80,25 +91,27 @@ setup_arduino() {
 }
 
 setup_espidf() {
-  log "ESP-IDF 4.4.7 + arduino-esp32 2.0.17"
+  log "ESP-IDF ${IDF_VERSION} + arduino-esp32 ${ARDUINO_ESP32_VERSION}"
   ensure_opt
   sudo apt-get install -y --no-install-recommends \
     git wget flex bison gperf python3 python3-pip python3-venv \
-    cmake ninja-build ccache libffi-dev libssl-dev libusb-1.0-0 python3-virtualenv
+    cmake ninja-build ccache libffi-dev libssl-dev libusb-1.0-0 dfu-util
 
   if [ ! -f "${IDF_PATH}/export.sh" ]; then
-    git clone -b v4.4.7 --recursive --depth=1 --shallow-submodules \
+    git clone -b "${IDF_VERSION}" --recursive --depth=1 --shallow-submodules \
       https://github.com/espressif/esp-idf.git "${IDF_PATH}"
   fi
-  # ESP-IDF 4.4 pins Python packages that predate Python 3.12; its installer
-  # builds its own venv under IDF_TOOLS_PATH.
-  IDF_TOOLS_PATH="${IDF_TOOLS_PATH}" "${IDF_PATH}/install.sh" esp32,esp32c3
+  IDF_TOOLS_PATH="${IDF_TOOLS_PATH}" "${IDF_PATH}/install.sh" esp32,esp32s3,esp32c3,esp32c6,esp32p4
+  # Debuggers and OpenOCD are not used by the compile pipeline (~400 MB).
+  rm -rf "${IDF_TOOLS_PATH}"/tools/*-gdb "${IDF_TOOLS_PATH}/tools/openocd-esp32" "${IDF_TOOLS_PATH}/dist"
 
   if [ ! -d "${ARDUINO_ESP32_PATH}/cores" ]; then
-    git clone --branch 2.0.17 --depth=1 --recursive --shallow-submodules \
+    git clone --branch "${ARDUINO_ESP32_VERSION}" --depth=1 --recursive --shallow-submodules \
       https://github.com/espressif/arduino-esp32.git "${ARDUINO_ESP32_PATH}"
   fi
 
+  # mkspiffs bakes uploaded files into the SPIFFS partition at compile time
+  # (looked up under IDF_TOOLS_PATH/tools/mkspiffs/*/mkspiffs/mkspiffs).
   local mk="${IDF_TOOLS_PATH}/tools/mkspiffs/0.2.3/mkspiffs/mkspiffs"
   if [ ! -x "${mk}" ]; then
     mkdir -p "$(dirname "${mk}")"
@@ -110,20 +123,13 @@ setup_espidf() {
     chmod +x "${mk}"
     rm -rf "${tmp}"
   fi
-
-  # Same ldgen memoisation the Docker image applies (41% of a cold build).
-  local ldgen="${IDF_PATH}/tools/ldgen/ldgen.py"
-  if [ ! -f "${IDF_PATH}/tools/ldgen/ldgen_upstream.py" ]; then
-    mv "${ldgen}" "${IDF_PATH}/tools/ldgen/ldgen_upstream.py"
-    cp "${ROOT_DIR}/backend/scripts/ldgen_cache.py" "${ldgen}"
-    chmod +x "${ldgen}"
-  fi
 }
 
 setup_qemu() {
-  log "QEMU (lcgamboa) for ESP32 emulation"
+  log "Pinslim QEMU (ESP32, S3, C3, C6 emulation)"
   ensure_opt
-  if [ -s "${QEMU_DIR}/libqemu-xtensa.so" ] && [ -s "${QEMU_DIR}/libqemu-riscv32.so" ]; then
+  if [ -s "${QEMU_DIR}/libqemu-xtensa.so" ] && [ -s "${QEMU_DIR}/libqemu-riscv32.so" ] \
+     && [ -f "${QEMU_DIR}/esp32c6-rom.bin" ]; then
     echo "already built"
     return
   fi
@@ -131,9 +137,7 @@ setup_qemu() {
     build-essential git ninja-build pkg-config perl libglib2.0-dev libpixman-1-dev \
     libgcrypt20-dev libslirp-dev libfdt-dev zlib1g-dev python3 python3-venv \
     python3-setuptools meson flex bison
-  "${ROOT_DIR}/scripts/build-qemu.sh"
-  mkdir -p "${QEMU_DIR}"
-  cp "${ROOT_DIR}"/prebuilt/qemu/* "${QEMU_DIR}/"
+  "${ROOT_DIR}/scripts/build-qemu.sh" "${QEMU_DIR}"
 }
 
 case "${step}" in

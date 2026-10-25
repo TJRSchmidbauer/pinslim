@@ -83,7 +83,9 @@ export type CompileProgress = (info: {
 }) => void;
 
 const POLL_INTERVAL_MS = 2000;
-const MAX_POLL_DURATION_MS = 15 * 60 * 1000; // 15 minutes — covers cold ESP-IDF builds
+// 65 minutes: the backend resumes a cold ESP-IDF build (new chip/variant)
+// on its own for up to ESPIDF_BUILD_BUDGET_S (one hour) before giving up.
+const MAX_POLL_DURATION_MS = 65 * 60 * 1000;
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
