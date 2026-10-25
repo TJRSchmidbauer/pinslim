@@ -27,7 +27,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { BoardInstance } from '../../types/board';
+import { BOARD_KIND_LABELS, type BoardInstance } from '../../types/board';
 import { useSimulatorStore } from '../../store/useSimulatorStore';
 import { isTauri, listSerialPorts, type SerialPortInfo } from '../../desktop/tauriBridge';
 import { streamFlash } from '../../services/flashService';
@@ -325,7 +325,7 @@ export const FlashModal = ({ board: boardProp, fqbn, onClose }: Props) => {
   }, [onClose]);
 
   // ── Render ──────────────────────────────────────────────────────
-  const boardLabel = board.boardKind;
+  const boardLabel = BOARD_KIND_LABELS[board.boardKind] ?? board.boardKind;
   // Entitlement (desktop: paid license only — see lib/proWebFlash.ts).
   const flashAllowed = hardwareFlashAllowed();
 

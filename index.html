@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pinslim – Mikrocontroller im Browser bauen, programmieren und messen</title>
+  <meta name="description" content="Pinslim simuliert Arduino, Raspberry Pi Pico und die ESP32-Familie direkt im Browser – mit Logikanalysator, Wahrheitstabelle, Schulbeispielen und Flashen auf echte Boards.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Pinslim – Mikrocontroller im Browser">
+  <meta property="og:description" content="Arduino, Pico und ESP32 im Browser simulieren, Busse analysieren und auf echte Boards flashen. Für Schule und Hobby.">
+  <meta property="og:image" content="https://tjrschmidbauer.github.io/pinslim/docs/img/site/og.jpg">
+  <meta property="og:url" content="https://tjrschmidbauer.github.io/pinslim/">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="frontend/public/favicon.svg" type="image/svg+xml">
+  <style>
+    :root {
+      --bg: #f6f8fb; --surface: #ffffff; --ink: #0f172a; --muted: #52607a;
+      --line: #dfe5ee; --brand: #0077ff; --brand2: #00c2ff; --accent-soft: #e8f1ff;
+      --shadow: 0 1px 2px rgba(15,23,42,.06), 0 12px 32px -12px rgba(15,23,42,.18);
+      --radius: 14px;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0b1020; --surface: #121a30; --ink: #eef2fb; --muted: #9fb0cf;
+        --line: #23304f; --accent-soft: #14284d;
+        --shadow: 0 1px 2px rgba(0,0,0,.4), 0 16px 40px -14px rgba(0,0,0,.6);
+      }
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0; background: var(--bg); color: var(--ink);
+      font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--brand); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
+
+    /* header */
+    header.top { position: sticky; top: 0; z-index: 10; backdrop-filter: saturate(1.4) blur(12px);
+      background: color-mix(in srgb, var(--bg) 82%, transparent); border-bottom: 1px solid var(--line); }
+    header.top .wrap { display: flex; align-items: center; gap: 28px; height: 60px; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 20px; color: var(--ink); letter-spacing: -.02em; }
+    .brand img { width: 30px; height: 30px; }
+    .brand b { color: var(--brand); font-weight: 800; }
+    nav { display: flex; gap: 22px; margin-left: auto; font-size: 15px; }
+    nav a { color: var(--muted); }
+    nav a:hover { color: var(--ink); text-decoration: none; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 20px; border-radius: 10px; font-weight: 650;
+      border: 1px solid var(--line); background: var(--surface); color: var(--ink); }
+    .btn:hover { text-decoration: none; border-color: var(--brand); }
+    .btn.primary { background: linear-gradient(135deg, var(--brand2), var(--brand)); border: 0; color: #fff;
+      box-shadow: 0 8px 20px -8px rgba(0,119,255,.7); }
+    .btn.primary:hover { filter: brightness(1.06); }
+
+    /* hero */
+    .hero { padding: 72px 0 24px; text-align: center; }
+    .eyebrow { display: inline-block; padding: 5px 14px; border-radius: 999px; background: var(--accent-soft); color: var(--brand);
+      font-weight: 650; font-size: 13.5px; letter-spacing: .02em; }
+    h1 { font-size: clamp(34px, 5.4vw, 60px); line-height: 1.08; letter-spacing: -.035em; margin: 18px auto 16px; max-width: 880px; }
+    h1 em { font-style: normal; background: linear-gradient(135deg, var(--brand2), var(--brand)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .lead { font-size: clamp(17px, 2vw, 20px); color: var(--muted); max-width: 720px; margin: 0 auto 30px; }
+    .cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .stats { display: flex; justify-content: center; gap: 36px; flex-wrap: wrap; margin: 34px 0 0; color: var(--muted); font-size: 14.5px; }
+    .stats b { display: block; font-size: 26px; color: var(--ink); letter-spacing: -.02em; }
+
+    .frame { margin: 44px auto 0; border-radius: 16px; overflow: hidden; background: var(--surface); box-shadow: var(--shadow); border: 1px solid var(--line); }
+    .frame .bar { display: flex; gap: 7px; padding: 11px 14px; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--surface) 88%, var(--line)); }
+    .frame .bar i { width: 11px; height: 11px; border-radius: 50%; background: #ff5f57; }
+    .frame .bar i:nth-child(2) { background: #febc2e; } .frame .bar i:nth-child(3) { background: #28c840; }
+    .frame img { display: block; width: 100%; height: auto; }
+    .hero .frame { max-width: 1080px; }
+
+    section { padding: 84px 0 0; }
+    h2 { font-size: clamp(28px, 3.6vw, 40px); letter-spacing: -.03em; line-height: 1.15; margin: 0 0 12px; }
+    .sub { color: var(--muted); max-width: 680px; margin: 0 0 34px; font-size: 17px; }
+    .center { text-align: center; } .center .sub { margin-left: auto; margin-right: auto; }
+
+    .grid { display: grid; gap: 18px; grid-template-columns: repeat(3, 1fr); }
+    .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); }
+    .card .ico { width: 42px; height: 42px; border-radius: 11px; display: grid; place-items: center; font-size: 22px;
+      background: var(--accent-soft); margin-bottom: 14px; }
+    .card h3 { margin: 0 0 6px; font-size: 18px; letter-spacing: -.01em; }
+    .card p { margin: 0; color: var(--muted); font-size: 15.5px; }
+
+    .row { display: grid; grid-template-columns: 1fr 1.25fr; gap: 44px; align-items: center; margin-top: 64px; }
+    .row.rev { grid-template-columns: 1.25fr 1fr; } .row.rev .text { order: 2; }
+    .row .text h3 { font-size: 28px; letter-spacing: -.025em; line-height: 1.2; margin: 0 0 12px; }
+    .row .text p { color: var(--muted); margin: 0 0 14px; }
+    .row ul { margin: 0; padding: 0; list-style: none; }
+    .row li { position: relative; padding-left: 28px; margin: 8px 0; color: var(--ink); font-size: 15.5px; }
+    .row li::before { content: "✓"; position: absolute; left: 0; color: var(--brand); font-weight: 800; }
+    .tag { display: inline-block; font-size: 12.5px; font-weight: 700; color: var(--brand); background: var(--accent-soft); padding: 3px 10px; border-radius: 999px; margin-bottom: 12px; letter-spacing: .03em; text-transform: uppercase; }
+
+    .boards { display: grid; gap: 14px; grid-template-columns: repeat(6, 1fr); }
+    .board { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 10px 12px; text-align: center; }
+    .board img { height: 92px; width: 100%; object-fit: contain; }
+    .board span { display: block; margin-top: 8px; font-size: 13.5px; font-weight: 600; }
+    .board small { color: var(--muted); font-size: 12px; }
+
+    .two { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    pre { margin: 0; padding: 18px 20px; background: #0f172a; color: #e6edf9; border-radius: 12px; overflow: auto; font: 13.5px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .card pre { margin-top: 14px; }
+    .note { margin-top: 18px; padding: 14px 18px; border-left: 4px solid var(--brand); background: var(--accent-soft); border-radius: 8px; color: var(--ink); font-size: 15px; }
+
+    .credits { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .credits a { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; color: var(--ink); }
+    .credits a:hover { border-color: var(--brand); text-decoration: none; }
+    .credits a b { display: block; font-size: 15px; } .credits a span { color: var(--muted); font-size: 13.5px; }
+
+    footer { margin-top: 96px; border-top: 1px solid var(--line); padding: 30px 0 46px; color: var(--muted); font-size: 14px; }
+    footer .wrap { display: flex; flex-wrap: wrap; gap: 14px 30px; align-items: center; }
+    footer .sp { margin-left: auto; }
+
+    @media (max-width: 960px) {
+      .grid { grid-template-columns: 1fr 1fr; } .boards { grid-template-columns: repeat(3, 1fr); }
+      .row, .row.rev { grid-template-columns: 1fr; gap: 24px; } .row.rev .text { order: 0; }
+      .credits { grid-template-columns: 1fr 1fr; } .two { grid-template-columns: 1fr; } nav { display: none; }
+    }
+    @media (max-width: 600px) { .grid, .credits { grid-template-columns: 1fr; } .boards { grid-template-columns: repeat(2, 1fr); } .hero { padding-top: 46px; } }
+  </style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top"><img src="frontend/public/favicon.svg" alt="" width="30" height="30"><span>Pin<b>slim</b></span></a>
+    <nav>
+      <a href="#funktionen">Funktionen</a>
+      <a href="#analyse">Analyse</a>
+      <a href="#schule">Schule</a>
+      <a href="#boards">Boards</a>
+      <a href="#start">Loslegen</a>
+    </nav>
+    <a class="btn" href="https://github.com/TJRSchmidbauer/pinslim">GitHub</a>
+  </div>
+</header>
+
+<main id="top">
+  <div class="hero wrap">
+    <span class="eyebrow">Open Source · läuft im Browser · für Schule und Hobby</span>
+    <h1>Mikrocontroller im Browser <em>bauen, programmieren und messen.</em></h1>
+    <p class="lead">Arduino, Raspberry Pi Pico und die ganze ESP32-Familie laufen als echte Emulation. Schaltung zeichnen, Sketch schreiben, Busse mit dem Logikanalysator ansehen – und am Ende auf ein echtes Board flashen.</p>
+    <div class="cta">
+      <a class="btn primary" href="#start">Selbst hosten</a>
+      <a class="btn" href="https://github.com/TJRSchmidbauer/pinslim">Quellcode auf GitHub</a>
+    </div>
+    <div class="stats">
+      <div><b>323</b>Beispielprojekte</div>
+      <div><b>25</b>Schulbeispiele nach Themen</div>
+      <div><b>4</b>ESP32-Chips mit eigenem QEMU</div>
+      <div><b>Deutsch</b>durchgehend übersetzt</div>
+    </div>
+    <div class="frame">
+      <div class="bar"><i></i><i></i><i></i></div>
+      <img src="docs/img/site/hero.webp" alt="Pinslim: Arduino Uno mit OLED-Display, serielle Ausgabe und Oszilloskop mit dekodiertem I²C-Verkehr" width="1600" height="1050">
+    </div>
+  </div>
+
+  <section id="funktionen">
+    <div class="wrap">
+      <div class="center">
+        <h2>Alles, was man zum Verstehen braucht</h2>
+        <p class="sub">Nicht nur „LED blinkt“: Pinslim zeigt, was auf den Leitungen passiert.</p>
+      </div>
+      <div class="grid">
+        <div class="card"><div class="ico">🧪</div><h3>Echte Emulation</h3><p>AVR (Uno, Nano, Mega), RP2040 (Pico) und ESP32, S3, C3 und C6 laufen mit der echten Firmware – kein Nachspielen von Beispielen.</p></div>
+        <div class="card"><div class="ico">📈</div><h3>Logikanalysator</h3><p>UART, I²C und SPI werden von den Pins gelesen und als Klartext dekodiert: <code>S 0x3C W ✓ 0x00 ✓ P</code>.</p></div>
+        <div class="card"><div class="ico">🔢</div><h3>Wahrheitstabelle &amp; Zeitdiagramm</h3><p>Für Gatterschaltungen: Tabelle, vereinfachter Ausdruck in ∧ ∨ ¬ und Zeitdiagramm – auch mit Flipflops.</p></div>
+        <div class="card"><div class="ico">🔌</div><h3>Auf echte Boards flashen</h3><p>Uno, Nano und die ESP32-Familie direkt aus dem Browser – mit Chip-Prüfung, Checkliste und verständlichen Fehlermeldungen.</p></div>
+        <div class="card"><div class="ico">🎓</div><h3>Für den Unterricht</h3><p>Schulbeispiele nach Themen, deutsche Oberfläche, helles Design und ein Lehrer-freundlicher Aufbau ohne Konto.</p></div>
+        <div class="card"><div class="ico">🏠</div><h3>Selbst gehostet</h3><p>Ein Server im Schulnetz genügt. Docker oder native Installation, keine Cloud, keine Lizenzschlüssel.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="analyse">
+    <div class="wrap">
+      <div class="row">
+        <div class="text">
+          <span class="tag">Logikanalysator</span>
+          <h3>Sehen, was auf den Leitungen passiert</h3>
+          <p>Die Peripherie wird bytegenau emuliert – Pinslim zeichnet daraus die Signale, die ein echter Chip auf SDA/SCL oder SCK/MOSI/MISO ausgeben würde, und dekodiert sie.</p>
+          <ul>
+            <li>UART mit automatischer Baudrate, I²C mit Adresse, Lesen/Schreiben und ACK/NACK, SPI in allen vier Modi</li>
+            <li>Auf Arduino und Pico mit dem echten Takt, auf dem ESP32 an den Pins, die der Sketch gewählt hat</li>
+            <li>Ablauf als Text kopieren – für das Heft oder den Bericht</li>
+          </ul>
+        </div>
+        <div class="frame"><div class="bar"><i></i><i></i><i></i></div><img src="docs/img/site/esp32-i2c.webp" alt="ESP32 mit OLED: dekodierter I²C-Verkehr im Oszilloskop" loading="lazy" width="1600" height="1050"></div>
+      </div>
+
+      <div class="row rev">
+        <div class="text">
+          <span class="tag">Auf jedem Board</span>
+          <h3>Derselbe Blick auf Arduino, Pico und ESP32</h3>
+          <p>Ob <code>Wire.write()</code> auf dem Raspberry Pi Pico oder dem Uno: Das Oszilloskop zeigt die Rahmen und die Bytes. Der Vergleich zwischen den Boards ist ein guter Einstieg in Bussysteme.</p>
+          <ul>
+            <li>Mehrere Boards gleichzeitig, jeder Kanal ist an Board und Pin gebunden</li>
+            <li>Trigger (Auto, Normal, Single) wie bei einem Speicheroszilloskop</li>
+          </ul>
+        </div>
+        <div class="frame"><div class="bar"><i></i><i></i><i></i></div><img src="docs/img/site/pico-i2c.webp" alt="Raspberry Pi Pico mit OLED: I²C-Dekodierung" loading="lazy" width="1600" height="1050"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="schule">
+    <div class="wrap">
+      <div class="center">
+        <h2>Gebaut für den Unterricht</h2>
+        <p class="sub">Digitaltechnik, Programmieren und Messen – Schritt für Schritt, ohne Hardware im Klassenraum.</p>
+      </div>
+      <div class="row">
+        <div class="text">
+          <span class="tag">Digitaltechnik</span>
+          <h3>Wahrheitstabelle auf Knopfdruck</h3>
+          <p>Schaltung aus Gattern, Schaltern und LEDs bauen – Pinslim berechnet die Tabelle, hebt die aktuelle Schalterstellung hervor und gibt den Booleschen Ausdruck aus.</p>
+          <ul>
+            <li>Volladdierer, Multiplexer, Komparator und mehr als 35 weitere Beispiele</li>
+            <li>Vereinfachter Ausdruck (Quine-McCluskey) oder vollständige Normalform</li>
+            <li>„Tabelle kopieren“ liefert Text für Word oder Excel</li>
+          </ul>
+        </div>
+        <div class="frame"><div class="bar"><i></i><i></i><i></i></div><img src="docs/img/site/truth.webp" alt="Wahrheitstabelle eines Volladdierers mit Booleschem Ausdruck" loading="lazy" width="1600" height="1050"></div>
+      </div>
+
+      <div class="row rev">
+        <div class="text">
+          <span class="tag">Schaltwerke</span>
+          <h3>Zeitdiagramme für Flipflops und Zähler</h3>
+          <p>Mit einem Taktschalter zählt der 4-Bit-Zähler vor den Augen der Klasse – als Impulsdiagramm, wie im Lehrbuch.</p>
+          <ul>
+            <li>Takt, Eingänge und alle Ausgänge in einem Diagramm</li>
+            <li>4 bis 32 Taktperioden wählbar</li>
+          </ul>
+        </div>
+        <div class="frame"><div class="bar"><i></i><i></i><i></i></div><img src="docs/img/site/timing.webp" alt="Zeitdiagramm eines 4-Bit-Ripple-Zählers" loading="lazy" width="1600" height="1050"></div>
+      </div>
+
+      <div class="row">
+        <div class="text">
+          <span class="tag">Beispiele</span>
+          <h3>Von „Erste Schritte“ bis Algorithmen</h3>
+          <p>Die Schulsammlung ordnet Beispiele nach Themen (Informatik, Natur und Technik) mit Lernzielen. Dazu 300 weitere Projekte vom Blinklicht bis zur Wetterstation.</p>
+        </div>
+        <div class="frame"><div class="bar"><i></i><i></i><i></i></div><img src="docs/img/site/gallery.webp" alt="Beispielgalerie mit Schulbeispielen nach Themen" loading="lazy" width="1600" height="1050"></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="row rev">
+        <div class="text">
+          <span class="tag">Hardware</span>
+          <h3>Vom Browser aufs echte Board</h3>
+          <p>Wenn der Sketch im Simulator läuft, geht es mit einem Klick weiter: kompilieren, Chip prüfen, flashen. Der Dialog führt Schritt für Schritt durch die Vorbereitung – von der BOOT-Taste bis zum Datenkabel.</p>
+          <ul>
+            <li>Arduino Uno und Nano sowie ESP32, S3, C3, C6 und P4</li>
+            <li>Warnt, wenn das angeschlossene Board nicht zum Projekt passt</li>
+            <li>Fehler wie „Port belegt“ oder „nicht im Flash-Modus“ auf Deutsch erklärt</li>
+          </ul>
+          <div class="note">Der Browser erlaubt USB-Zugriff nur über <b>https://</b> oder <b>localhost</b>. Eine Anleitung für den Schulserver steht in der README.</div>
+        </div>
+        <div class="frame"><div class="bar"><i></i><i></i><i></i></div><img src="docs/img/site/flash.webp" alt="Flash-Dialog mit Checkliste für den Arduino Uno" loading="lazy" width="1000" height="700"></div>
+      </div>
+
+      <div class="row">
+        <div class="text">
+          <span class="tag">Neu: ESP32-C6 &amp; P4</span>
+          <h3>Die ganze ESP32-Familie, mit eigenem QEMU</h3>
+          <p>ESP32, S3, C3 und C6 laufen auf einer selbst gebauten QEMU-Version mit GPIO, ADC, PWM, I²C, SPI und – außer beim C6 – WLAN. Der P4 lässt sich kompilieren und flashen.</p>
+          <ul>
+            <li>ESP-IDF 5.5 und Arduino-ESP32 3.3</li>
+            <li>Der QEMU-Patch liegt im Repository und lässt sich reproduzierbar bauen</li>
+          </ul>
+        </div>
+        <div class="frame"><div class="bar"><i></i><i></i><i></i></div><img src="docs/img/site/c6.webp" alt="ESP32-C6-DevKitC-1 blinkt im Simulator, serielle Ausgabe daneben" loading="lazy" width="1600" height="1050"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="boards">
+    <div class="wrap">
+      <div class="center">
+        <h2>Boards</h2>
+        <p class="sub">Eine Auswahl – die vollständige Liste steht im Simulator.</p>
+      </div>
+      <div class="boards">
+        <div class="board"><img src="docs/img/boards/arduino-uno.png" alt="" loading="lazy"><span>Arduino Uno</span><small>AVR</small></div>
+        <div class="board"><img src="docs/img/boards/arduino-nano.png" alt="" loading="lazy"><span>Arduino Nano</span><small>AVR</small></div>
+        <div class="board"><img src="docs/img/boards/arduino-mega.png" alt="" loading="lazy"><span>Arduino Mega</span><small>AVR</small></div>
+        <div class="board"><img src="docs/img/boards/pi-pico-w.png" alt="" loading="lazy"><span>Raspberry Pi Pico W</span><small>RP2040</small></div>
+        <div class="board"><img src="docs/img/boards/esp32.png" alt="" loading="lazy"><span>ESP32 DevKit</span><small>Xtensa LX6</small></div>
+        <div class="board"><img src="docs/img/boards/esp32-s3.png" alt="" loading="lazy"><span>ESP32-S3</span><small>Xtensa LX7</small></div>
+        <div class="board"><img src="docs/img/boards/esp32-c3.png" alt="" loading="lazy"><span>ESP32-C3</span><small>RISC-V</small></div>
+        <div class="board"><img src="docs/img/boards/esp32-c6.png" alt="" loading="lazy"><span>ESP32-C6</span><small>RISC-V</small></div>
+        <div class="board"><img src="docs/img/boards/esp32-cam.png" alt="" loading="lazy"><span>ESP32-CAM</span><small>Xtensa LX6</small></div>
+        <div class="board"><img src="docs/img/boards/arduino-nano-esp32.png" alt="" loading="lazy"><span>Nano ESP32</span><small>ESP32-S3</small></div>
+        <div class="board"><img src="docs/img/boards/attiny85.png" alt="" loading="lazy"><span>ATtiny85</span><small>AVR</small></div>
+        <div class="board"><img src="docs/img/boards/raspberry-pi-3.png" alt="" loading="lazy"><span>Raspberry Pi 3</span><small>Linux (QEMU)</small></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="start">
+    <div class="wrap">
+      <div class="center">
+        <h2>Loslegen</h2>
+        <p class="sub">Pinslim läuft auf deinem eigenen Rechner oder Server – ohne Konto und ohne Cloud.</p>
+      </div>
+      <div class="two">
+        <div class="card">
+          <h3>Mit Docker</h3>
+          <p>Der schnellste Weg: Frontend, Backend und Toolchains in einem Container.</p>
+<pre>git clone https://github.com/TJRSchmidbauer/pinslim.git
+cd pinslim
+docker compose up -d --build
+# dann http://localhost:3082 öffnen</pre>
+        </div>
+        <div class="card">
+          <h3>Nativ auf Debian/Ubuntu</h3>
+          <p>Installiert arduino-cli, ESP-IDF 5.5, arduino-esp32 3.3 und baut QEMU für ESP32, S3, C3 und C6.</p>
+<pre>scripts/setup-native.sh          # alles
+scripts/setup-native.sh qemu     # nur QEMU
+# Details: README, Abschnitt „Native install“</pre>
+        </div>
+      </div>
+      <div class="note">Die Seite benötigt für das Flashen echter Boards HTTPS. Für den ESP32 im Browser wird ein Backend gebraucht; AVR und Pico laufen vollständig im Browser.</div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="center">
+        <h2>Aufgebaut auf großartiger Open-Source-Arbeit</h2>
+        <p class="sub">Pinslim ist ein Fork von Velxio und verdankt vieles diesen Projekten.</p>
+      </div>
+      <div class="credits">
+        <a href="https://github.com/davidmonterocrespo24/velxio"><b>Velxio</b><span>Ausgangsprojekt, Simulator-Oberfläche</span></a>
+        <a href="https://github.com/lcgamboa/qemu"><b>lcgamboa/qemu</b><span>QEMU mit PICSimLab-Schnittstelle für ESP32</span></a>
+        <a href="https://github.com/espressif/qemu"><b>Espressif QEMU</b><span>ESP32-C6-Modelle</span></a>
+        <a href="https://github.com/wokwi/avr8js"><b>avr8js</b><span>AVR-Emulation im Browser</span></a>
+        <a href="https://github.com/wokwi/rp2040js"><b>rp2040js</b><span>RP2040-Emulation</span></a>
+        <a href="https://github.com/wokwi/wokwi-elements"><b>Wokwi Elements</b><span>Bauteil-Grafiken</span></a>
+        <a href="https://github.com/espressif/esptool-js"><b>esptool-js</b><span>ESP-Flashen im Browser</span></a>
+        <a href="https://randomnerdtutorials.com/"><b>Random Nerd Tutorials</b><span>Vorlagen für ESP32-Beispiele</span></a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© Pinslim – Open Source unter AGPL-3.0</span>
+    <a href="https://github.com/TJRSchmidbauer/pinslim/blob/master/LICENSE">Lizenz</a>
+    <a href="https://github.com/TJRSchmidbauer/pinslim/tree/master/docs">Dokumentation</a>
+    <span class="sp"><a href="https://schmidbauer.io/impressum/">Impressum</a> · <a href="https://schmidbauer.io/datenschutz/">Datenschutz</a></span>
+  </div>
+</footer>
+
+</body>
+</html>
