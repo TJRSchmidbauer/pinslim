@@ -6,6 +6,7 @@
  * Falls back to bundled firmware in public/firmware/ if remote download fails.
  */
 
+import { fetchBundledFirmware } from './firmwareFetch';
 import { get as idbGet, set as idbSet } from 'idb-keyval';
 import type { BoardKind } from '../types/board';
 
@@ -65,7 +66,7 @@ export function toFirmwareVariant(boardKind: BoardKind): 'esp32' | 'esp32-s3' | 
 
 /**
  * Get MicroPython firmware binary for an ESP32 board.
- * Checks IndexedDB cache first, then remote, then bundled fallback.
+ * Checks the IndexedDB cache, then the bundled copy, then downloads it.
  */
 export async function getEsp32Firmware(
   boardKind: BoardKind,
@@ -86,7 +87,19 @@ export async function getEsp32Firmware(
     // IndexedDB unavailable
   }
 
-  // 2. Try remote download
+  // 2. The copy that ships with the app (works offline, nothing leaves the school network)
+  const bundled = await fetchBundledFirmware(config.fallback);
+  if (bundled) {
+    try {
+      await idbSet(config.cacheKey, bundled);
+    } catch {
+      /* non-fatal */
+    }
+    console.log(`[ESP32-MicroPython] Firmware loaded from the bundled copy (${variant}, ${bundled.length} bytes)`);
+    return bundled;
+  }
+
+  // 3. Not bundled: download it
   try {
     const response = await fetch(config.remote);
     if (response.ok) {
@@ -130,7 +143,7 @@ export async function getEsp32Firmware(
     );
   }
 
-  // 3. Fallback to bundled firmware
+  // 4. Last resort
   const response = await fetch(config.fallback);
   if (!response.ok) {
     throw new Error(

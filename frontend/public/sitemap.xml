@@ -529,6 +529,11 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://velxio.dev/examples/uno-serial-plotter/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://velxio.dev/examples/uno-7segment/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>

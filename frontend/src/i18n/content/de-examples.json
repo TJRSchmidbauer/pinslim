@@ -1282,5 +1282,9 @@
  "esp32s3-wifi-connect": {
   "t": "ESP32-S3: WLAN verbinden",
   "d": "Den ESP32-S3 mit dem virtuellen WLAN „Velxio-GUEST“ verbinden und die zugewiesene IP-Adresse ausgeben. Nutzt Kanal 6 für eine schnellere Verbindung."
+ },
+ "uno-serial-plotter": {
+  "t": "Arduino Uno: Serieller Plotter (Poti + Sinuskurve)",
+  "d": "Gibt zwei Werte pro Zeile als „name:wert“ aus. Öffne den seriellen Monitor, wechsle auf „Plotter“ und sieh dir die Kurven an; drehe am Potentiometer und beobachte, wie die blaue Kurve folgt."
  }
 }

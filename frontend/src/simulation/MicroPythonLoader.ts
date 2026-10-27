@@ -6,6 +6,7 @@
  * 3. Caches the MicroPython firmware UF2 in IndexedDB for fast subsequent loads
  */
 
+import { fetchBundledFirmware } from './firmwareFetch';
 import { get as idbGet, set as idbSet } from 'idb-keyval';
 import createLittleFS from 'littlefs';
 // ?url tells Vite to return the correct asset URL for the WASM binary
@@ -186,7 +187,7 @@ export async function loadUserFiles(
 
 /**
  * Get the MicroPython UF2 firmware binary.
- * Checks IndexedDB cache first, then tries remote download, then bundled fallback.
+ * Checks the IndexedDB cache, then the bundled copy, then downloads it.
  */
 export async function getFirmware(
   variant: FirmwareVariant = 'pico',
@@ -205,7 +206,19 @@ export async function getFirmware(
     // IndexedDB unavailable, continue
   }
 
-  // 2. Try remote download
+  // 2. The copy that ships with the app (works offline, nothing leaves the school network)
+  const bundled = await fetchBundledFirmware(fallbackPath);
+  if (bundled) {
+    try {
+      await idbSet(cacheKey, bundled);
+    } catch {
+      /* non-fatal */
+    }
+    console.log(`[MicroPython] Firmware (${variant}) loaded from the bundled copy`);
+    return bundled;
+  }
+
+  // 3. Not bundled: download it
   try {
     const response = await fetch(remoteUrl);
     if (response.ok) {

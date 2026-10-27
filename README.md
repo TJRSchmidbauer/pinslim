@@ -67,6 +67,22 @@ The Docker image (`Dockerfile.standalone`) bundles the same ESP-IDF /
 arduino-esp32 versions and builds Pinslim's QEMU from source unless
 `prebuilt/qemu/` already holds the libraries and ROMs.
 
+### Offline and privacy (school networks)
+
+The app itself needs no Internet and talks to no third party: the code editor,
+fonts, MicroPython firmware and the circuit solver are all served from your
+server, there is no tracking (the analytics tag only loads on `velxio.dev`),
+and `frontend/src/__tests__/offline-first.test.ts` keeps it that way. What does need a connection:
+
+- **Library Manager and board cores** (installing a new Arduino library or core).
+- **The first compile per ESP32 chip**, which downloads ESP-IDF components once;
+  after that it is cached on the server.
+- **Links** such as the GitHub button, which are only requests when clicked.
+
+A server that has once installed what the classes use keeps working with the
+network cable pulled. In Docker, boot-time `arduino-cli` index updates time out
+after 60 s instead of blocking the start.
+
 ### HTTPS for flashing
 
 Browsers only offer USB access (Web Serial) on `https://` pages and on

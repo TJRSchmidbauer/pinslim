@@ -17,21 +17,21 @@ fi
 # Ensure arduino-cli config and board manager URLs are set up
 if [ ! -f /root/.arduino15/arduino-cli.yaml ]; then
     echo "📦 Initializing arduino-cli config..."
-    arduino-cli config init 2>/dev/null || true
-    arduino-cli config add board_manager.additional_urls \
+    timeout 60 arduino-cli config init 2>/dev/null || true
+    timeout 60 arduino-cli config add board_manager.additional_urls \
         https://github.com/earlephilhower/arduino-pico/releases/download/global/package_rp2040_index.json 2>/dev/null || true
-    arduino-cli config add board_manager.additional_urls \
+    timeout 60 arduino-cli config add board_manager.additional_urls \
         https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json 2>/dev/null || true
     # ATTinyCore (Spence Konde) — needed for ATtiny85 FQBNs.
     # Without this URL `core install ATTinyCore:avr` fails with
     #   "Platform 'ATTinyCore:avr' not found: platform not installed".
     # See https://github.com/SpenceKonde/ATTinyCore
-    arduino-cli config add board_manager.additional_urls \
+    timeout 60 arduino-cli config add board_manager.additional_urls \
         http://drazzy.com/package_drazzy.com_index.json 2>/dev/null || true
     # STM32duino (STMicroelectronics:stm32) — needed for STM32 Blue/Black Pill
     # FQBNs. Without this URL `core install STMicroelectronics:stm32` fails with
     #   "Platform 'STMicroelectronics:stm32' not found: platform not installed".
-    arduino-cli config add board_manager.additional_urls \
+    timeout 60 arduino-cli config add board_manager.additional_urls \
         https://github.com/stm32duino/BoardManagerFiles/raw/main/package_stmicroelectronics_index.json 2>/dev/null || true
 fi
 
@@ -55,11 +55,11 @@ fi
 
 # Install missing cores.
 # The ESP32 core matches the bundled ESP-IDF 5.5 (arduino-esp32 3.3.12).
-arduino-cli core update-index 2>/dev/null || true
-arduino-cli core install arduino:avr 2>/dev/null || true
-arduino-cli core install rp2040:rp2040 2>/dev/null || true
-arduino-cli core install ATTinyCore:avr@1.4.1 2>/dev/null || true
-arduino-cli core install STMicroelectronics:stm32 2>/dev/null || true
+timeout 60 arduino-cli core update-index 2>/dev/null || true
+timeout 60 arduino-cli core install arduino:avr 2>/dev/null || true
+timeout 60 arduino-cli core install rp2040:rp2040 2>/dev/null || true
+timeout 60 arduino-cli core install ATTinyCore:avr@1.4.1 2>/dev/null || true
+timeout 60 arduino-cli core install STMicroelectronics:stm32 2>/dev/null || true
 
 # ESP32 compilation now uses ESP-IDF instead of arduino-cli.
 # arduino-cli ESP32 core is no longer needed for QEMU-compatible builds.
@@ -73,10 +73,10 @@ else
     ESP32_VER=$(arduino-cli core list 2>/dev/null | grep esp32:esp32 | awk '{print $2}')
     if [ -z "$ESP32_VER" ]; then
         echo "📦 Installing ESP32 core 3.3.12..."
-        arduino-cli core install esp32:esp32@3.3.12
+        timeout 60 arduino-cli core install esp32:esp32@3.3.12
     elif [[ "$ESP32_VER" != 3.3.12 ]]; then
         echo "⚠️  ESP32 core is $ESP32_VER, need 3.3.12 — reinstalling..."
-        arduino-cli core install esp32:esp32@3.3.12
+        timeout 60 arduino-cli core install esp32:esp32@3.3.12
     fi
 fi
 

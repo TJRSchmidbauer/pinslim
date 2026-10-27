@@ -7557,6 +7557,42 @@ void loop() {
     ],
   },
 
+  // ─── Serial plotter ─────────────────────────────────────────────────────
+  {
+    id: 'uno-serial-plotter',
+    title: 'Arduino Uno: Serial Plotter (potentiometer + sine wave)',
+    description:
+      'Prints two values per line as "name:value" pairs. Open the serial monitor and switch to the "Plotter" view to see them as curves; turn the potentiometer and watch the blue curve follow it.',
+    category: 'sensors',
+    difficulty: 'beginner',
+    boardType: 'arduino-uno',
+    boardFilter: 'arduino-uno',
+    code: `// Serial plotter demo — switch the serial monitor to "Plotter".
+// One line per measurement: name:value,name:value
+void setup() {
+  Serial.begin(115200);
+}
+
+void loop() {
+  int poti = analogRead(A0);                          // 0 … 1023
+  float sinus = 512 + 400 * sin(millis() / 1000.0 * 3);  // moves by itself
+
+  Serial.print("Poti:");
+  Serial.print(poti);
+  Serial.print(",Sinus:");
+  Serial.println(sinus);
+  delay(50);
+}`,
+    components: [
+      { type: 'wokwi-potentiometer', id: 'plot-pot', x: 440, y: 120, properties: { value: 600 } },
+    ],
+    wires: [
+      { id: 'plotw1', start: { componentId: 'arduino-uno', pinName: 'A0' }, end: { componentId: 'plot-pot', pinName: 'SIG' }, color: '#3388ff' },
+      { id: 'plotw2', start: { componentId: 'arduino-uno', pinName: '5V' }, end: { componentId: 'plot-pot', pinName: 'VCC' }, color: '#ff3333' },
+      { id: 'plotw3', start: { componentId: 'arduino-uno', pinName: 'GND.2' }, end: { componentId: 'plot-pot', pinName: 'GND' }, color: '#000000' },
+    ],
+  },
+
   // ─── 7-Segment Display Examples ──────────────────────────────────────────
   {
     id: 'uno-7segment',

@@ -421,6 +421,22 @@
         "nl": "Neue Zeile",
         "cr": "Wagenrücklauf",
         "both": "Beides NL & CR"
+      },
+      "viewText": "Text",
+      "viewPlot": "Plotter",
+      "viewTextTitle": "Den ausgegebenen Text anzeigen",
+      "viewPlotTitle": "Ausgegebene Zahlen als Kurven zeichnen",
+      "plot": {
+        "empty": "Warte auf Zahlen … gib z. B. Serial.println(wert); aus",
+        "hint": "Ausgaben wie „wert“, „a,b,c“ oder „name:wert“ werden gezeichnet.",
+        "toggleCurve": "Kurve ein- oder ausblenden",
+        "window": "Fenster:",
+        "all": "alle",
+        "samples": "{{n}} Messungen",
+        "pause": "Pause",
+        "resume": "Weiter",
+        "csv": "Als CSV kopieren",
+        "copied": "Kopiert ✓"
       }
     },
     "menu": {

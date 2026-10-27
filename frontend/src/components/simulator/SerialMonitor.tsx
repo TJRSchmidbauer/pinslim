@@ -5,6 +5,7 @@
 
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { SerialPlotter } from './SerialPlotter';
 import { useSimulatorStore } from '../../store/useSimulatorStore';
 import { getTabSessionId } from '../../simulation/Esp32Bridge';
 import { openDeviceGateway } from '../../lib/openDeviceGateway';
@@ -102,6 +103,7 @@ export const SerialMonitor: React.FC = () => {
   const [inputValue, setInputValue] = useState('');
   const [lineEnding, setLineEnding] = useState<'none' | 'nl' | 'cr' | 'both'>('nl');
   const [autoscroll, setAutoscroll] = useState(true);
+  const [view, setView] = useState<'text' | 'plot'>('text');
   const outputRef = useRef<HTMLPreElement>(null);
 
   // Sync active tab to activeBoardId when it changes
@@ -242,6 +244,32 @@ export const SerialMonitor: React.FC = () => {
                 {activeBoard.serialBaudRate.toLocaleString()} baud
               </span>
             )}
+          {!isMicroPython && (
+            <span style={{ display: 'inline-flex' }} role="tablist">
+              {(['text', 'plot'] as const).map((v) => (
+                <button
+                  key={v}
+                  role="tab"
+                  aria-selected={view === v}
+                  onClick={() => setView(v)}
+                  style={{
+                    ...styles.clearBtn,
+                    borderRadius: v === 'text' ? '3px 0 0 3px' : '0 3px 3px 0',
+                    ...(view === v
+                      ? { background: 'var(--color-accent-soft)', borderColor: 'var(--color-action-primary)', color: 'var(--color-action-primary)' }
+                      : {}),
+                  }}
+                  title={
+                    v === 'text'
+                      ? t('editor.serial.viewTextTitle', 'Show the printed text')
+                      : t('editor.serial.viewPlotTitle', 'Draw printed numbers as curves')
+                  }
+                >
+                  {v === 'text' ? t('editor.serial.viewText', 'Text') : t('editor.serial.viewPlot', 'Plotter')}
+                </button>
+              ))}
+            </span>
+          )}
           <label style={styles.autoscrollLabel}>
             <input
               type="checkbox"
@@ -272,6 +300,11 @@ export const SerialMonitor: React.FC = () => {
         <div style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
           <PiTerminal key={activeBoard.id} boardId={activeBoard.id} />
         </div>
+      ) : view === 'plot' && !isMicroPython ? (
+        <SerialPlotter
+          text={activeBoard?.serialOutput ?? ''}
+          onClear={() => resolvedTabId && clearBoardSerialOutput(resolvedTabId)}
+        />
       ) : (
       <pre ref={outputRef} style={styles.output}>
         {activeBoard?.serialOutput

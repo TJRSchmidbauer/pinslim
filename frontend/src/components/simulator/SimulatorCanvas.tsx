@@ -1537,6 +1537,16 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
     return () => cleanups.forEach((fn) => fn());
   }, [components, wires, boards]);
 
+  // One selection at a time: picking a wire drops the part selection and vice
+  // versa. Otherwise Delete removed both the wire and the part that happened to
+  // still be selected.
+  useEffect(() => {
+    if (selectedWireId) setSelectedComponentId(null);
+  }, [selectedWireId]);
+  useEffect(() => {
+    if (selectedComponentId) setSelectedWire(null);
+  }, [selectedComponentId, setSelectedWire]);
+
   // Handle keyboard delete for the selected component
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
