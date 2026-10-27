@@ -15,6 +15,7 @@
  * spreadsheet (Excel / LibreOffice) for tables and regression lines.
  */
 import type { ExampleProject } from './examples';
+import { ESP_VARIANTS, toEsp32 } from './examples-school-esp';
 
 export interface SchoolTopic {
   id: string;
@@ -850,7 +851,7 @@ export function buildSchoolExamples(base: ExampleProject[]): ExampleProject[] {
   for (const entry of ENTRIES) {
     const src = byId.get(entry.base);
     if (!src) continue;
-    out.push({
+    const built: ExampleProject = {
       ...src,
       id: entry.id,
       title: entry.title,
@@ -864,7 +865,11 @@ export function buildSchoolExamples(base: ExampleProject[]): ExampleProject[] {
       thumbnail: src.thumbnail ?? `/examples-thumbs/${src.id}.webp`,
       tags: ['schule', entry.topic, ...(src.tags ?? [])],
       schoolTopic: entry.topic,
-    });
+    };
+    // The school collection runs on an ESP32; the Uno sketch above stays as the
+    // fallback for circuits that have no ESP32 variant (pure analog/logic ones).
+    const esp = ESP_VARIANTS[entry.id];
+    out.push(esp ? toEsp32(built, esp) : built);
   }
   return out;
 }
