@@ -33,16 +33,28 @@ import {
 import { useAutoSaveProject } from '../hooks/useAutoSaveProject';
 import { registerEditorCommand } from '../lib/editorCommands';
 import { EditorMenuBar } from '../components/editor/EditorMenuBar';
-import { isCoarsePointer } from '../utils/useTouchDevice';
+import { useTouchMode } from '../utils/useTouchDevice';
 import '../App.css';
 
-// Tab layout (Code | Circuit) instead of side-by-side panes: phones, and
-// tablets held upright — at 810 px a portrait iPad squeezed explorer, code and
-// circuit into three narrow columns. Keep in sync with the CSS @media blocks
-// that style this layout (App.css, SimulatorCanvas.css).
-const MOBILE_LAYOUT_QUERY =
-  '(max-width: 768px), (pointer: coarse) and (orientation: portrait) and (max-width: 1100px)';
+// Tab layout (Code | Circuit) instead of side-by-side panes: phones, and — in
+// touch mode — tablets held upright: at 810 px a portrait iPad squeezed
+// explorer, code and circuit into three narrow columns. The layout CSS keys
+// off `html.layout-tabs` (set below) besides its own phone media query.
 const PHONE_QUERY = '(max-width: 768px)';
+const TABLET_PORTRAIT_QUERY = '(orientation: portrait) and (max-width: 1100px)';
+
+/** Re-render on a media query change. */
+function useMediaQuery(query: string): boolean {
+  const [matches, setMatches] = useState(() => window.matchMedia(query).matches);
+  useEffect(() => {
+    const mq = window.matchMedia(query);
+    const update = () => setMatches(mq.matches);
+    update();
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
+  }, [query]);
+  return matches;
+}
 
 const BOTTOM_PANEL_MIN = 80;
 const BOTTOM_PANEL_MAX = 600;
@@ -154,20 +166,16 @@ export const EditorPage: React.FC = () => {
   }, []);
 
   const [explorerWidth, setExplorerWidth] = useState(EXPLORER_DEFAULT);
-  const [isMobile, setIsMobile] = useState(
-    () => window.matchMedia(MOBILE_LAYOUT_QUERY).matches,
-  );
   // Phones proper. A portrait tablet uses the tab layout too but has the
   // width for the File/Edit/View menu bar, which phones swap for a hamburger.
-  const [isPhone, setIsPhone] = useState(
-    () => window.matchMedia(PHONE_QUERY).matches,
-  );
+  const isPhone = useMediaQuery(PHONE_QUERY);
+  const isTabletPortrait = useMediaQuery(TABLET_PORTRAIT_QUERY);
+  const touchMode = useTouchMode();
+  const isMobile = isPhone || (touchMode && isTabletPortrait);
   useEffect(() => {
-    const mq = window.matchMedia(PHONE_QUERY);
-    const update = () => setIsPhone(mq.matches);
-    mq.addEventListener('change', update);
-    return () => mq.removeEventListener('change', update);
-  }, []);
+    document.documentElement.classList.toggle('layout-tabs', isMobile);
+    return () => document.documentElement.classList.remove('layout-tabs');
+  }, [isMobile]);
   // Slot element for SimulatorCanvas to portal its header into. When set, the
   // canvas board selector / Serial / Scope / zoom / Add buttons render here
   // instead of above the canvas — keeping the top bar a single full-width row
@@ -191,25 +199,13 @@ export const EditorPage: React.FC = () => {
     setShowNewProjectDialog(true);
   }, []);
 
-  // Track mobile breakpoint
+  // The tab layout and touch mode start with the file explorer folded away: on
+  // a 10" screen it took a fifth of the width from code and circuit, and the
+  // projects used in class have a single sketch. The explorer button brings
+  // it back.
   useEffect(() => {
-    const mq = window.matchMedia(MOBILE_LAYOUT_QUERY);
-    const update = (e: MediaQueryListEvent | MediaQueryList) => {
-      const mobile = e.matches;
-      setIsMobile(mobile);
-      if (mobile) setExplorerOpen(false);
-    };
-    update(mq);
-    mq.addEventListener('change', update);
-    return () => mq.removeEventListener('change', update);
-  }, [setExplorerOpen]);
-
-  // Tablets start with the file explorer folded away: on a 10" screen it took
-  // a fifth of the width from code and circuit, and the projects used in class
-  // have a single sketch. The explorer button brings it back.
-  useEffect(() => {
-    if (isCoarsePointer()) setExplorerOpen(false);
-  }, [setExplorerOpen]);
+    if (isMobile || touchMode) setExplorerOpen(false);
+  }, [isMobile, touchMode, setExplorerOpen]);
 
   // Ctrl+S shortcut
   useEffect(() => {
@@ -519,7 +515,7 @@ export const EditorPage: React.FC = () => {
               <polyline points="16 18 22 12 16 6" />
               <polyline points="8 6 2 12 8 18" />
             </svg>
-            <span>&lt;/&gt; {t('editor.shell.code')}</span>
+            <span>{t('editor.shell.code')}</span>
           </button>
           <button
             className={`mobile-tab-btn${mobileView === 'circuit' ? ' mobile-tab-btn--active' : ''}`}

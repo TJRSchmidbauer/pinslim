@@ -1,188 +1,390 @@
 /*
- * Touch mode — tablets and touch-only laptops (primary pointer is a finger).
+ * Touch mode — styled after Apple's Human Interface Guidelines (iPadOS).
  *
- * The editor was laid out for a mouse: toolbar buttons are 28 px, the file
- * explorer icons 16 px, the zoom buttons 24 px. A fingertip needs about
- * 44 px (Apple HIG, WCAG 2.5.5), so on a coarse pointer every control grows
- * to that size. Phones (< 768 px) have their own mobile layout and are not
- * touched by these rules beyond the same minimum sizes.
+ * Active when <html data-touch="on"> (lib/touchMode: automatic on a finger
+ * device, switchable with the hand button next to light/dark). Mouse mode is
+ * untouched by everything below.
  *
- * `!important` is needed where the components set sizes inline.
+ * What HIG asks for and how it maps here:
+ *  - 44 pt minimum hit targets                → every control ≥ 44 px
+ *  - system font, clear type hierarchy        → -apple-system stack, 15–17 px
+ *  - tint colour instead of boxes             → borderless icon buttons in
+ *                                               system blue; fills only for
+ *                                               the selected / primary state
+ *  - segmented controls for mutually
+ *    exclusive views                          → view switch, Code|Circuit tabs
+ *  - floating controls on translucent
+ *    "material" with blur                     → thumb bar, selection bar,
+ *                                               zoom, symbol row
+ *  - hairline separators, soft shadows,
+ *    continuous large corner radii            → 0.5 px lines, 12–18 px radii
  */
-@media (pointer: coarse) {
-  /* Menu bar: Datei / Bearbeiten / Ansicht / … */
-  .emb-trigger {
-    min-height: 44px;
-    padding-left: 14px !important;
-    padding-right: 14px !important;
-  }
 
-  /* Toolbar: compile / run / stop / reset / libraries / output / theme */
-  .tb-btn,
-  .tb-btn-libraries {
-    min-width: 44px !important;
-    min-height: 44px !important;
-  }
-  .tb-btn svg,
-  .tb-btn-libraries svg {
-    width: 22px;
-    height: 22px;
-  }
-  .tb-lang-select,
-  .board-selector {
-    min-height: 44px !important;
-  }
-
-  /* Explorer | Code | Both | Circuit */
-  .view-mode-toggle button {
-    height: 44px !important;
-    min-width: 44px;
-  }
-
-  /* Serial / scope / truth table / add part */
-  .canvas-serial-btn,
-  .add-component-btn {
-    min-width: 48px !important;
-    min-height: 44px !important;
-  }
-
-  /* File explorer actions */
-  .file-explorer-new-btn,
-  .file-explorer-save-btn,
-  .fe-board-new-btn,
-  .fe-collapse-btn {
-    min-width: 40px !important;
-    min-height: 40px !important;
-  }
-
-  /* Floating zoom controls on the canvas */
-  .zoom-btn {
-    width: 44px !important;
-    height: 44px !important;
-    font-size: 20px;
-  }
-  .zoom-level {
-    min-height: 44px;
-    min-width: 52px;
-  }
-
-  /* Selection bar above the canvas: room between the actions */
-  .selection-action-bar {
-    gap: 6px !important;
-    padding: 6px 8px !important;
-  }
-  /* The selected part already carries its name in the dashed frame on the
-     canvas; dropping it here keeps the bar on one line next to a code pane. */
-  .selection-action-bar__name {
-    display: none;
-  }
-
-  /* The floating zoom group had a fixed 32 px height */
-  .zoom-controls--floating {
-    height: auto !important;
-  }
+/* ── Tokens (light / dark) ─────────────────────────────────────────────── */
+html[data-touch='on'] {
+  --hig-tint: #007aff;
+  --hig-green: #34c759;
+  --hig-red: #ff3b30;
+  --hig-label: #1c1c1e;
+  --hig-label-2: rgba(60, 60, 67, 0.6);
+  --hig-fill: rgba(120, 120, 128, 0.12);
+  --hig-separator: rgba(60, 60, 67, 0.2);
+  --hig-material: rgba(249, 249, 251, 0.78);
+  --hig-segment-on: #ffffff;
+  --hig-shadow: 0 8px 28px rgba(0, 0, 0, 0.12), 0 0 0 0.5px rgba(0, 0, 0, 0.08);
+  --hig-font: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', system-ui,
+    'Segoe UI', Roboto, sans-serif;
+}
+html[data-touch='on'][data-theme='dark'] {
+  --hig-tint: #0a84ff;
+  --hig-green: #30d158;
+  --hig-red: #ff453a;
+  --hig-label: #ffffff;
+  --hig-label-2: rgba(235, 235, 245, 0.6);
+  --hig-fill: rgba(120, 120, 128, 0.24);
+  --hig-separator: rgba(84, 84, 88, 0.65);
+  --hig-material: rgba(30, 30, 32, 0.78);
+  --hig-segment-on: #636366;
+  --hig-shadow: 0 8px 28px rgba(0, 0, 0, 0.45), 0 0 0 0.5px rgba(255, 255, 255, 0.08);
 }
 
-/* Thumb bar (CanvasTouchBar) — only rendered on touch devices */
+/* ── Type ──────────────────────────────────────────────────────────────── */
+html[data-touch='on'] .app-header,
+html[data-touch='on'] .editor-toolbar,
+html[data-touch='on'] .canvas-header,
+html[data-touch='on'] .mobile-tab-bar,
+html[data-touch='on'] .selection-action-bar,
+html[data-touch='on'] .modal-content,
+html[data-touch='on'] [role='dialog'] {
+  font-family: var(--hig-font);
+}
+
+/* ── Menu bar (Datei / Bearbeiten / …) ─────────────────────────────────── */
+html[data-touch='on'] .emb-trigger {
+  min-height: 44px;
+  padding: 0 14px !important;
+  border-radius: 10px;
+  font-size: 17px;
+  color: var(--hig-label);
+}
+html[data-touch='on'] .emb-trigger:active {
+  background: var(--hig-fill);
+}
+
+/* ── Toolbar: borderless tinted icon buttons ───────────────────────────── */
+html[data-touch='on'] .tb-btn,
+html[data-touch='on'] .tb-btn-libraries {
+  min-width: 44px !important;
+  min-height: 44px !important;
+  border: none !important;
+  border-radius: 10px !important;
+  background: transparent !important;
+  color: var(--hig-tint) !important;
+}
+html[data-touch='on'] .tb-btn:active,
+html[data-touch='on'] .tb-btn-libraries:active {
+  background: var(--hig-fill) !important;
+}
+html[data-touch='on'] .tb-btn:disabled {
+  color: var(--hig-label-2) !important;
+  opacity: 0.5;
+}
+html[data-touch='on'] .tb-btn svg,
+html[data-touch='on'] .tb-btn-libraries svg {
+  width: 22px;
+  height: 22px;
+}
+html[data-touch='on'] .tb-btn-touch.is-on {
+  background: var(--hig-tint) !important;
+  color: #fff !important;
+}
+html[data-touch='on'] .tb-divider {
+  width: 0.5px;
+  height: 24px;
+  background: var(--hig-separator);
+}
+html[data-touch='on'] .tb-lang-select,
+html[data-touch='on'] .board-selector {
+  min-height: 44px !important;
+  border: none !important;
+  border-radius: 10px !important;
+  background: var(--hig-fill) !important;
+  color: var(--hig-label) !important;
+  font-size: 15px !important;
+}
+
+/* No doubles: Run/Stop live in the thumb bar on the canvas. In the tab
+   layout the toolbar is only on screen together with the code (canvas and
+   thumb bar hidden), so there it keeps them. */
+html[data-touch='on']:not(.layout-tabs) .tb-btn-run,
+html[data-touch='on']:not(.layout-tabs) .tb-btn-run-caret,
+html[data-touch='on']:not(.layout-tabs) .tb-btn-stop {
+  display: none !important;
+}
+/* The tab layout's header carries light/dark and touch already. */
+html.layout-tabs .editor-toolbar .tb-btn-theme,
+html.layout-tabs .editor-toolbar .tb-btn-touch {
+  display: none !important;
+}
+
+/* ── Segmented controls: view switch and the Code | Circuit tabs ───────── */
+html[data-touch='on'] .view-mode-toggle {
+  padding: 2px !important;
+  gap: 2px !important;
+  border: none !important;
+  border-radius: 10px !important;
+  background: var(--hig-fill) !important;
+}
+html[data-touch='on'] .view-mode-toggle button {
+  height: 40px !important;
+  min-width: 48px;
+  border-radius: 8px !important;
+  background: transparent !important;
+  color: var(--hig-label) !important;
+}
+html[data-touch='on'] .view-mode-toggle button[aria-pressed='true'] {
+  background: var(--hig-segment-on) !important;
+  color: var(--hig-label) !important;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12), 0 0 0 0.5px rgba(0, 0, 0, 0.04);
+}
+
+html[data-touch='on'] .mobile-tab-bar {
+  height: auto !important;
+  margin: 8px 12px;
+  padding: 2px;
+  gap: 2px;
+  border: none !important;
+  border-radius: 10px;
+  background: var(--hig-fill) !important;
+}
+html[data-touch='on'] .mobile-tab-btn {
+  min-height: 40px;
+  margin: 0 !important;
+  border: none !important;
+  border-radius: 8px;
+  color: var(--hig-label) !important;
+  font-size: 15px !important;
+  font-weight: 600;
+}
+html[data-touch='on'] .mobile-tab-btn--active {
+  background: var(--hig-segment-on) !important;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12), 0 0 0 0.5px rgba(0, 0, 0, 0.04);
+}
+
+/* ── Canvas header: Serial / Scope / Table / Add ───────────────────────── */
+html[data-touch='on'] .canvas-header {
+  height: auto !important;
+  min-height: 56px;
+  gap: 8px;
+}
+html[data-touch='on'] .canvas-serial-btn {
+  min-width: 48px !important;
+  min-height: 44px !important;
+  border: none !important;
+  border-radius: 10px !important;
+  background: transparent !important;
+  color: var(--hig-tint) !important;
+}
+html[data-touch='on'] .canvas-serial-btn-active {
+  background: var(--hig-fill) !important;
+}
+html[data-touch='on'] .add-component-btn {
+  min-width: 48px !important;
+  min-height: 44px !important;
+  border: none !important;
+  border-radius: 22px !important;
+  background: var(--hig-tint) !important;
+  color: #fff !important;
+}
+
+/* ── File explorer actions ─────────────────────────────────────────────── */
+html[data-touch='on'] .file-explorer-new-btn,
+html[data-touch='on'] .file-explorer-save-btn,
+html[data-touch='on'] .fe-board-new-btn,
+html[data-touch='on'] .fe-collapse-btn {
+  min-width: 40px !important;
+  min-height: 40px !important;
+}
+
+/* ── Floating material: zoom, selection bar, thumb bar ─────────────────── */
+html[data-touch='on'] .zoom-controls--floating,
+html[data-touch='on'] .selection-action-bar,
+.canvas-touch-bar {
+  background: var(--hig-material, rgba(249, 249, 251, 0.78)) !important;
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+  border: none !important;
+  box-shadow: var(--hig-shadow, 0 8px 28px rgba(0, 0, 0, 0.12)) !important;
+}
+
+html[data-touch='on'] .zoom-controls--floating {
+  height: auto !important;
+  padding: 4px !important;
+  border-radius: 16px !important;
+}
+html[data-touch='on'] .zoom-btn {
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 12px !important;
+  color: var(--hig-tint) !important;
+  font-size: 22px;
+}
+html[data-touch='on'] .zoom-level {
+  min-height: 44px;
+  min-width: 56px;
+  color: var(--hig-label);
+  font: 600 15px var(--hig-font);
+}
+
+/* Selection bar: one row, label dropped (the part is framed on the canvas) */
+html[data-touch='on'] .selection-action-bar {
+  top: 14px !important;
+  gap: 2px !important;
+  padding: 4px !important;
+  border-radius: 16px !important;
+  color: var(--hig-label) !important;
+}
+html[data-touch='on'] .selection-action-bar__name {
+  display: none;
+}
+html[data-touch='on'] .selection-action-bar button {
+  min-height: 44px !important;
+  padding: 0 14px !important;
+  border: none !important;
+  border-radius: 12px !important;
+  color: var(--hig-tint) !important;
+  font-size: 15px !important;
+  font-weight: 500;
+}
+html[data-touch='on'] .selection-action-bar button:active {
+  background: var(--hig-fill) !important;
+}
+html[data-touch='on'] .selection-action-bar button[title*='ösch'],
+html[data-touch='on'] .selection-action-bar button[title*='elete'] {
+  color: var(--hig-red) !important;
+}
+
+/* Thumb bar (CanvasTouchBar) — rendered only in touch mode */
 .canvas-touch-bar {
   position: absolute;
-  left: 14px;
-  bottom: 14px;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
   z-index: 60;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
   padding: 4px;
-  background: var(--wb-2, #fff);
-  border: 1px solid var(--wb-6, #d0d7de);
-  border-radius: 12px;
-  box-shadow: var(--shadow-2, 0 4px 14px rgba(0, 0, 0, 0.18));
+  border-radius: 18px;
   touch-action: none;
 }
 .canvas-touch-bar__btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
+  width: 52px;
   height: 48px;
   border: none;
-  border-radius: 10px;
+  border-radius: 14px;
   background: transparent;
-  color: var(--wb-12, #333);
+  color: var(--hig-tint, #007aff);
   cursor: pointer;
 }
 .canvas-touch-bar__btn:active {
-  background: var(--wb-5, #e5e7eb);
+  background: var(--hig-fill, rgba(120, 120, 128, 0.12));
 }
 .canvas-touch-bar__btn:disabled {
-  opacity: 0.35;
+  color: var(--hig-label-2, rgba(60, 60, 67, 0.6));
+  opacity: 0.45;
 }
-.canvas-touch-bar__btn.is-active {
-  background: var(--color-action-primary, #0b6bcb);
+/* Primary action: a filled capsule, green to run, red to stop */
+.canvas-touch-bar__btn.is-run,
+.canvas-touch-bar__btn.is-stop {
+  width: 64px;
   color: #fff;
 }
 .canvas-touch-bar__btn.is-run {
-  color: var(--color-feedback-success, #1a7f37);
+  background: var(--hig-green, #34c759);
 }
 .canvas-touch-bar__btn.is-stop {
-  color: var(--color-feedback-error, #cf222e);
+  background: var(--hig-red, #ff3b30);
 }
 .canvas-touch-bar__sep {
-  width: 1px;
+  width: 0.5px;
   height: 28px;
-  background: var(--wb-6, #d0d7de);
-  margin: 0 2px;
+  margin: 0 6px;
+  background: var(--hig-separator, rgba(60, 60, 67, 0.2));
 }
 
-/* Touch wiring: the pin under the finger, and its name shown above it */
+/* ── Wiring with a finger ──────────────────────────────────────────────── */
 .pin-overlay--hot {
-  background: rgba(255, 153, 0, 0.25) !important;
-  border: 2px solid #ff9900 !important;
+  background: rgba(0, 122, 255, 0.18) !important;
+  border: 2px solid var(--hig-tint, #007aff) !important;
   border-radius: 50% !important;
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.9);
 }
 .pin-touch-hint {
   position: fixed;
   transform: translateX(-50%);
   z-index: 1000;
-  padding: 6px 12px;
-  border-radius: 999px;
-  background: rgba(20, 20, 20, 0.88);
-  color: #fff;
-  font-size: 15px;
-  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 14px;
+  background: var(--hig-material, rgba(30, 30, 32, 0.82));
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+  box-shadow: var(--hig-shadow, 0 8px 28px rgba(0, 0, 0, 0.2));
+  color: var(--hig-label, #fff);
+  font: 600 17px var(--hig-font, -apple-system, system-ui, sans-serif);
   white-space: nowrap;
   pointer-events: none;
 }
 
-/* Symbol row above the on-screen keyboard (CodeSymbolBar) */
+/* ── Symbol row above the on-screen keyboard (CodeSymbolBar) ───────────── */
 .code-symbol-bar {
   position: fixed;
   left: 0;
   right: 0;
   z-index: 900;
   display: flex;
-  gap: 4px;
-  padding: 6px;
+  gap: 6px;
+  padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px));
   overflow-x: auto;
-  background: var(--wb-3, #eef0f3);
-  border-top: 1px solid var(--wb-6, #d0d7de);
+  background: var(--hig-material, rgba(209, 212, 217, 0.92));
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+  border-top: 0.5px solid var(--hig-separator, rgba(60, 60, 67, 0.2));
   -webkit-overflow-scrolling: touch;
 }
+/* Keys look like iPadOS keyboard keys */
 .code-symbol-bar__key {
   flex: 0 0 auto;
   min-width: 44px;
   height: 44px;
-  border: 1px solid var(--wb-6, #d0d7de);
+  border: none;
   border-radius: 8px;
-  background: var(--wb-1, #fff);
-  color: var(--wb-13, #222);
-  font: 600 20px ui-monospace, Menlo, monospace;
+  background: #fff;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+  color: #000;
+  font: 500 20px ui-monospace, 'SF Mono', Menlo, monospace;
+}
+html[data-theme='dark'] .code-symbol-bar__key {
+  background: #6b6b6d;
+  color: #fff;
 }
 .code-symbol-bar__key--wide {
-  min-width: 64px;
-  font-size: 15px;
+  min-width: 68px;
+  font: 500 15px var(--hig-font, -apple-system, system-ui, sans-serif);
 }
 .code-symbol-bar__key:active {
-  background: var(--wb-5, #e5e7eb);
+  background: #c7c9ce;
+}
+
+/* Pickers keep their text: "Arduino C++" and the board name were cut to
+   "Arduin" / "ESP3…" once the buttons around them grew to 44 px. */
+html[data-touch='on'] .tb-lang-select {
+  min-width: 132px;
+}
+html[data-touch='on'] .board-selector {
+  min-width: 150px;
+  max-width: 220px;
 }

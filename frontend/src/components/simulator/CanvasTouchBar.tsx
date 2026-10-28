@@ -4,11 +4,12 @@
  * Floats at the bottom-left of the canvas (the zoom controls sit bottom-right)
  * and only renders on a coarse pointer. It carries what a tablet user reaches
  * for while working on the circuit and otherwise has to fetch from the top
- * toolbar or a keyboard shortcut that a tablet does not have:
- * Run / Stop, Undo / Redo, Serial monitor and Add part.
+ * toolbar or a keyboard shortcut that a tablet does not have: Run / Stop and
+ * Undo / Redo. (Serial monitor and Add part sit in the canvas header; the
+ * toolbar's own Run/Stop are hidden in touch mode, so nothing is doubled.)
  *
  * Run and Stop go through the editor command registry (EditorToolbar owns
- * compile + run); undo/redo and the serial monitor are plain store actions.
+ * compile + run); undo/redo are store actions.
  *
  * Touch note: the canvas listens to native touch events and calls
  * preventDefault on touchend, which swallows the synthetic click of anything
@@ -20,9 +21,6 @@ import { useTranslation } from 'react-i18next';
 import { useSimulatorStore } from '../../store/useSimulatorStore';
 import { runEditorCommand } from '../../lib/editorCommands';
 
-interface CanvasTouchBarProps {
-  onAddComponent: () => void;
-}
 
 const ICON = 22;
 
@@ -91,11 +89,9 @@ const BarButton: React.FC<{
   );
 };
 
-export const CanvasTouchBar: React.FC<CanvasTouchBarProps> = ({ onAddComponent }) => {
+export const CanvasTouchBar: React.FC = () => {
   const { t } = useTranslation();
   const running = useSimulatorStore((s) => s.running);
-  const serialOpen = useSimulatorStore((s) => s.serialMonitorOpen);
-  const toggleSerial = useSimulatorStore((s) => s.toggleSerialMonitor);
   // Subscribing to the index re-renders on every push/undo/redo, so the
   // enabled state of the two buttons stays current.
   const historyIndex = useSimulatorStore((s) => s.historyIndex);
@@ -158,28 +154,6 @@ export const CanvasTouchBar: React.FC<CanvasTouchBarProps> = ({ onAddComponent }
         </Svg>
       </BarButton>
 
-      <span className="canvas-touch-bar__sep" aria-hidden="true" />
-
-      <BarButton
-        label={t('editor.touchBar.serial', 'Serial monitor')}
-        onAction={toggleSerial}
-        active={serialOpen}
-      >
-        <Svg>
-          <polyline points="4 17 10 11 4 5" />
-          <line x1="12" y1="19" x2="20" y2="19" />
-        </Svg>
-      </BarButton>
-      <BarButton
-        label={t('editor.touchBar.addPart', 'Add part')}
-        onAction={onAddComponent}
-        disabled={running}
-      >
-        <Svg>
-          <line x1="12" y1="5" x2="12" y2="19" />
-          <line x1="5" y1="12" x2="19" y2="12" />
-        </Svg>
-      </BarButton>
     </div>
   );
 };

@@ -43,7 +43,9 @@
       "uploadFirmwareLabel": "Upload firmware",
       "recordLabel": "Record simulation",
       "themeToLight": "Switch to light theme",
-      "themeToDark": "Switch to dark theme"
+      "themeToDark": "Switch to dark theme",
+      "touchOn": "Switch to touch mode",
+      "touchOff": "Touch mode is on — switch to mouse mode"
     },
     "fileExplorer": {
       "workspace": "WORKSPACE",

@@ -65,7 +65,9 @@
         "firmwareLoaded": "Firmware geladen: {{name}}",
         "imported": "{{name}} importiert",
         "p4NoEmulation": "Der ESP32-P4 lässt sich nicht emulieren – Sketch kompilieren und auf ein echtes Board flashen."
-      }
+      },
+      "touchOn": "Touch-Bedienung einschalten",
+      "touchOff": "Touch-Bedienung ist an – zur Maus-Bedienung wechseln"
     },
     "fileExplorer": {
       "workspace": "ARBEITSBEREICH",

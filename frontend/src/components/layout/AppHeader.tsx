@@ -5,6 +5,7 @@ import { useProjectStore } from '../../store/useProjectStore';
 import { ShareModal } from './ShareModal';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { ThemeToggle } from './ThemeToggle';
+import { TouchToggle } from './TouchToggle';
 import { useLocalizedHref, useCurrentLocale } from '../../i18n/useLocalizedNavigate';
 import { blogUrlFor } from '../../i18n/path';
 import { trackVisitGitHub } from '../../utils/analytics';
@@ -217,6 +218,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ editorMenu, editorToolbar 
               (pro DarkSurface) — offering a switch that visibly does nothing
               would be worse than not offering one. */}
           <ThemeToggle className="header-theme-toggle" />
+          <TouchToggle className="header-theme-toggle" />
           <LanguageSwitcher />
 
           {/* Share button — visible when a project is loaded */}

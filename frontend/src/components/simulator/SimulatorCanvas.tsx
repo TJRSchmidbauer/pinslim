@@ -3481,7 +3481,7 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
           )}
 
           {/* Thumb bar for tablets (bottom-left; zoom sits bottom-right). */}
-          {isTouchDevice && <CanvasTouchBar onAddComponent={() => setShowComponentPicker(true)} />}
+          {isTouchDevice && <CanvasTouchBar />}
 
           {/* Floating zoom controls — pinned to the canvas' bottom-right
               corner (they lived in the canvas header, which gets too tight

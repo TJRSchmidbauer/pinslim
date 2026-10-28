@@ -44,6 +44,7 @@ import { exportSchematicPng } from '../../utils/exportSchematicPng';
 import { BomModal } from './BomModal';
 import './EditorToolbar.css';
 import { ThemeToggle } from '../layout/ThemeToggle';
+import { TouchToggle } from '../layout/TouchToggle';
 
 /**
  * Output-console group for circuit pre-flight + runtime faults. Routing these
@@ -1822,6 +1823,7 @@ export const EditorToolbar = ({
               </svg>
             </button>
             <ThemeToggle />
+            <TouchToggle />
             {rightSlot}
           </div>
         </div>

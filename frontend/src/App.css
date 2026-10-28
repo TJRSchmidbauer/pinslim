@@ -352,7 +352,7 @@ body {
 }
 
 /* ── Responsive ─────────────────────────────────── */
-@media (max-width: 768px), (pointer: coarse) and (orientation: portrait) and (max-width: 1100px) {
+@media (max-width: 768px) {
   .app-container {
     flex-direction: column;
   }
@@ -369,13 +369,28 @@ body {
     display: none;
   }
 }
+/* Same rules when the editor uses its tab layout on a tablet held upright
+   (EditorPage sets html.layout-tabs; touch mode + portrait). */
+html.layout-tabs .app-container {
+    flex-direction: column;
+  }
+html.layout-tabs .editor-panel,
+html.layout-tabs .simulator-panel {
+    width: 100% !important;
+    min-width: unset;
+    max-width: unset;
+    flex: 1;
+  }
+html.layout-tabs .resize-handle {
+    display: none;
+  }
 
 /* ── Mobile tab bar ──────────────────────────────── */
 .mobile-tab-bar {
   display: none;
 }
 
-@media (max-width: 768px), (pointer: coarse) and (orientation: portrait) and (max-width: 1100px) {
+@media (max-width: 768px) {
   .mobile-tab-bar {
     display: flex;
     flex-shrink: 0;
@@ -418,16 +433,61 @@ body {
     background: var(--color-wash-hover);
   }
 }
+/* Same rules when the editor uses its tab layout on a tablet held upright
+   (EditorPage sets html.layout-tabs; touch mode + portrait). */
+html.layout-tabs .mobile-tab-bar {
+    display: flex;
+    flex-shrink: 0;
+    height: 44px;
+    background: var(--wb-2);
+    border-bottom: 2px solid var(--color-action-primary);
+    z-index: 50;
+    /* Sits between header and panels */
+  }
+html.layout-tabs .mobile-tab-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--wb-9);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      color 0.15s,
+      background 0.15s,
+      border-color 0.15s;
+    padding: 8px 0;
+    margin-bottom: -2px;
+  }
+html.layout-tabs .mobile-tab-btn--active {
+    color: var(--color-action-primary);
+    border-bottom-color: var(--color-action-primary);
+    background: var(--color-accent-soft);
+  }
+html.layout-tabs .mobile-tab-btn:active {
+    background: var(--color-wash-hover);
+  }
 
 /* ── View-mode toggle: desktop only (mobile uses bottom-nav) ─────── */
-@media (max-width: 768px), (pointer: coarse) and (orientation: portrait) and (max-width: 1100px) {
+@media (max-width: 768px) {
   .view-mode-toggle {
     display: none !important;
   }
 }
+/* Same rules when the editor uses its tab layout on a tablet held upright
+   (EditorPage sets html.layout-tabs; touch mode + portrait). */
+html.layout-tabs .view-mode-toggle {
+    display: none !important;
+  }
 
 /* ── Header responsive ───────────────────────────── */
-@media (max-width: 768px), (pointer: coarse) and (orientation: portrait) and (max-width: 1100px) {
+@media (max-width: 768px) {
   .app-header {
     padding: 0 10px;
     height: 44px;
@@ -474,6 +534,49 @@ body {
     display: flex;
   }
 }
+/* Same rules when the editor uses its tab layout on a tablet held upright
+   (EditorPage sets html.layout-tabs; touch mode + portrait). */
+html.layout-tabs .app-header {
+    padding: 0 10px;
+    height: 44px;
+  }
+html.layout-tabs .examples-link span,
+html.layout-tabs .header-github-text,
+html.layout-tabs .header-username-text {
+    display: none;
+  }
+html.layout-tabs .examples-link {
+    padding: 6px 8px;
+  }
+html.layout-tabs /* Mobile nav: hide links,
+html.layout-tabs show hamburger,
+html.layout-tabs dropdown on open */
+  .header-nav-links {
+    display: none;
+    position: absolute;
+    top: 44px;
+    left: 0;
+    right: 0;
+    background: var(--color-bg-header);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--color-border-default);
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 6px 0;
+    z-index: 200;
+  }
+html.layout-tabs .header-nav-links.header-nav-open {
+    display: flex;
+  }
+html.layout-tabs .header-nav-link {
+    padding: 10px 16px;
+    border-radius: 0;
+    font-size: 14px;
+  }
+html.layout-tabs .header-hamburger {
+    display: flex;
+  }
 
 @keyframes velxio-pulse {
   0%, 100% { opacity: 0.4; transform: scale(0.85); }
