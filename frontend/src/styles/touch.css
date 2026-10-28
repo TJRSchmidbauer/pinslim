@@ -154,3 +154,35 @@
   white-space: nowrap;
   pointer-events: none;
 }
+
+/* Symbol row above the on-screen keyboard (CodeSymbolBar) */
+.code-symbol-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 900;
+  display: flex;
+  gap: 4px;
+  padding: 6px;
+  overflow-x: auto;
+  background: var(--wb-3, #eef0f3);
+  border-top: 1px solid var(--wb-6, #d0d7de);
+  -webkit-overflow-scrolling: touch;
+}
+.code-symbol-bar__key {
+  flex: 0 0 auto;
+  min-width: 44px;
+  height: 44px;
+  border: 1px solid var(--wb-6, #d0d7de);
+  border-radius: 8px;
+  background: var(--wb-1, #fff);
+  color: var(--wb-13, #222);
+  font: 600 20px ui-monospace, Menlo, monospace;
+}
+.code-symbol-bar__key--wide {
+  min-width: 64px;
+  font-size: 15px;
+}
+.code-symbol-bar__key:active {
+  background: var(--wb-5, #e5e7eb);
+}

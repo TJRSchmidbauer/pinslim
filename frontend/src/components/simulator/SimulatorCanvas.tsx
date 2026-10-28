@@ -92,6 +92,7 @@ import {
   trackCreateWire,
   trackToggleSerialMonitor,
 } from '../../utils/analytics';
+import { pickNearestPin } from '../../utils/pinSnap';
 import { SelectionActionBar } from './SelectionActionBar';
 import { CanvasTouchBar } from './CanvasTouchBar';
 import { WireModeBanner } from './WireModeBanner';
@@ -115,10 +116,6 @@ const DISPLAY_BODY_METADATA_RE =
 /** Long-press duration for touch context menu (ms). */
 const LONG_PRESS_MS = 500;
 
-/** How far (screen px) beyond a pin's hit box a fingertip may land and still
- * connect to it while wiring. */
-const PIN_SNAP_RADIUS_PX = 24;
-
 interface SnappedPin {
   el: HTMLElement;
   componentId: string;
@@ -133,32 +130,27 @@ interface SnappedPin {
  * PIN_SNAP_RADIUS_PX of its hit box. Distance is measured to the box edge, so
  * a touch inside a box always wins; ties go to the nearer centre.
  */
-function findPinOverlayNear(root: HTMLElement | null, clientX: number, clientY: number): SnappedPin | null {
+function findPinOverlayNear(
+  root: HTMLElement | null,
+  clientX: number,
+  clientY: number,
+): SnappedPin | null {
   if (!root) return null;
-  let best: SnappedPin | null = null;
-  let bestEdge = Infinity;
-  let bestCentre = Infinity;
-  root.querySelectorAll<HTMLElement>('[data-pin-overlay][data-pin-name]').forEach((el) => {
+  const candidates = [
+    ...root.querySelectorAll<HTMLElement>('[data-pin-overlay][data-pin-name]'),
+  ].map((el) => {
     const r = el.getBoundingClientRect();
-    if (r.width === 0) return;
-    const dx = Math.max(r.left - clientX, 0, clientX - r.right);
-    const dy = Math.max(r.top - clientY, 0, clientY - r.bottom);
-    const edge = Math.hypot(dx, dy);
-    if (edge > PIN_SNAP_RADIUS_PX) return;
-    const centre = Math.hypot(clientX - (r.left + r.right) / 2, clientY - (r.top + r.bottom) / 2);
-    if (edge < bestEdge || (edge === bestEdge && centre < bestCentre)) {
-      bestEdge = edge;
-      bestCentre = centre;
-      best = {
-        el,
-        componentId: el.dataset.pinComponent ?? '',
-        pinName: el.dataset.pinName ?? '',
-        x: Number(el.dataset.pinWx),
-        y: Number(el.dataset.pinWy),
-      };
-    }
+    return { el, left: r.left, top: r.top, right: r.right, bottom: r.bottom };
   });
-  return best;
+  const hit = pickNearestPin(candidates, clientX, clientY);
+  if (!hit) return null;
+  return {
+    el: hit.el,
+    componentId: hit.el.dataset.pinComponent ?? '',
+    pinName: hit.el.dataset.pinName ?? '',
+    x: Number(hit.el.dataset.pinWx),
+    y: Number(hit.el.dataset.pinWy),
+  };
 }
 
 /** Max movement during long-press before it cancels (px). */

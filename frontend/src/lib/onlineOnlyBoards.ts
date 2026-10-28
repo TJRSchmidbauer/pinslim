@@ -42,8 +42,19 @@ export function suppressOnlineOnlyAds(ids: string[]): void {
   for (const id of ids) suppressedAdIds.add(id);
 }
 
+/**
+ * The ads point to the hosted velxio.dev editor. On a self-hosted Pinslim
+ * (school server) they only confuse: boards and parts that cannot be used,
+ * labelled "VELXIO.DEV EXKLUSIV". Hidden everywhere except velxio.dev itself.
+ */
+export function isSelfHosted(): boolean {
+  if (typeof window === 'undefined') return false; // SSR / unit tests
+  const host = window.location.hostname;
+  return !(host === 'velxio.dev' || host.endsWith('.velxio.dev'));
+}
+
 export function isOnlineOnlyAdSuppressed(id: string): boolean {
-  return suppressedAdIds.has(id);
+  return isSelfHosted() || suppressedAdIds.has(id);
 }
 
 export const ONLINE_ONLY_BOARD_ADS: OnlineOnlyBoardAd[] = [

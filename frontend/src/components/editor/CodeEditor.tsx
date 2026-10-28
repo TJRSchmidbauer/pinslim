@@ -1,10 +1,14 @@
+import { useRef, useState } from 'react';
 import Editor from '@monaco-editor/react';
+import type { editor } from 'monaco-editor';
 import { useEditorStore } from '../../store/useEditorStore';
 import { useSimulatorStore } from '../../store/useSimulatorStore';
 import { registerRetroAsm, LANGUAGE_ID as RETRO_ASM_ID } from './retroAsmLanguage';
 import { attachIntellisenseMonaco } from '../../lib/intellisenseRegistry';
 import { defineVelxioThemes, monacoThemeFor } from './monacoThemes';
 import { useResolvedTheme } from '../../hooks/useTheme';
+import { useIsCoarsePointer } from '../../utils/useTouchDevice';
+import { CodeSymbolBar } from './CodeSymbolBar';
 
 function getLanguage(filename: string): string {
   const ext = filename.split('.').pop()?.toLowerCase() ?? '';
@@ -25,6 +29,13 @@ export const CodeEditor = () => {
   // against the canvas and the panels, so it follows the same switch.
   const theme = monacoThemeFor(useResolvedTheme());
   const activeFile = files.find((f) => f.id === activeFileId);
+
+  // Touch: bigger text, no minimap (it only steals width on a tablet), and a
+  // row of the symbols the on-screen keyboard buries.
+  const coarse = useIsCoarsePointer();
+  const effectiveFontSize = coarse ? Math.max(fontSize, 16) : fontSize;
+  const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
+  const [editorFocused, setEditorFocused] = useState(false);
 
   // READ-ONLY libraries.json view (the file explorer's libraries.json entry).
   // Shows the active board's declared library manifest as plain-text JSON, live.
@@ -77,12 +88,17 @@ export const CodeEditor = () => {
           // (idempotent per monaco instance, so per-file remounts are fine).
           attachIntellisenseMonaco(monaco);
         }}
+        onMount={(ed) => {
+          editorRef.current = ed;
+          ed.onDidFocusEditorText(() => setEditorFocused(true));
+          ed.onDidBlurEditorText(() => setEditorFocused(false));
+        }}
         onChange={(value) => {
           if (activeFileId) setFileContent(activeFileId, value || '');
         }}
         options={{
-          minimap: { enabled: true },
-          fontSize,
+          minimap: { enabled: !coarse },
+          fontSize: effectiveFontSize,
           automaticLayout: true,
           scrollBeyondLastLine: false,
           wordWrap: 'on',
@@ -97,6 +113,7 @@ export const CodeEditor = () => {
           suggest: { snippetsPreventQuickSuggestions: false },
         }}
       />
+      <CodeSymbolBar editorRef={editorRef} visible={coarse && editorFocused} />
     </div>
   );
 };
