@@ -121,9 +121,22 @@ elseif(DEFINED ENV{ARDUINO_ESP32_PATH})
     # which is a syntax error. A whitelist (instead of the old C3/S3
     # blacklist) keeps new targets safe by default — the ESP32-C6 variant
     # was the first to hit the blacklist gap.
+    #
+    # The generic variant is not the only one on the classic ESP32 though: boards
+    # such as the Wemos Lolin32 Lite ship their own variant that defines
+    # LED_BUILTIN (22), and the define below turned it into
+    # `static const uint8_t 2 = 22;` — the build failed. So look into the
+    # selected variant's pins_arduino.h and only add the fallback when it has none.
     if(IDF_TARGET STREQUAL "esp32")
-        target_compile_definitions(${COMPONENT_LIB} PRIVATE
-            "LED_BUILTIN=2")
+        set(_variant_pins "${_arduino_path_norm}/variants/${CONFIG_ARDUINO_VARIANT}/pins_arduino.h")
+        set(_variant_has_led "")
+        if(EXISTS "${_variant_pins}")
+            file(STRINGS "${_variant_pins}" _variant_has_led REGEX "LED_BUILTIN")
+        endif()
+        if(NOT _variant_has_led)
+            target_compile_definitions(${COMPONENT_LIB} PRIVATE
+                "LED_BUILTIN=2")
+        endif()
     endif()
 
     # Relax `-Werror=` for user sketches. ESP-IDF defaults treat several

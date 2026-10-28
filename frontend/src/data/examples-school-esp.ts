@@ -64,6 +64,8 @@ export interface EspVariant {
   properties?: Record<string, Record<string, unknown>>;
   /** Uno pin → pad overrides for this entry only (e.g. 5V → VIN for an HC-SR04). */
   pinOverrides?: Record<string, string>;
+  /** Run on another ESP32 board than the default (its kind is the component id). */
+  boardKind?: string;
 }
 
 const mapPin = (pin: string, overrides?: Record<string, string>): string =>
@@ -83,7 +85,7 @@ export function convertCircuit(
     }));
   const fix = (e: Wire['start']): Wire['start'] =>
     isBoard(e.componentId)
-      ? { ...e, componentId: SCHOOL_ESP_BOARD, pinName: mapPin(e.pinName, variant.pinOverrides) }
+      ? { ...e, componentId: variant.boardKind ?? SCHOOL_ESP_BOARD, pinName: mapPin(e.pinName, variant.pinOverrides) }
       : { ...e };
   const wires = src.wires.map((w) => ({ ...w, start: fix(w.start), end: fix(w.end) }));
   return {
@@ -556,6 +558,9 @@ void loop() {
 // Tipp: Klicke während der Simulation auf den Sensor, um den Abstand
 // zu verändern.
 
+// Hinweis: Im Simulator schwanken Laufzeitmessungen auf dem ESP32 deutlich
+// (die Emulation läuft nicht taktgenau). Die Abstände stimmen nur grob.
+
 const int TRIG = 25;
 const int ECHO = 26;
 const float SCHALL = 343.0;      // Schallgeschwindigkeit in m/s bei 20 °C
@@ -631,6 +636,47 @@ void loop() {
 `,
   },
 
+  // Wemos Lolin32 Lite: the pads are named GPIOxx, supply is "3V" (no 5 V pad).
+  'schule-lolin-blinken': {
+    boardKind: 'wemos-lolin32-lite',
+    description:
+      'Das erste Programm auf dem Wemos Lolin32 Lite: Eine LED an GPIO 23 blinkt im Sekundentakt, der serielle Monitor zählt mit. Lernziele: setup() und loop(), Ausgänge schalten, serielle Ausgabe.',
+    code: `// Erstes Programm auf dem Wemos Lolin32 Lite
+// Externe LED mit Vorwiderstand an GPIO 23.
+// (Die blaue LED auf dem Board hängt an GPIO 22 und leuchtet bei LOW.)
+
+const int LED = 23;
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(LED, OUTPUT);
+}
+
+void loop() {
+  digitalWrite(LED, HIGH);
+  Serial.println("LED an");
+  delay(1000);
+  digitalWrite(LED, LOW);
+  Serial.println("LED aus");
+  delay(1000);
+}
+
+// Aufgaben:
+// 1) Lass die LED doppelt so schnell blinken.
+// 2) Schalte statt der externen die Board-LED an GPIO 22.
+//    Achtung: Sie leuchtet bei LOW, nicht bei HIGH.
+`,
+    extraComponents: [
+      { type: 'wokwi-led', id: 'led-1', x: 400, y: 100, properties: { color: 'red' } },
+      { type: 'wokwi-resistor', id: 'r-led', x: 300, y: 110, properties: { value: '220' } },
+    ],
+    extraWires: [
+      { id: 'w1', start: { componentId: 'wemos-lolin32-lite', pinName: 'GPIO23' }, end: { componentId: 'r-led', pinName: '1' }, color: '#22aa44' },
+      { id: 'w2', start: { componentId: 'r-led', pinName: '2' }, end: { componentId: 'led-1', pinName: 'A' }, color: '#22aa44' },
+      { id: 'w3', start: { componentId: 'led-1', pinName: 'C' }, end: { componentId: 'wemos-lolin32-lite', pinName: 'GND' }, color: '#222222' },
+    ],
+  },
+
   'schule-kondensator': {
     description:
       'Ein Kondensator (100 µF) wird über einen Widerstand (10 kΩ) geladen; der ESP32 nimmt die Ladekurve auf. Lernziele: Zeitkonstante τ = R · C, exponentieller Verlauf, Auswertung in der Tabellenkalkulation.',
@@ -687,9 +733,9 @@ export function toEsp32(
   return {
     ...ex,
     description: variant.description ?? ex.description,
-    boardType: SCHOOL_ESP_BOARD,
+    boardType: variant.boardKind ?? SCHOOL_ESP_BOARD,
     boardFilter: 'esp32',
-    boards: [{ boardKind: SCHOOL_ESP_BOARD, x: 100, y: 100, code: variant.code }],
+    boards: [{ boardKind: variant.boardKind ?? SCHOOL_ESP_BOARD, x: 100, y: 100, code: variant.code }],
     code: '',
     components,
     wires,

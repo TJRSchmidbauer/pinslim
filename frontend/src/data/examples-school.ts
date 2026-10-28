@@ -91,6 +91,14 @@ void loop() {
 `,
   },
   {
+    id: 'schule-lolin-blinken',
+    base: 'blink-led',
+    topic: 'start',
+    title: 'Erstes Programm auf dem Wemos Lolin32 Lite',
+    description: 'Blinkende LED auf dem Wemos Lolin32 Lite.',
+    difficulty: 'beginner',
+  },
+  {
     id: 'schule-taster',
     base: 'button-led',
     topic: 'start',
