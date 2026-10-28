@@ -352,7 +352,7 @@ body {
 }
 
 /* ── Responsive ─────────────────────────────────── */
-@media (max-width: 768px) {
+@media (max-width: 768px), (pointer: coarse) and (orientation: portrait) and (max-width: 1100px) {
   .app-container {
     flex-direction: column;
   }
@@ -375,7 +375,7 @@ body {
   display: none;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 768px), (pointer: coarse) and (orientation: portrait) and (max-width: 1100px) {
   .mobile-tab-bar {
     display: flex;
     flex-shrink: 0;
@@ -420,14 +420,14 @@ body {
 }
 
 /* ── View-mode toggle: desktop only (mobile uses bottom-nav) ─────── */
-@media (max-width: 768px) {
+@media (max-width: 768px), (pointer: coarse) and (orientation: portrait) and (max-width: 1100px) {
   .view-mode-toggle {
     display: none !important;
   }
 }
 
 /* ── Header responsive ───────────────────────────── */
-@media (max-width: 768px) {
+@media (max-width: 768px), (pointer: coarse) and (orientation: portrait) and (max-width: 1100px) {
   .app-header {
     padding: 0 10px;
     height: 44px;

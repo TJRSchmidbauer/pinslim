@@ -64,6 +64,7 @@ import '@wokwi/elements';
 import '../velxio-elements';
 import './ComponentPickerModal.css';
 import { trPart } from '../i18n/content';
+import { isCoarsePointer } from '../utils/useTouchDevice';
 
 interface ComponentPickerModalProps {
   isOpen: boolean;
@@ -381,7 +382,9 @@ export const ComponentPickerModal: React.FC<ComponentPickerModalProps> = ({
                 setSearchQuery(e.target.value);
                 clearHover();
               }}
-              autoFocus
+              // No autofocus on a tablet: the on-screen keyboard would cover
+              // half of the part grid before the user wanted to type at all.
+              autoFocus={!isCoarsePointer()}
             />
             {searchQuery && (
               <button
@@ -526,8 +529,9 @@ export const ComponentPickerModal: React.FC<ComponentPickerModalProps> = ({
             {/* Footer Info */}
             <div className="modal-footer">
               <span className="component-count">
-                {filteredComponents.length} component{filteredComponents.length !== 1 ? 's' : ''}{' '}
-                available
+                {t('editor.componentPicker.count', '{{count}} components available', {
+                  count: filteredComponents.length,
+                })}
               </span>
             </div>
           </>

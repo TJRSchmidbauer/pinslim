@@ -191,7 +191,9 @@
       "boards": "Boards",
       "loading": "Loading components...",
       "noResults": "No components found",
-      "clearFilters": "Clear filters"
+      "clearFilters": "Clear filters",
+      "count_one": "{{count}} component available",
+      "count_other": "{{count}} components available"
     },
     "libraryManager": {
       "title": "LIBRARY MANAGER",
@@ -468,6 +470,15 @@
         "recompiling": "Code changed since the last build — recompiling before flashing...",
         "compiled": "Build OK in {{seconds}}s. Starting flash..."
       }
+    },
+    "touchBar": {
+      "label": "Quick actions",
+      "run": "Run",
+      "stop": "Stop",
+      "undo": "Undo",
+      "redo": "Redo",
+      "serial": "Serial monitor",
+      "addPart": "Add part"
     }
   },
   "about": {

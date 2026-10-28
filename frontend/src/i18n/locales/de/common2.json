@@ -227,7 +227,9 @@
       "boards": "Boards",
       "loading": "Komponenten werden geladen...",
       "noResults": "Keine Komponenten gefunden",
-      "clearFilters": "Filter löschen"
+      "clearFilters": "Filter löschen",
+      "count_one": "{{count}} Bauteil verfügbar",
+      "count_other": "{{count}} Bauteile verfügbar"
     },
     "libraryManager": {
       "title": "BIBLIOTHEKSVERWALTUNG",
@@ -558,6 +560,15 @@
       "blankTitle": "Leeres Projekt",
       "blankDesc": "Leerer Arbeitsbereich – füge eigene Boards und Bauteile hinzu",
       "cancel": "Abbrechen"
+    },
+    "touchBar": {
+      "label": "Schnellaktionen",
+      "run": "Starten",
+      "stop": "Stoppen",
+      "undo": "Rückgängig",
+      "redo": "Wiederholen",
+      "serial": "Serieller Monitor",
+      "addPart": "Bauteil hinzufügen"
     }
   },
   "about": {

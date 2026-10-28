@@ -93,6 +93,7 @@ import {
   trackToggleSerialMonitor,
 } from '../../utils/analytics';
 import { SelectionActionBar } from './SelectionActionBar';
+import { CanvasTouchBar } from './CanvasTouchBar';
 import { WireModeBanner } from './WireModeBanner';
 import { PinPickerDialog } from './PinPickerDialog';
 import { useButtonKeyBindings } from '../../hooks/useButtonKeyBindings';
@@ -3376,6 +3377,9 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
               }
               return null;
             })()}
+
+          {/* Thumb bar for tablets (bottom-left; zoom sits bottom-right). */}
+          {isTouchDevice && <CanvasTouchBar onAddComponent={() => setShowComponentPicker(true)} />}
 
           {/* Floating zoom controls — pinned to the canvas' bottom-right
               corner (they lived in the canvas header, which gets too tight
