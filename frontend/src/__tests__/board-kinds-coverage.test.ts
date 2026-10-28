@@ -31,7 +31,6 @@ const ACCEPTED_UNCOVERED: ReadonlySet<BoardKind> = new Set([
   'raspberry-pi-zero',
   'raspberry-pi-1',
   'raspberry-pi-2',
-  'wemos-lolin32-lite',
   'xiao-esp32-s3',
   'arduino-nano-esp32',
   'xiao-esp32-c3',

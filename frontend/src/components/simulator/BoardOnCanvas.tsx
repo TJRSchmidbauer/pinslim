@@ -195,7 +195,7 @@ export const BoardOnCanvas = ({
       case 'esp32-p4':
       case 'xiao-esp32-c6':
       case 'aitewinrobot-esp32c3-supermini':
-        return <Esp32 id={id} x={x} y={y} boardKind={boardKind} />;
+        return <Esp32 id={id} x={x} y={y} boardKind={boardKind} led={led13} />;
       case 'stm32-bluepill':
         return <Stm32BluePill id={id} x={x} y={y} />;
       case 'stm32-blackpill':

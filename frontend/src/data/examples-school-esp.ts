@@ -558,9 +558,6 @@ void loop() {
 // Tipp: Klicke während der Simulation auf den Sensor, um den Abstand
 // zu verändern.
 
-// Hinweis: Im Simulator schwanken Laufzeitmessungen auf dem ESP32 deutlich
-// (die Emulation läuft nicht taktgenau). Die Abstände stimmen nur grob.
-
 const int TRIG = 25;
 const int ECHO = 26;
 const float SCHALL = 343.0;      // Schallgeschwindigkeit in m/s bei 20 °C

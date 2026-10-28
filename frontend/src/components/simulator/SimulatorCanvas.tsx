@@ -3,6 +3,7 @@ import {
   getEsp32Bridge,
   getBoardBridge,
   getBoardSimulator,
+  getBoardPinManager,
 } from '../../store/useSimulatorStore';
 import { getBoardBuiltins, getProBoard } from '../../lib/proBoardRegistry';
 import { useElectricalStore } from '../../store/useElectricalStore';
@@ -1360,6 +1361,8 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
     boards.forEach((board) => {
       // Determine which GPIO pin drives the board's built-in LED
       let ledPin: number;
+      // Lit when the pin is LOW (the LED sits between 3V3 and the pin).
+      let activeLow = false;
       switch (board.boardKind as string) {
         case 'raspberry-pi-pico':
         case 'pi-pico-w':
@@ -1369,15 +1372,26 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
         case 'attiny85':
           ledPin = 1; // PB1 (Digispark convention)
           break;
+        case 'esp32':
+          ledPin = 2; // DevKit V1 blue LED
+          break;
+        case 'wemos-lolin32-lite':
+          ledPin = 22; // blue LED, wired to 3V3
+          activeLow = true;
+          break;
         default:
           ledPin = 13; // Pin 13 for Arduino Uno/Nano/Mega
       }
 
+      // Each board has its own pin manager; the shared one only sees the
+      // first board, so a second board's LED never lit.
+      const pm = getBoardPinManager(board.id) ?? pinManager;
       unsubs.push(
-        pinManager.onPinChange(ledPin, (_pin, state) => {
+        pm.onPinChange(ledPin, (_pin, state) => {
+          const lit = activeLow ? !state : state;
           setBoardLedStates((prev) => {
-            if (prev[board.id] === state) return prev;
-            return { ...prev, [board.id]: state };
+            if (prev[board.id] === lit) return prev;
+            return { ...prev, [board.id]: lit };
           });
         }),
       );
@@ -1385,6 +1399,13 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
 
     return () => unsubs.forEach((u) => u());
   }, [boards, pinManager]);
+
+  // Stop clears the board LEDs. The pin managers only re-announce pins that
+  // were HIGH on reset, so an active-low LED (lit while its pin is LOW) would
+  // otherwise stay lit after the simulation ends.
+  useEffect(() => {
+    if (!running) setBoardLedStates((prev) => (Object.keys(prev).length ? {} : prev));
+  }, [running]);
 
   // ESP32 input components: forward button presses and potentiometer values to QEMU
   useEffect(() => {

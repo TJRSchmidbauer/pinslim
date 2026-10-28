@@ -484,10 +484,19 @@ interface BoardConfig {
   w: number;
   h: number;
   pins: { name: string; x: number; y: number }[];
+  /** User LED printed on the board (centre in board px). Lit via the `led` property. */
+  led?: { x: number; y: number; color: string };
 }
 
 const BOARD_CONFIGS: Record<string, BoardConfig> = {
-  esp32: { svgUrl: esp32SvgUrl, w: 141, h: 265, pins: PINS_ESP32 },
+  // DevKit V1: the blue user LED (GPIO 2) is the right one of the two SMD LEDs.
+  esp32: {
+    svgUrl: esp32SvgUrl,
+    w: 141,
+    h: 265,
+    pins: PINS_ESP32,
+    led: { x: 94.5, y: 148.5, color: '#3b82f6' },
+  },
   'esp32-s3': { svgUrl: esp32S3SvgUrl, w: 128, h: 350, pins: PINS_ESP32_S3 },
   'esp32-c3': { svgUrl: esp32C3SvgUrl, w: 127, h: 215, pins: PINS_ESP32_C3 },
   'esp32-devkit-c-v4': {
@@ -497,7 +506,14 @@ const BOARD_CONFIGS: Record<string, BoardConfig> = {
     pins: PINS_ESP32_DEVKIT_C_V4,
   },
   'esp32-cam': { svgUrl: esp32CamSvgUrl, w: 136, h: 202, pins: PINS_ESP32_CAM },
-  'wemos-lolin32-lite': { svgUrl: wemosLolin32SvgUrl, w: 128, h: 250, pins: PINS_WEMOS_LOLIN32 },
+  // Lolin32 Lite: blue user LED on GPIO 22, the small pad next to "3V".
+  'wemos-lolin32-lite': {
+    svgUrl: wemosLolin32SvgUrl,
+    w: 128,
+    h: 250,
+    pins: PINS_WEMOS_LOLIN32,
+    led: { x: 105, y: 42, color: '#3b82f6' },
+  },
   'xiao-esp32-s3': { svgUrl: xiaoEsp32S3SvgUrl, w: 91, h: 117, pins: PINS_XIAO_ESP32_S3 },
   'arduino-nano-esp32': {
     svgUrl: arduinoNanoEsp32SvgUrl,
@@ -545,13 +561,30 @@ class Esp32Element extends HTMLElement {
     return this.config.pins;
   }
 
+  private _led = false;
+  /** Lights the board's user LED (no-op on boards without one). */
+  get led(): boolean {
+    return this._led;
+  }
+  set led(on: boolean) {
+    this._led = Boolean(on);
+    this.shadowRoot?.querySelector('.led')?.classList.toggle('on', this._led);
+  }
+
   private render() {
     if (!this.shadowRoot) return;
-    const { svgUrl, w, h } = this.config;
+    const { svgUrl, w, h, led } = this.config;
+    const ledHtml = led
+      ? `<div class="led${this._led ? ' on' : ''}" style="left:${led.x - 4}px;top:${led.y - 4}px;--led:${led.color}"></div>`
+      : '';
     this.shadowRoot.innerHTML = `
       <style>
-        :host { display: inline-block; line-height: 0; }
+        :host { display: inline-block; line-height: 0; position: relative; }
         img   { display: block; }
+        .led  { position: absolute; width: 8px; height: 8px; border-radius: 50%;
+                pointer-events: none; opacity: 0; transition: opacity 60ms; }
+        .led.on { opacity: 1; background: var(--led);
+                  box-shadow: 0 0 6px 3px var(--led), 0 0 14px 6px color-mix(in srgb, var(--led) 45%, transparent); }
       </style>
       <img
         src="${svgUrl}"
@@ -560,6 +593,7 @@ class Esp32Element extends HTMLElement {
         draggable="false"
         alt="ESP32 board"
       />
+      ${ledHtml}
     `;
   }
 }

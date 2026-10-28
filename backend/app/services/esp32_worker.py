@@ -381,6 +381,12 @@ def main() -> None:  # noqa: C901  (complexity OK for inline worker)
     machine           = cfg.get('machine', 'esp32-picsimlab')
     initial_sensors   = cfg.get('sensors', [])
     wifi_enabled      = cfg.get('wifi_enabled', False)
+    # Sensors whose timing must be exact in guest time (see the guest-time
+    # clock below). Only without WiFi: the AP beacon timer runs on real time.
+    _deterministic_sensors = (
+        not wifi_enabled
+        and any(s.get('sensor_type') == 'hc-sr04' for s in initial_sensors)
+    )
     wifi_hostfwd_port = cfg.get('wifi_hostfwd_port', 0)
     sd_card_cfg       = cfg.get('sd_card')  # {'image_b64': ...} when a microSD is wired
 
@@ -460,6 +466,29 @@ def main() -> None:  # noqa: C901  (complexity OK for inline worker)
     except AttributeError:
         _shutdown_request = None
 
+    # ── Guest-time clock for timing-critical sensor models ────────────────
+    # The HC-SR04 model ends its ECHO pulse after a given time. Measured in
+    # host wall-clock time that came out wrong by up to several ms: the guest
+    # only sees the falling edge at its next GPIO read, and reads stall (each
+    # one calls back into Python; the vCPU waits for the iothread lock), while
+    # its cycle counter keeps running. Under -icount the guest's time advances
+    # only with executed instructions, so stalls are invisible to the guest,
+    # and a deadline on QEMU_CLOCK_VIRTUAL lands exactly where pulseIn() sees
+    # it. See _deterministic_sensors below for when -icount is switched on.
+    try:
+        _qemu_clock_get_ns = lib.qemu_clock_get_ns
+        _qemu_clock_get_ns.restype  = ctypes.c_int64
+        _qemu_clock_get_ns.argtypes = [ctypes.c_int]
+    except AttributeError:
+        _qemu_clock_get_ns = None
+    _QEMU_CLOCK_VIRTUAL = 1
+
+    def _sensor_clock_ns() -> int:
+        """Guest time under -icount (deterministic sensors), wall time otherwise."""
+        if _deterministic_sensors and _qemu_clock_get_ns is not None:
+            return _qemu_clock_get_ns(_QEMU_CLOCK_VIRTUAL)
+        return time.perf_counter_ns()
+
     # ── ESP32-CAM frame injection ─────────────────────────────────────────
     # Exported by hw/misc/esp32_i2s_cam.c (the OV2640+I²S patch). When the
     # symbol is absent (= stock library, no camera patch yet), we keep a
@@ -534,6 +563,13 @@ def main() -> None:  # noqa: C901  (complexity OK for inline worker)
     # time can cause beacon delivery issues on slow/virtualized hosts.
     if _is_riscv(machine):
         args_list.extend([b'-icount', b'3'])
+    elif _deterministic_sensors:
+        # Xtensa with an HC-SR04 (and no WiFi, see above): run on instruction
+        # counting so echo times are exact in guest time. shift=6 is 64 ns per
+        # instruction — coarse enough that a 2 cm…4 m echo needs only a few
+        # hundred GPIO reads (each read is a Python callback), fine enough that
+        # one pulseIn() loop iteration is ~1.5 µs (0.03 cm).
+        args_list.extend([b'-icount', b'shift=6'])
 
     # ── WiFi NIC (slirp user-mode networking) ──────────────────────────────
     # Always present on machines that model a radio — see wifi_nic_arg().
@@ -924,10 +960,13 @@ def main() -> None:  # noqa: C901  (complexity OK for inline worker)
 
           Phase 3 of pulseIn() (measure HIGH duration):
             Subsequent gpio_get_level() calls fire step().  We hold ECHO HIGH
-            until echo_us wall-clock µs have elapsed (perf_counter_ns), then
-            set LOW.  Virtual time ≈ wall-clock time (confirmed: 30 000 µs
-            pulseIn timeout = 30 ms wall-clock), so pulseIn() measures ≈ echo_us
-            virtual µs → correct distance.
+            until echo_us have elapsed on _sensor_clock_ns(), then set LOW.
+            With an HC-SR04 the worker runs QEMU with -icount and that clock is
+            the guest's own (QEMU_CLOCK_VIRTUAL), so pulseIn() measures echo_us
+            to within one loop iteration.  On wall-clock time instead (the
+            fallback) the result ran up to several ms long, because the guest
+            only sees LOW at its next read and reads stall while its cycle
+            counter keeps counting.
 
         Guard: wall-clock timeouts replace step-count limits.  A step-count
         guard is wrong because steps fire at rates that vary with QEMU load;
@@ -944,7 +983,7 @@ def main() -> None:  # noqa: C901  (complexity OK for inline worker)
             self._echo_us       = echo_us
             self._state         = 'armed'
             self._total_steps   = 0
-            self._arm_start_ns  = time.perf_counter_ns()
+            self._arm_start_ns  = _sensor_clock_ns()
             self._echo_start_ns = 0
 
         def step(self) -> bool:
@@ -954,7 +993,7 @@ def main() -> None:  # noqa: C901  (complexity OK for inline worker)
                 if self._total_steps <= self._SKIP_COUNT:
                     return False
                 # Check armed timeout (handler never entered 'high')
-                arm_us = (time.perf_counter_ns() - self._arm_start_ns) // 1000
+                arm_us = (_sensor_clock_ns() - self._arm_start_ns) // 1000
                 if arm_us > self._ARMED_TIMEOUT_US:
                     _log(f'HCSR04 armed timeout trig={self._trig_gpio} '
                          f'arm_us={arm_us} steps={self._total_steps} — releasing')
@@ -970,12 +1009,12 @@ def main() -> None:  # noqa: C901  (complexity OK for inline worker)
                 _log(f'HCSR04 ECHO HIGH (sync) trig={self._trig_gpio} '
                      f'slot={self._echo_slot} echo_us={self._echo_us} '
                      f'armed_us={arm_us} skip={self._total_steps - 1}')
-                self._echo_start_ns = time.perf_counter_ns()
+                self._echo_start_ns = _sensor_clock_ns()
                 self._state = 'high'
                 return False
 
             elif self._state == 'high':
-                elapsed_us = (time.perf_counter_ns() - self._echo_start_ns) // 1000
+                elapsed_us = (_sensor_clock_ns() - self._echo_start_ns) // 1000
                 if elapsed_us >= self._echo_us:
                     return self._finish(elapsed_us)
                 # Safety: don't hold ECHO past pulseIn() timeout
