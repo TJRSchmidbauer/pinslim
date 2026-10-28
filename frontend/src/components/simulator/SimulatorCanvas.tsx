@@ -1117,26 +1117,11 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
                   setSensorControlMetadataId(component.metadataId);
                 }
               } else {
-                setPropertyDialogComponentId(touchId);
-                // The inspector positions itself in VIEWPORT coordinates (it
-                // is portaled to body), so convert the component's canvas
-                // position through the canvas-content rect. The right-click
-                // path passes e.clientX/Y, which is already viewport space —
-                // the two gestures used to disagree on this.
-                const canvasRect = document
-                  .querySelector('.canvas-content')
-                  ?.getBoundingClientRect();
-                setPropertyDialogPosition({
-                  x:
-                    component.x * zoomRef.current +
-                    panRef.current.x +
-                    (canvasRect?.left ?? 0),
-                  y:
-                    component.y * zoomRef.current +
-                    panRef.current.y +
-                    (canvasRect?.top ?? 0),
-                });
-                setShowPropertyDialog(true);
+                // Select only: the action bar on top offers Connect,
+                // Properties, Rotate and Delete. Opening the property dialog
+                // straight away covered half a tablet screen on every tap,
+                // with the bar's own Rotate/Delete duplicated underneath.
+                setSelectedComponentId(touchId);
               }
             }
           }
@@ -1567,6 +1552,21 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
   useEffect(() => {
     if (selectedComponentId) setSelectedWire(null);
   }, [selectedComponentId, setSelectedWire]);
+
+  // Open the property dialog next to a component (viewport coordinates: the
+  // dialog is portaled to body, so canvas coordinates go through the
+  // canvas-content rect).
+  const openPropertyDialogFor = (componentId: string) => {
+    const component = components.find((c) => c.id === componentId);
+    if (!component) return;
+    const canvasRect = document.querySelector('.canvas-content')?.getBoundingClientRect();
+    setPropertyDialogComponentId(componentId);
+    setPropertyDialogPosition({
+      x: component.x * zoomRef.current + panRef.current.x + (canvasRect?.left ?? 0),
+      y: component.y * zoomRef.current + panRef.current.y + (canvasRect?.top ?? 0),
+    });
+    setShowPropertyDialog(true);
+  };
 
   // Handle keyboard delete for the selected component
   useEffect(() => {
@@ -2418,10 +2418,84 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
   // On touch-primary devices we also auto-fit the zoom — projects authored on
   // a desktop with a wide canvas otherwise show up cramped at zoom 1 on a
   // ~400px-wide phone, with everything piled into the top-left corner.
+  // Centre (and on touch devices fit) the whole circuit into the canvas.
+  // Kept in a ref so the load effect and the rotation listener share it.
+  const fitToContentRef = useRef<() => void>(() => {});
+  fitToContentRef.current = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+
+    // Read actual rendered sizes from the DOM so the fit accounts for each
+    // board/component's true footprint, not a guessed bounding box.
+    const z = zoomRef.current;
+    const p = panRef.current;
+    const toWorldRect = (r: DOMRect) => ({
+      x1: (r.left - rect.left - p.x) / z,
+      y1: (r.top - rect.top - p.y) / z,
+      x2: (r.right - rect.left - p.x) / z,
+      y2: (r.bottom - rect.top - p.y) / z,
+    });
+
+    const targets: HTMLElement[] = [];
+    boardsRef.current.forEach((b) => {
+      const el = canvas.querySelector<HTMLElement>(`[data-board-id="${b.id}"]`);
+      if (el) targets.push(el);
+    });
+    componentsRef.current.forEach((c) => {
+      const el = canvas.querySelector<HTMLElement>(`[data-component-id="${c.id}"]`);
+      if (el) targets.push(el);
+    });
+
+    if (targets.length === 0) return;
+
+    let minX = Infinity;
+    let minY = Infinity;
+    let maxX = -Infinity;
+    let maxY = -Infinity;
+    targets.forEach((el) => {
+      const wr = toWorldRect(el.getBoundingClientRect());
+      if (wr.x1 < minX) minX = wr.x1;
+      if (wr.y1 < minY) minY = wr.y1;
+      if (wr.x2 > maxX) maxX = wr.x2;
+      if (wr.y2 > maxY) maxY = wr.y2;
+    });
+    if (!isFinite(minX)) return;
+
+    const centerX = (minX + maxX) / 2;
+    const centerY = (minY + maxY) / 2;
+    const worldW = Math.max(1, maxX - minX);
+    const worldH = Math.max(1, maxY - minY);
+
+    // On touch-primary viewports, also adjust zoom so everything fits with
+    // padding. On desktop, keep the existing behavior (pan only) so users
+    // who set a custom zoom don't lose it on every load.
+    let nextZoom = z;
+    if (isTouchDeviceRef.current) {
+      const PADDING = 32;
+      const availW = Math.max(50, rect.width - PADDING * 2);
+      const availH = Math.max(50, rect.height - PADDING * 2);
+      // Never zoom *in* past 1× — small projects shouldn't get magnified.
+      const fit = Math.min(availW / worldW, availH / worldH, 1);
+      nextZoom = Math.max(0.2, fit);
+    }
+
+    const newPan = {
+      x: rect.width / 2 - centerX * nextZoom,
+      y: rect.height / 2 - centerY * nextZoom,
+    };
+    zoomRef.current = nextZoom;
+    panRef.current = newPan;
+    setZoom(nextZoom);
+    setPan(newPan);
+  };
+
   const prevComponentCountRef = useRef(-1);
   useEffect(() => {
     const prev = prevComponentCountRef.current;
-    const curr = components.length;
+    // Boards count too: an example with only a board (Blink, Serial) has no
+    // components and was never centred.
+    const curr = components.length + boards.length;
     prevComponentCountRef.current = curr;
 
     // Only re-fit when the component list transitions from empty/different
@@ -2429,77 +2503,27 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
     const isLoad = curr > 0 && (prev <= 0 || Math.abs(curr - prev) > 2);
     if (!isLoad) return;
 
-    const timer = setTimeout(() => {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-      const rect = canvas.getBoundingClientRect();
-
-      // Read actual rendered sizes from the DOM so the fit accounts for each
-      // board/component's true footprint, not a guessed bounding box.
-      const z = zoomRef.current;
-      const p = panRef.current;
-      const toWorldRect = (r: DOMRect) => ({
-        x1: (r.left - rect.left - p.x) / z,
-        y1: (r.top - rect.top - p.y) / z,
-        x2: (r.right - rect.left - p.x) / z,
-        y2: (r.bottom - rect.top - p.y) / z,
-      });
-
-      const targets: HTMLElement[] = [];
-      boardsRef.current.forEach((b) => {
-        const el = canvas.querySelector<HTMLElement>(`[data-board-id="${b.id}"]`);
-        if (el) targets.push(el);
-      });
-      componentsRef.current.forEach((c) => {
-        const el = canvas.querySelector<HTMLElement>(`[data-component-id="${c.id}"]`);
-        if (el) targets.push(el);
-      });
-
-      if (targets.length === 0) return;
-
-      let minX = Infinity;
-      let minY = Infinity;
-      let maxX = -Infinity;
-      let maxY = -Infinity;
-      targets.forEach((el) => {
-        const wr = toWorldRect(el.getBoundingClientRect());
-        if (wr.x1 < minX) minX = wr.x1;
-        if (wr.y1 < minY) minY = wr.y1;
-        if (wr.x2 > maxX) maxX = wr.x2;
-        if (wr.y2 > maxY) maxY = wr.y2;
-      });
-      if (!isFinite(minX)) return;
-
-      const centerX = (minX + maxX) / 2;
-      const centerY = (minY + maxY) / 2;
-      const worldW = Math.max(1, maxX - minX);
-      const worldH = Math.max(1, maxY - minY);
-
-      // On touch-primary viewports, also adjust zoom so everything fits with
-      // padding. On desktop, keep the existing behavior (pan only) so users
-      // who set a custom zoom don't lose it on every load.
-      let nextZoom = z;
-      if (isTouchDeviceRef.current) {
-        const PADDING = 32;
-        const availW = Math.max(50, rect.width - PADDING * 2);
-        const availH = Math.max(50, rect.height - PADDING * 2);
-        // Never zoom *in* past 1× — small projects shouldn't get magnified.
-        const fit = Math.min(availW / worldW, availH / worldH, 1);
-        nextZoom = Math.max(0.2, fit);
-      }
-
-      const newPan = {
-        x: rect.width / 2 - centerX * nextZoom,
-        y: rect.height / 2 - centerY * nextZoom,
-      };
-      zoomRef.current = nextZoom;
-      panRef.current = newPan;
-      setZoom(nextZoom);
-      setPan(newPan);
-    }, 200);
-
+    const timer = setTimeout(() => fitToContentRef.current(), 200);
     return () => clearTimeout(timer);
-  }, [components.length]);
+  }, [components.length, boards.length]);
+
+  // Turning a tablet changes the canvas from wide to tall: fit again, or the
+  // circuit hangs off one side.
+  useEffect(() => {
+    if (!isTouchDevice) return;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const onRotate = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => fitToContentRef.current(), 300);
+    };
+    window.addEventListener('orientationchange', onRotate);
+    window.screen.orientation?.addEventListener?.('change', onRotate);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('orientationchange', onRotate);
+      window.screen.orientation?.removeEventListener?.('change', onRotate);
+    };
+  }, [isTouchDevice]);
 
   // Which pins of each component are plugged into a breadboard hole. Seating
   // is an invisible `bb` wire (component pin = start, hole = end), so one pass
@@ -3337,6 +3361,11 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
                     label={meta?.name ?? 'Component'}
                     canRotate
                     onRotate={() => handleRotateComponent(selectedComponentId)}
+                    onWire={() => setPinPicker({ kind: 'component', targetId: selectedComponentId })}
+                    onProperties={() => {
+                      openPropertyDialogFor(selectedComponentId);
+                      setSelectedComponentId(null);
+                    }}
                     onDelete={() => {
                       recordRemoveComponent(selectedComponentId);
                       setSelectedComponentId(null);
@@ -3436,7 +3465,9 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
             const meta = c ? registry.getById(c.metadataId) : null;
             if (meta) title = meta.name;
           }
-          const subtitle = wireInProgress ? 'Tap a pin to connect' : 'Tap a pin to start a wire';
+          const subtitle = wireInProgress
+            ? t('editor.pinPicker.tapToConnect', 'Tap a pin to connect')
+            : t('editor.pinPicker.tapToStart', 'Tap a pin to start a wire');
           // Rotate is only meaningful for components (boards have no rotation).
           const handlePickerRotate =
             pinPicker.kind === 'component'

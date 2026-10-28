@@ -281,7 +281,10 @@
         "wire": "Delete wire",
         "component": "Delete component",
         "board": "Delete board"
-      }
+      },
+      "wire": "Connect a pin",
+      "wireShort": "Connect",
+      "properties": "Properties"
     },
     "console": {
       "title": "Output",
@@ -312,7 +315,9 @@
       "filterPins": "Filter pins…",
       "noMatch": "No pins match.",
       "rotate": "Rotate",
-      "delete": "Delete"
+      "delete": "Delete",
+      "tapToConnect": "Tap a pin to connect",
+      "tapToStart": "Tap a pin to start a wire"
     },
     "boardOptions": {
       "confirmOverwrite": {

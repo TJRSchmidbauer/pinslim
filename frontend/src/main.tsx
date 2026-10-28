@@ -1,6 +1,7 @@
 import { createRoot } from 'react-dom/client';
 import { loader } from '@monaco-editor/react';
 import './index.css';
+import './styles/touch.css';
 // Side-effect import: initialises i18next BEFORE any component renders so
 // useTranslation() always resolves against a live instance. Must come
 // before App.

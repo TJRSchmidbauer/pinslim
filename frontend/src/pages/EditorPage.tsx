@@ -33,6 +33,7 @@ import {
 import { useAutoSaveProject } from '../hooks/useAutoSaveProject';
 import { registerEditorCommand } from '../lib/editorCommands';
 import { EditorMenuBar } from '../components/editor/EditorMenuBar';
+import { isCoarsePointer } from '../utils/useTouchDevice';
 import '../App.css';
 
 const MOBILE_BREAKPOINT = 768;
@@ -184,6 +185,13 @@ export const EditorPage: React.FC = () => {
     update(mq);
     mq.addEventListener('change', update);
     return () => mq.removeEventListener('change', update);
+  }, [setExplorerOpen]);
+
+  // Tablets start with the file explorer folded away: on a 10" screen it took
+  // a fifth of the width from code and circuit, and the projects used in class
+  // have a single sketch. The explorer button brings it back.
+  useEffect(() => {
+    if (isCoarsePointer()) setExplorerOpen(false);
   }, [setExplorerOpen]);
 
   // Ctrl+S shortcut

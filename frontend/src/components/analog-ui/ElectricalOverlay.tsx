@@ -54,7 +54,6 @@ export function ElectricalOverlay({
   const nodeVoltages = useElectricalStore((s) => s.nodeVoltages);
   const converged = useElectricalStore((s) => s.converged);
   const error = useElectricalStore((s) => s.error);
-  const solveMs = useElectricalStore((s) => s.lastSolveMs);
   const analysisMode = useElectricalStore((s) => s.analysisMode);
   const timeWaveforms = useElectricalStore((s) => s.timeWaveforms);
 
@@ -156,13 +155,13 @@ export function ElectricalOverlay({
     (!!error && /no vectors currently active/i.test(error));
   if (nothingToSolve) return null;
 
+  // The pill only speaks up when something is wrong. The healthy line
+  // ("8 nets | 0 ms") is solver statistics: it sat on top of every circuit,
+  // in the way of parts on a tablet, and told a student nothing.
   const summaryLines: string[] = [];
   if (error) summaryLines.push(`${t('editor.canvas.spiceWarning', 'Warning')}: ${error}`);
   else if (!converged) summaryLines.push(t('editor.canvas.spiceNoConverge', 'Warning: did not converge'));
-  else {
-    const n = Object.keys(nodeVoltages).length;
-    summaryLines.push(`${n} nets | ${solveMs.toFixed(0)} ms`);
-  }
+  const showSummary = summaryLines.length > 0;
 
   return (
     <svg
@@ -176,7 +175,8 @@ export function ElectricalOverlay({
         zIndex: 20,
       }}
     >
-      {/* Summary pill with AC/DC badge */}
+      {/* Summary pill with AC/DC badge — warnings only */}
+      {showSummary && (
       <g transform="translate(12, 12)">
         <rect
           x={0}
@@ -220,6 +220,7 @@ export function ElectricalOverlay({
           SPICE {summaryLines.join(' ')}
         </text>
       </g>
+      )}
 
       {/* Per-wire voltage labels — only for what the cursor is on */}
       {visibleLabels.map((l) => (

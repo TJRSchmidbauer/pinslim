@@ -33,6 +33,10 @@ interface SelectionActionBarProps {
   onDeselect: () => void;
   onColorChange?: (color: string) => void;
   currentColor?: string;
+  /** Start a wire from one of this part's pins (opens the pin list). */
+  onWire?: () => void;
+  /** Open the property dialog (values, datasheet). */
+  onProperties?: () => void;
 }
 
 const ICON_SIZE = 16;
@@ -70,6 +74,48 @@ const RotateIcon: React.FC = () => (
   >
     <polyline points="23 4 23 10 17 10" />
     <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+  </svg>
+);
+
+const WireIcon: React.FC = () => (
+  <svg
+    width={ICON_SIZE}
+    height={ICON_SIZE}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={2}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <circle cx="5" cy="19" r="2" />
+    <circle cx="19" cy="5" r="2" />
+    <path d="M7 19h5a3 3 0 0 0 3-3V8a3 3 0 0 1 3-3h-1" />
+  </svg>
+);
+
+const SlidersIcon: React.FC = () => (
+  <svg
+    width={ICON_SIZE}
+    height={ICON_SIZE}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={2}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <line x1="4" y1="21" x2="4" y2="14" />
+    <line x1="4" y1="10" x2="4" y2="3" />
+    <line x1="12" y1="21" x2="12" y2="12" />
+    <line x1="12" y1="8" x2="12" y2="3" />
+    <line x1="20" y1="21" x2="20" y2="16" />
+    <line x1="20" y1="12" x2="20" y2="3" />
+    <line x1="1" y1="14" x2="7" y2="14" />
+    <line x1="9" y1="8" x2="15" y2="8" />
+    <line x1="17" y1="16" x2="23" y2="16" />
   </svg>
 );
 
@@ -131,6 +177,8 @@ export const SelectionActionBar: React.FC<SelectionActionBarProps> = ({
   onDeselect,
   onColorChange,
   currentColor,
+  onWire,
+  onProperties,
 }) => {
   const { t } = useTranslation();
   const [showPalette, setShowPalette] = React.useState(false);
@@ -139,6 +187,8 @@ export const SelectionActionBar: React.FC<SelectionActionBarProps> = ({
   const rotateRef = useRef<HTMLButtonElement | null>(null);
   const deselectRef = useRef<HTMLButtonElement | null>(null);
   const colorToggleRef = useRef<HTMLButtonElement | null>(null);
+  const wireRef = useRef<HTMLButtonElement | null>(null);
+  const propertiesRef = useRef<HTMLButtonElement | null>(null);
 
   // Reset the palette when the selection kind or colour-change handler changes
   // (i.e. the user switched from one wire to another, or deselected).
@@ -168,6 +218,8 @@ export const SelectionActionBar: React.FC<SelectionActionBarProps> = ({
   useTouchSafeAction(rotateRef, onRotate ?? noop);
   useTouchSafeAction(deselectRef, onDeselect);
   useTouchSafeAction(colorToggleRef, () => setShowPalette(!showPalette));
+  useTouchSafeAction(wireRef, onWire ?? noop);
+  useTouchSafeAction(propertiesRef, onProperties ?? noop);
 
   if (!kind) return null;
 
@@ -182,10 +234,22 @@ export const SelectionActionBar: React.FC<SelectionActionBarProps> = ({
       style={{
         position: 'absolute',
         top: 12,
-        left: '50%',
-        transform: 'translateX(-50%)',
+        // Centred with auto margins, not left:50% + translate: a box at
+        // left:50% may only use the right half of the canvas before it
+        // wraps, which broke the bar into two rows next to the code pane.
+        left: 0,
+        right: 0,
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        width: 'fit-content',
         display: 'flex',
         alignItems: 'center',
+        // Wraps instead of running off both edges of a narrow canvas (a
+        // tablet in split view): the bar is centred, so it clipped the
+        // part's name on the left and the close button on the right.
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        maxWidth: 'calc(100% - 16px)',
         gap: 6,
         background: 'var(--wb-3)',
         border: '1px solid var(--wb-7)',
@@ -200,6 +264,7 @@ export const SelectionActionBar: React.FC<SelectionActionBarProps> = ({
       }}
     >
       <span
+        className="selection-action-bar__name"
         style={{
           padding: '0 8px 0 4px',
           color: 'var(--wb-12)',
@@ -268,6 +333,38 @@ export const SelectionActionBar: React.FC<SelectionActionBarProps> = ({
             </div>
           )}
         </div>
+      )}
+
+      {onWire && (
+        <button
+          type="button"
+          ref={wireRef}
+          onClick={onWire}
+          style={buttonStyle}
+          title={t('editor.selectionBar.wire', 'Connect a pin')}
+          aria-label={t('editor.selectionBar.wire', 'Connect a pin')}
+        >
+          <WireIcon />
+          <span className="selection-action-bar__label" style={buttonLabelStyle}>
+            {t('editor.selectionBar.wireShort', 'Connect')}
+          </span>
+        </button>
+      )}
+
+      {onProperties && (
+        <button
+          type="button"
+          ref={propertiesRef}
+          onClick={onProperties}
+          style={buttonStyle}
+          title={t('editor.selectionBar.properties', 'Properties')}
+          aria-label={t('editor.selectionBar.properties', 'Properties')}
+        >
+          <SlidersIcon />
+          <span className="selection-action-bar__label" style={buttonLabelStyle}>
+            {t('editor.selectionBar.properties', 'Properties')}
+          </span>
+        </button>
       )}
 
       {canRotate && onRotate && (
@@ -357,7 +454,7 @@ const buttonStyle: React.CSSProperties = {
   cursor: 'pointer',
   fontSize: 13,
   lineHeight: 1,
-  minHeight: 36, // touch-friendly hit target
+  minHeight: 44, // touch-friendly hit target (Apple HIG / WCAG 2.5.5)
 };
 
 const buttonLabelStyle: React.CSSProperties = {
