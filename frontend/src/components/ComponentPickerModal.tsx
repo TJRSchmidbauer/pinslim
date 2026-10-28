@@ -45,6 +45,7 @@ import {
   ONLINE_ONLY_COMPONENT_ADS,
   ONLINE_EDITOR_URL,
   isOnlineOnlyAdSuppressed,
+  isSelfHosted,
   type OnlineOnlyBoardAd,
   type OnlineOnlyComponentAd,
 } from '../lib/onlineOnlyBoards';
@@ -64,6 +65,7 @@ import '@wokwi/elements';
 import '../velxio-elements';
 import './ComponentPickerModal.css';
 import { trPart } from '../i18n/content';
+import { isCoarsePointer } from '../utils/useTouchDevice';
 
 interface ComponentPickerModalProps {
   isOpen: boolean;
@@ -304,7 +306,11 @@ export const ComponentPickerModal: React.FC<ComponentPickerModalProps> = ({
 
   // Boards list: static OSS kinds + overlay-registered boards (proBoardRegistry).
   const allBoards = useMemo(() => {
-    return [...ALL_BOARDS, ...(listProBoards().map((d) => d.kind) as BoardKind[])];
+    const boards = [...ALL_BOARDS, ...(listProBoards().map((d) => d.kind) as BoardKind[])];
+    // STM32 and the Raspberry Pi family need emulation binaries that only the
+    // hosted editor ships; on a self-hosted server they cannot run, so they
+    // would only be dead cards labelled "VELXIO.DEV EXKLUSIV".
+    return isSelfHosted() ? boards.filter((kind) => !isProBoardKind(kind)) : boards;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [proBoardsVersion]);
 
@@ -381,7 +387,9 @@ export const ComponentPickerModal: React.FC<ComponentPickerModalProps> = ({
                 setSearchQuery(e.target.value);
                 clearHover();
               }}
-              autoFocus
+              // No autofocus on a tablet: the on-screen keyboard would cover
+              // half of the part grid before the user wanted to type at all.
+              autoFocus={!isCoarsePointer()}
             />
             {searchQuery && (
               <button
@@ -526,8 +534,9 @@ export const ComponentPickerModal: React.FC<ComponentPickerModalProps> = ({
             {/* Footer Info */}
             <div className="modal-footer">
               <span className="component-count">
-                {filteredComponents.length} component{filteredComponents.length !== 1 ? 's' : ''}{' '}
-                available
+                {t('editor.componentPicker.count', '{{count}} components available', {
+                  count: filteredComponents.length,
+                })}
               </span>
             </div>
           </>

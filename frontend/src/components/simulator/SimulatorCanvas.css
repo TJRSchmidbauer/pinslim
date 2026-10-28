@@ -438,6 +438,54 @@
     bottom: 8px;
   }
 }
+/* Same rules when the editor uses its tab layout on a tablet held upright
+   (EditorPage sets html.layout-tabs; touch mode + portrait). */
+html.layout-tabs .canvas-header {
+    height: 42px;
+    padding: 0 6px;
+  }
+html.layout-tabs .canvas-header-left,
+html.layout-tabs .canvas-header-right {
+    gap: 4px;
+  }
+html.layout-tabs .canvas-serial-btn {
+    padding: 0 6px;
+    font-size: 0; /* hide text, show icon only */
+  }
+html.layout-tabs .canvas-serial-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+html.layout-tabs .canvas-cam-mic-btn {
+    padding: 0 6px;
+    gap: 0;
+    font-size: 0; /* icon-only on narrow viewports too */
+  }
+html.layout-tabs .add-component-btn {
+    padding: 0 8px;
+    font-size: 0; /* hide text, show icon only */
+  }
+html.layout-tabs .add-component-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+html.layout-tabs .board-selector {
+    font-size: 11px;
+    max-width: 90px;
+    padding: 4px 20px 4px 6px;
+  }
+html.layout-tabs .zoom-controls {
+    display: none; /* Use pinch-to-zoom on mobile */
+  }
+html.layout-tabs .component-count {
+    display: none;
+  }
+html.layout-tabs .wire-mode-banner {
+    font-size: 12px;
+    padding: 6px 12px;
+    gap: 8px;
+    bottom: 8px;
+  }
 
 /* ── Narrow shared toolbar (desktop, AI chat open) ────────────────────────
    When the canvas header is portaled into the unified top toolbar, it shares

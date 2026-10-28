@@ -161,6 +161,12 @@ export const PinOverlay: React.FC<PinOverlayProps> = ({
           <div
             key={`${pin.name}-${index}`}
             data-pin-overlay="true"
+            // Read by the canvas' touch snapping (findPinOverlayNear): a
+            // fingertip that lands next to the pin still connects to it.
+            data-pin-component={componentId}
+            data-pin-name={pin.name}
+            data-pin-wx={componentX + wrapperOffsetX + pinX}
+            data-pin-wy={componentY + wrapperOffsetY + pinY}
             onMouseDown={(e) => {
               // Without this, press-and-drag on a pin square bubbles to the
               // canvas and pans it — a pin press must never move the canvas.

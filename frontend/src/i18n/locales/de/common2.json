@@ -65,7 +65,9 @@
         "firmwareLoaded": "Firmware geladen: {{name}}",
         "imported": "{{name}} importiert",
         "p4NoEmulation": "Der ESP32-P4 lässt sich nicht emulieren – Sketch kompilieren und auf ein echtes Board flashen."
-      }
+      },
+      "touchOn": "Touch-Bedienung einschalten",
+      "touchOff": "Touch-Bedienung ist an – zur Maus-Bedienung wechseln"
     },
     "fileExplorer": {
       "workspace": "ARBEITSBEREICH",
@@ -227,7 +229,9 @@
       "boards": "Boards",
       "loading": "Komponenten werden geladen...",
       "noResults": "Keine Komponenten gefunden",
-      "clearFilters": "Filter löschen"
+      "clearFilters": "Filter löschen",
+      "count_one": "{{count}} Bauteil verfügbar",
+      "count_other": "{{count}} Bauteile verfügbar"
     },
     "libraryManager": {
       "title": "BIBLIOTHEKSVERWALTUNG",
@@ -326,7 +330,10 @@
         "wire": "Leitung löschen",
         "component": "Komponente löschen",
         "board": "Board löschen"
-      }
+      },
+      "wire": "Einen Pin verbinden",
+      "wireShort": "Verbinden",
+      "properties": "Eigenschaften"
     },
     "console": {
       "title": "Ausgabe",
@@ -350,7 +357,9 @@
       "filterPins": "Pins filtern…",
       "noMatch": "Keine passenden Pins.",
       "rotate": "Drehen",
-      "delete": "Löschen"
+      "delete": "Löschen",
+      "tapToConnect": "Pin antippen, um zu verbinden",
+      "tapToStart": "Pin antippen, um ein Kabel zu beginnen"
     },
     "boardOptions": {
       "confirmOverwrite": {
@@ -553,6 +562,15 @@
       "blankTitle": "Leeres Projekt",
       "blankDesc": "Leerer Arbeitsbereich – füge eigene Boards und Bauteile hinzu",
       "cancel": "Abbrechen"
+    },
+    "touchBar": {
+      "label": "Schnellaktionen",
+      "run": "Starten",
+      "stop": "Stoppen",
+      "undo": "Rückgängig",
+      "redo": "Wiederholen",
+      "serial": "Serieller Monitor",
+      "addPart": "Bauteil hinzufügen"
     }
   },
   "about": {

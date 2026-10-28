@@ -43,7 +43,9 @@
       "uploadFirmwareLabel": "Upload firmware",
       "recordLabel": "Record simulation",
       "themeToLight": "Switch to light theme",
-      "themeToDark": "Switch to dark theme"
+      "themeToDark": "Switch to dark theme",
+      "touchOn": "Switch to touch mode",
+      "touchOff": "Touch mode is on — switch to mouse mode"
     },
     "fileExplorer": {
       "workspace": "WORKSPACE",
@@ -191,7 +193,9 @@
       "boards": "Boards",
       "loading": "Loading components...",
       "noResults": "No components found",
-      "clearFilters": "Clear filters"
+      "clearFilters": "Clear filters",
+      "count_one": "{{count}} component available",
+      "count_other": "{{count}} components available"
     },
     "libraryManager": {
       "title": "LIBRARY MANAGER",
@@ -281,7 +285,10 @@
         "wire": "Delete wire",
         "component": "Delete component",
         "board": "Delete board"
-      }
+      },
+      "wire": "Connect a pin",
+      "wireShort": "Connect",
+      "properties": "Properties"
     },
     "console": {
       "title": "Output",
@@ -312,7 +319,9 @@
       "filterPins": "Filter pins…",
       "noMatch": "No pins match.",
       "rotate": "Rotate",
-      "delete": "Delete"
+      "delete": "Delete",
+      "tapToConnect": "Tap a pin to connect",
+      "tapToStart": "Tap a pin to start a wire"
     },
     "boardOptions": {
       "confirmOverwrite": {
@@ -463,6 +472,15 @@
         "recompiling": "Code changed since the last build — recompiling before flashing...",
         "compiled": "Build OK in {{seconds}}s. Starting flash..."
       }
+    },
+    "touchBar": {
+      "label": "Quick actions",
+      "run": "Run",
+      "stop": "Stop",
+      "undo": "Undo",
+      "redo": "Redo",
+      "serial": "Serial monitor",
+      "addPart": "Add part"
     }
   },
   "about": {
