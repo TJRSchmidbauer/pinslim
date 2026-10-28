@@ -18,9 +18,9 @@
  */
 import React, { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Redo2, Undo2 } from 'lucide-react';
 import { useSimulatorStore } from '../../store/useSimulatorStore';
 import { runEditorCommand } from '../../lib/editorCommands';
-
 
 const ICON = 22;
 
@@ -138,22 +138,15 @@ export const CanvasTouchBar: React.FC = () => {
         onAction={undo}
         disabled={!canUndo || running}
       >
-        <Svg>
-          <polyline points="9 14 4 9 9 4" />
-          <path d="M20 20v-7a4 4 0 0 0-4-4H4" />
-        </Svg>
+        <Undo2 size={ICON} aria-hidden="true" />
       </BarButton>
       <BarButton
         label={t('editor.touchBar.redo', 'Redo')}
         onAction={redo}
         disabled={!canRedo || running}
       >
-        <Svg>
-          <polyline points="15 14 20 9 15 4" />
-          <path d="M4 20v-7a4 4 0 0 1 4-4h12" />
-        </Svg>
+        <Redo2 size={ICON} aria-hidden="true" />
       </BarButton>
-
     </div>
   );
 };

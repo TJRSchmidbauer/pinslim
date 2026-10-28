@@ -1,6 +1,6 @@
 // touch-check.mjs — browser check of the tablet (touch) UI against a running Pinslim.
 //
-//   BASE_URL=http://192.168.178.199:3082 node scripts/touch-check.mjs
+//   BASE_URL=http://<your-server>:<port> node scripts/touch-check.mjs
 //
 // Needs `playwright` resolvable from the working directory (e.g. run it from a
 // folder where `npm i playwright` was done). Exits 1 when a check fails.
