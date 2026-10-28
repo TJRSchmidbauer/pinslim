@@ -59,6 +59,8 @@ export const BOARD_SIZE: Record<string, { w: number; h: number }> = {
   'esp32-cam': { w: 136, h: 202 },
   'wemos-lolin32-lite': { w: 128, h: 250 },
   'xiao-esp32-s3': { w: 91, h: 117 },
+  'xiao-esp32s3-sense': { w: 91, h: 117 },
+  'esp32-s3-supermini': { w: 90, h: 118 },
   'arduino-nano-esp32': { w: 217, h: 90 },
   'xiao-esp32-c3': { w: 91, h: 117 },
   'xiao-esp32-c6': { w: 91, h: 117 },
@@ -188,6 +190,8 @@ export const BoardOnCanvas = ({
       case 'wemos-lolin32-lite':
       case 'esp32-s3':
       case 'xiao-esp32-s3':
+      case 'xiao-esp32s3-sense':
+      case 'esp32-s3-supermini':
       case 'arduino-nano-esp32':
       case 'esp32-c3':
       case 'xiao-esp32-c3':

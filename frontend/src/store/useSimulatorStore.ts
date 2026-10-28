@@ -274,7 +274,7 @@ class Esp32BridgeShim {
     // ADC2 = GPIO 11-20 (index 10-19); C3 family ADC1 = GPIO 0-4, GPIO5 →
     // index 5 (both verified against the qemu SARADC, 2026-07).
     const kind = this.bridge.boardKind as string;
-    if (kind === 'esp32-s3' || kind === 'xiao-esp32-s3' || kind === 'arduino-nano-esp32') {
+    if (kind === 'esp32-s3' || kind === 'xiao-esp32-s3' || kind === 'xiao-esp32s3-sense' || kind === 'esp32-s3-supermini' || kind === 'arduino-nano-esp32') {
       if (pin >= 1 && pin <= 10) return pin - 1;
       if (pin >= 11 && pin <= 20) return 10 + (pin - 11);
       return -1;
@@ -976,6 +976,8 @@ const ESP32_KINDS = new Set<BoardKind>([
   'wemos-lolin32-lite',
   'esp32-s3',
   'xiao-esp32-s3',
+  'xiao-esp32s3-sense',
+  'esp32-s3-supermini',
   'arduino-nano-esp32',
 ]);
 

@@ -24,6 +24,7 @@ const arduinoNanoEsp32SvgUrl = '/boards/arduino-nano-esp32.svg';
 const xiaoEsp32C3SvgUrl = '/boards/xiao-esp32-c3.svg';
 const xiaoEsp32C6SvgUrl = '/boards/xiao-esp32-c6.svg';
 const aitewinC3SvgUrl = '/boards/esp32c3-supermini.svg';
+const esp32S3SuperminiSvgUrl = '/boards/esp32-s3-supermini.svg';
 const esp32C6DevkitSvgUrl = '/boards/esp32-c6-devkitc-1.svg';
 const esp32P4DevSvgUrl = '/boards/esp32-p4-dev.svg';
 
@@ -407,6 +408,31 @@ const PINS_AITEWIN_C3 = [
   { name: '0', x: 84, y: 105 },
 ];
 
+// ESP32-S3 SuperMini: 18 mm × 23.5 mm → 90 × 118 px. 2 × 9 side pads on the
+// 2.54 mm grid, USB-C at the top. Pad order after espboards.dev (left: TX/RX
+// = GPIO43/44, GPIO1-7; right: 5V, GND, 3V3, GPIO13-8). The underside pads
+// (GPIO14-18, 21, 33-48) are not breadboard pins and are left out.
+const PINS_ESP32_S3_SUPERMINI = [
+  { name: 'TX', x: 6, y: 10.5 },
+  { name: 'RX', x: 6, y: 23.2 },
+  { name: '1', x: 6, y: 35.9 },
+  { name: '2', x: 6, y: 48.6 },
+  { name: '3', x: 6, y: 61.3 },
+  { name: '4', x: 6, y: 74.0 },
+  { name: '5', x: 6, y: 86.7 },
+  { name: '6', x: 6, y: 99.4 },
+  { name: '7', x: 6, y: 112.1 },
+  { name: '5V', x: 84, y: 10.5 },
+  { name: 'GND', x: 84, y: 23.2 },
+  { name: '3V3', x: 84, y: 35.9 },
+  { name: '13', x: 84, y: 48.6 },
+  { name: '12', x: 84, y: 61.3 },
+  { name: '11', x: 84, y: 74.0 },
+  { name: '10', x: 84, y: 86.7 },
+  { name: '9', x: 84, y: 99.4 },
+  { name: '8', x: 84, y: 112.1 },
+];
+
 // ─── ADC pin map: GPIO → { adc bank, channel within bank, qemu chn index } ──────
 // chn is the index passed to qemu_picsimlab_set_apin():
 //   0-7  → ADC1 channels 0-7  (GPIO 36,37,38,39,32,33,34,35)
@@ -515,6 +541,14 @@ const BOARD_CONFIGS: Record<string, BoardConfig> = {
     led: { x: 105, y: 42, color: '#3b82f6' },
   },
   'xiao-esp32-s3': { svgUrl: xiaoEsp32S3SvgUrl, w: 91, h: 117, pins: PINS_XIAO_ESP32_S3 },
+  // Same board seen from the top; the Sense add-on (camera, mic, SD) sits underneath.
+  'xiao-esp32s3-sense': { svgUrl: xiaoEsp32S3SvgUrl, w: 91, h: 117, pins: PINS_XIAO_ESP32_S3 },
+  'esp32-s3-supermini': {
+    svgUrl: esp32S3SuperminiSvgUrl,
+    w: 90,
+    h: 118,
+    pins: PINS_ESP32_S3_SUPERMINI,
+  },
   'arduino-nano-esp32': {
     svgUrl: arduinoNanoEsp32SvgUrl,
     w: 217,
@@ -530,6 +564,8 @@ const BOARD_CONFIGS: Record<string, BoardConfig> = {
     w: 90,
     h: 123,
     pins: PINS_AITEWIN_C3,
+    // Blue user LED on GPIO 8 (active low), the pad labelled IO8.
+    led: { x: 68, y: 64.3, color: '#3b82f6' },
   },
 };
 

@@ -20,6 +20,7 @@ import { robotDesktopExamples } from './examples-robot-desktop';
 import { microsdExamples } from './examples-storage-microsd';
 import { esp32MqttExamples } from './examples-esp32-mqtt';
 import { esp32s3TftExamples } from './examples-esp32s3-tft';
+import { superminiExamples } from './examples-supermini';
 import { jsemuChipExamples } from './examples-jsemu-chips';
 import { buildSchoolExamples } from './examples-school';
 
@@ -12070,6 +12071,7 @@ const galleryExamples: ExampleProject[] = [
   ...microsdExamples,
   ...esp32MqttExamples,
   ...esp32s3TftExamples,
+  ...superminiExamples,
   ...jsemuChipExamples,
 ];
 

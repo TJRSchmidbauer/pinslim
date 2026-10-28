@@ -92,7 +92,7 @@ function isQemuBoardKind(kind: BoardKind | undefined): boolean {
     kind === 'esp32-c3' ||
     kind === 'esp32-devkit-c-v4' ||
     kind === 'wemos-lolin32-lite' ||
-    kind === 'xiao-esp32-s3' ||
+    kind === 'xiao-esp32-s3' || kind === 'xiao-esp32s3-sense' || kind === 'esp32-s3-supermini' ||
     kind === 'arduino-nano-esp32' ||
     kind === 'xiao-esp32-c3' ||
     kind === 'xiao-esp32-c6' ||

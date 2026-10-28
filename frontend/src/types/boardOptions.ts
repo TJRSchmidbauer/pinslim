@@ -70,6 +70,8 @@ export const DEFAULT_ESP32_OPTIONS: ESP32BoardOptions = {
 const ESP32_S3_KINDS: ReadonlySet<BoardKind> = new Set([
   'esp32-s3',
   'xiao-esp32-s3',
+  'xiao-esp32s3-sense',
+  'esp32-s3-supermini',
   'arduino-nano-esp32',
 ]);
 

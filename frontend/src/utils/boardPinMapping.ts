@@ -246,6 +246,8 @@ export const BOARD_COMPONENT_IDS = [
   'wemos-lolin32-lite',
   'esp32-s3',
   'xiao-esp32-s3',
+  'xiao-esp32s3-sense',
+  'esp32-s3-supermini',
   'arduino-nano-esp32',
   'esp32-c3',
   'xiao-esp32-c3',
@@ -405,6 +407,17 @@ export function boardPinToNumber(boardId: string, pinName: string): number | nul
   }
 
   // ESP32 / ESP32-S3 / ESP32-C3 — GPIO numbers used directly
+  // ESP32-S3 SuperMini: pads are silkscreened with the GPIO number; TX/RX
+  // are the S3's UART0 pins 43/44 (not the classic ESP32's 1/3).
+  // Before the generic esp32* branch, which would read TX/RX as GPIO1/3.
+  if (boardId === 'esp32-s3-supermini') {
+    if (POWER_PAD_RE.test(pinName)) return -1;
+    if (pinName === 'TX') return 43;
+    if (pinName === 'RX') return 44;
+    const num = parseInt(pinName, 10);
+    return !isNaN(num) && num >= 0 && num <= 48 ? num : null;
+  }
+
   if (boardId === 'esp32' || boardId.startsWith('esp32')) {
     // Power / GND / reset pads (GND, GND.1, 3V3, 5V, EN, RST, ...)
     if (POWER_PAD_RE.test(pinName)) return -1;
@@ -439,7 +452,7 @@ export function boardPinToNumber(boardId: string, pinName: string): number | nul
     return ESP32_PIN_MAP[pinName] ?? null;
   }
 
-  if (boardId === 'xiao-esp32-s3' || boardId === 'arduino-nano-esp32') {
+  if (boardId === 'xiao-esp32-s3' || boardId === 'xiao-esp32s3-sense' || boardId === 'arduino-nano-esp32') {
     if (POWER_PAD_RE.test(pinName)) return -1;
     // D0-D13, A0-A7 → ESP32-S3 GPIO numbers
     const XIAO_S3_MAP: Record<string, number> = {

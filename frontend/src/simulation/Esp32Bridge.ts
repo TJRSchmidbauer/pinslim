@@ -73,7 +73,7 @@ export function toQemuBoardType(kind: BoardKind): 'esp32' | 'esp32-s3' | 'esp32-
     );
   }
   if (proFam) return proFam;
-  if (kind === 'esp32-s3' || kind === 'xiao-esp32-s3' || kind === 'arduino-nano-esp32')
+  if (kind === 'esp32-s3' || kind === 'xiao-esp32-s3' || kind === 'xiao-esp32s3-sense' || kind === 'esp32-s3-supermini' || kind === 'arduino-nano-esp32')
     return 'esp32-s3';
   if (kind === 'esp32-c6' || kind === 'xiao-esp32-c6')
     return 'esp32-c6';
@@ -281,6 +281,8 @@ export class Esp32Bridge {
     switch (this.boardKind as string) {
       case 'esp32-s3':
       case 'xiao-esp32-s3':
+      case 'xiao-esp32s3-sense':
+      case 'esp32-s3-supermini':
       case 'arduino-nano-esp32':
         return 43;
       case 'esp32-c6':

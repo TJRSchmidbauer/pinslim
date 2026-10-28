@@ -194,7 +194,7 @@ function carrySeatedBoards(
 function isEsp32Kind(kind: BoardKind): boolean {
   return (
     kind.startsWith('esp32') ||
-    kind === 'xiao-esp32-s3' ||
+    kind === 'xiao-esp32-s3' || kind === 'xiao-esp32s3-sense' || kind === 'esp32-s3-supermini' ||
     kind === 'xiao-esp32-c3' ||
     kind === 'xiao-esp32-c6' ||
     kind === 'arduino-nano-esp32' ||
@@ -1441,6 +1441,10 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
           break;
         case 'wemos-lolin32-lite':
           ledPin = 22; // blue LED, wired to 3V3
+          activeLow = true;
+          break;
+        case 'aitewinrobot-esp32c3-supermini':
+          ledPin = 8; // blue LED, wired to 3V3
           activeLow = true;
           break;
         default:

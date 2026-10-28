@@ -34,7 +34,6 @@ const ACCEPTED_UNCOVERED: ReadonlySet<BoardKind> = new Set([
   'xiao-esp32-s3',
   'arduino-nano-esp32',
   'xiao-esp32-c3',
-  'aitewinrobot-esp32c3-supermini',
 ]);
 
 interface Coverage {

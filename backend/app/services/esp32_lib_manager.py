@@ -139,6 +139,8 @@ EventCallback = Callable[[str, dict], Awaitable[None]]
 _MACHINE: dict[str, str] = {
     'esp32':                          'esp32-picsimlab',
     'esp32-s3':                       'esp32s3-picsimlab',
+    'esp32-s3-supermini':             'esp32s3-picsimlab',
+    'xiao-esp32s3-sense':             'esp32s3-picsimlab',
     'esp32-c3':                       'esp32c3-picsimlab',
     'esp32-c6':                       'esp32c6-picsimlab',
     'xiao-esp32-c3':                  'esp32c3-picsimlab',

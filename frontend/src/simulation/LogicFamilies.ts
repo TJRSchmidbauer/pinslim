@@ -207,6 +207,8 @@ const BOARD_FAMILY: Record<string, LogicFamilyId> = {
   'esp32-c6':          'LVCMOS33',
   'esp32-p4':          'LVCMOS33',
   'xiao-esp32-s3':     'LVCMOS33',
+  'xiao-esp32s3-sense':     'LVCMOS33',
+  'esp32-s3-supermini': 'LVCMOS33',
   'arduino-nano-esp32':'LVCMOS33',
   'esp32-devkit-c-v4': 'LVCMOS33',
   'raspberry-pi-pico': 'LVCMOS33',

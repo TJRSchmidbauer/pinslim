@@ -121,5 +121,7 @@
   "IR camera gesture sensor on a XIAO carrier: seat a XIAO on its socket and read rotate/tap/grab/pinch/swipe over I2C - available in the online editor": "IR-Kamera-Gestensensor auf XIAO-Trägerplatine: XIAO aufstecken und Drehen/Tippen/Greifen/Zoomen/Wischen per I2C auslesen – im Online-Editor verfügbar",
   "Dual-mic array with a XIAO socket: live mic in, audio out, beamforming/AEC/NS model - online editor": "Zwei-Mikrofon-Array mit XIAO-Sockel: Live-Mikrofon, Audioausgang, Beamforming/Echo-/Rauschunterdrückung – Online-Editor",
   "Seeed XIAO ESP32-C6 (WiFi 6, BLE 5, 802.15.4 / Zigbee) (QEMU)": "Seeed XIAO ESP32-C6 (WLAN 6, BLE 5, 802.15.4 / Zigbee) (QEMU)",
-  "Seeed XIAO ESP32-C6 RISC-V, Zigbee/WiFi6 (QEMU)": "Seeed XIAO ESP32-C6, RISC-V, Zigbee/WLAN 6 (QEMU)"
+  "Seeed XIAO ESP32-C6 RISC-V, Zigbee/WiFi6 (QEMU)": "Seeed XIAO ESP32-C6, RISC-V, Zigbee/WLAN 6 (QEMU)",
+  "Tiny ESP32-S3 board, 4MB flash + 2MB PSRAM, USB-C (QEMU)": "Winziges ESP32-S3-Board, 4 MB Flash + 2 MB PSRAM, USB-C (QEMU)",
+  "XIAO ESP32-S3 with camera/mic add-on, 8MB flash+PSRAM (QEMU, camera not simulated)": "XIAO ESP32-S3 mit Kamera-/Mikrofon-Aufsatz, 8 MB Flash + PSRAM (QEMU, Kamera nicht simuliert)"
 }

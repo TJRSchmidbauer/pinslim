@@ -86,6 +86,9 @@ const ADC_PIN_MAP: Partial<Record<BoardKind, Array<{ pinName: string; channel: n
   'wemos-lolin32-lite': adcRange('GPIO', 32, 8),
   'esp32-s3': adcRange('', 1, 10),
   'xiao-esp32-s3': adcRange('D', 0, 9),
+  'xiao-esp32s3-sense': adcRange('D', 0, 9),
+  // S3 SuperMini: pads are the GPIO numbers; ADC1 = GPIO1-10.
+  'esp32-s3-supermini': adcRange('', 1, 10),
   'arduino-nano-esp32': adcRange('A', 0, 8),
   'esp32-c3': adcRange('', 0, 6),
   'xiao-esp32-c3': adcRange('D', 0, 4),
@@ -120,6 +123,8 @@ const ADC_PIN_TO_GPIO: Partial<Record<BoardKind, (pinName: string, channel: numb
   'wemos-lolin32-lite': gpioPinFromName,
   'esp32-s3': gpioPinFromName,
   'xiao-esp32-s3': gpioPinFromName,
+  'xiao-esp32s3-sense': gpioPinFromName,
+  'esp32-s3-supermini': gpioPinFromName,
   'arduino-nano-esp32': avrPinFromName,
   'esp32-c3': gpioPinFromName,
   'xiao-esp32-c3': gpioPinFromName,

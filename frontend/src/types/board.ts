@@ -18,6 +18,8 @@ export type BoardKind =
   | 'wemos-lolin32-lite' // Wemos Lolin32 Lite, QEMU (esp32)
   | 'esp32-s3' // Xtensa LX7, QEMU backend
   | 'xiao-esp32-s3' // Seeed XIAO ESP32-S3, QEMU (esp32-s3)
+  | 'xiao-esp32s3-sense' // Seeed XIAO ESP32S3 Sense (XIAO S3 + camera/mic board; camera not emulated)
+  | 'esp32-s3-supermini' // ESP32-S3 SuperMini (Tenstar-style 18x23.5 mm), QEMU (esp32-s3)
   | 'arduino-nano-esp32' // Arduino Nano ESP32 (S3), QEMU (esp32-s3)
   | 'esp32-c3' // RISC-V RV32IMC, QEMU backend
   | 'xiao-esp32-c3' // Seeed XIAO ESP32-C3, QEMU backend
@@ -74,6 +76,8 @@ export const BOARD_SUPPORTS_MICROPYTHON = new Set<BoardKind>([
   // ESP32-S3 Xtensa (QEMU bridge)
   'esp32-s3',
   'xiao-esp32-s3',
+  'xiao-esp32s3-sense',
+  'esp32-s3-supermini',
   'arduino-nano-esp32',
   // ESP32-C3 / C6 RISC-V (QEMU bridge)
   'esp32-c3',
@@ -96,6 +100,8 @@ export const BOARD_SUPPORTS_ESPIDF = new Set<BoardKind>([
   // ESP32-S3 Xtensa (QEMU bridge)
   'esp32-s3',
   'xiao-esp32-s3',
+  'xiao-esp32s3-sense',
+  'esp32-s3-supermini',
   'arduino-nano-esp32',
   // ESP32-C3 / C6 RISC-V (QEMU bridge)
   'esp32-c3',
@@ -237,6 +243,8 @@ export const BOARD_KIND_LABELS: Record<BoardKind, string> = {
   'wemos-lolin32-lite': 'Wemos Lolin32 Lite',
   'esp32-s3': 'ESP32-S3 DevKit',
   'xiao-esp32-s3': 'XIAO ESP32-S3',
+  'xiao-esp32s3-sense': 'XIAO ESP32-S3 Sense',
+  'esp32-s3-supermini': 'ESP32-S3 SuperMini',
   'arduino-nano-esp32': 'Arduino Nano ESP32',
   'esp32-c3': 'ESP32-C3 DevKit',
   'xiao-esp32-c3': 'XIAO ESP32-C3',
@@ -280,6 +288,8 @@ export const BOARD_KIND_FQBN: Record<BoardKind, string | null> = {
   'wemos-lolin32-lite': 'esp32:esp32:lolin32-lite',
   'esp32-s3': 'esp32:esp32:esp32s3',
   'xiao-esp32-s3': 'esp32:esp32:XIAO_ESP32S3',
+  'xiao-esp32s3-sense': 'esp32:esp32:XIAO_ESP32S3',
+  'esp32-s3-supermini': 'esp32:esp32:esp32s3',
   'arduino-nano-esp32': 'esp32:esp32:nano_nora',
   'esp32-c3': 'esp32:esp32:esp32c3',
   'xiao-esp32-c3': 'esp32:esp32:XIAO_ESP32C3',

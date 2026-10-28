@@ -123,6 +123,8 @@ const BOARD_DEFS: Record<string, CompDef> = {
   'wemos-lolin32-lite': { svg: 'esp32-devkit-v1.svg', w: 107, h: 204 },
   'esp32-s3': { svg: 'esp32-devkit-v1.svg', w: 107, h: 204 },
   'xiao-esp32-s3': { svg: 'esp32-devkit-v1.svg', w: 107, h: 204 },
+  'xiao-esp32s3-sense': { svg: 'xiao-esp32-s3.svg', w: 91, h: 117 },
+  'esp32-s3-supermini': { svg: 'esp32-s3-supermini.svg', w: 90, h: 118 },
   'arduino-nano-esp32': { svg: 'esp32-devkit-v1.svg', w: 107, h: 204 },
   'esp32-c3': { svg: 'esp32-devkit-v1.svg', w: 107, h: 204 },
   'xiao-esp32-c3': { svg: 'esp32-devkit-v1.svg', w: 107, h: 204 },

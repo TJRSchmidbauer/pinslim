@@ -128,6 +128,9 @@ const ESP32_FAMILY_PADS: Record<string, string[]> = {
   ],
   'xiao-esp32-c3': ['D0', 'D1', 'D2', 'D3', 'D4', 'D5', 'D6', 'D7', 'D8', 'D9', 'D10', '3V3', 'GND', '5V'],
   'aitewinrobot-esp32c3-supermini': ['5', '6', '7', '8', '9', '10', 'RX', 'TX', '5V', 'GND', '3V3', '4', '3', '2', '1', '0'],
+  'esp32-s3-supermini': [
+    'TX', 'RX', '1', '2', '3', '4', '5', '6', '7', '5V', 'GND', '3V3', '13', '12', '11', '10', '9', '8',
+  ],
 };
 
 /**
@@ -181,6 +184,15 @@ describe('boardPinToNumber — the pads that were dead', () => {
   it('the Nano ESP32 reaches GPIO44/43 through the pads it actually draws', () => {
     expect(boardPinToNumber('arduino-nano-esp32', 'RX0')).toBe(44);
     expect(boardPinToNumber('arduino-nano-esp32', 'TX1')).toBe(43);
+  });
+
+  it('the S3 SuperMini maps TX/RX to the S3 UART0 pins and pads to their GPIO', () => {
+    expect(boardPinToNumber('esp32-s3-supermini', 'TX')).toBe(43);
+    expect(boardPinToNumber('esp32-s3-supermini', 'RX')).toBe(44);
+    expect(boardPinToNumber('esp32-s3-supermini', '13')).toBe(13);
+    expect(boardPinToNumber('esp32-s3-supermini', '3V3')).toBe(-1);
+    expect(boardPinToNumber('esp32-s3-supermini', '5V')).toBe(-1);
+    expect(boardPinToNumber('esp32-s3-supermini', 'GND')).toBe(-1);
   });
 
   it('supply pads are -1, not the digit their name starts with', () => {
