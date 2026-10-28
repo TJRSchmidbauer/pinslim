@@ -133,3 +133,24 @@
   background: var(--wb-6, #d0d7de);
   margin: 0 2px;
 }
+
+/* Touch wiring: the pin under the finger, and its name shown above it */
+.pin-overlay--hot {
+  background: rgba(255, 153, 0, 0.25) !important;
+  border: 2px solid #ff9900 !important;
+  border-radius: 50% !important;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.9);
+}
+.pin-touch-hint {
+  position: fixed;
+  transform: translateX(-50%);
+  z-index: 1000;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(20, 20, 20, 0.88);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  pointer-events: none;
+}

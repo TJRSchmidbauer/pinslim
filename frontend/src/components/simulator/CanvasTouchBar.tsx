@@ -72,11 +72,7 @@ const BarButton: React.FC<{
 }> = ({ label, onAction, disabled, active, variant, children }) => {
   const ref = useRef<HTMLButtonElement | null>(null);
   useTapAction(ref, onAction);
-  const cls = [
-    'canvas-touch-bar__btn',
-    active ? 'is-active' : '',
-    variant ? `is-${variant}` : '',
-  ]
+  const cls = ['canvas-touch-bar__btn', active ? 'is-active' : '', variant ? `is-${variant}` : '']
     .filter(Boolean)
     .join(' ');
   return (

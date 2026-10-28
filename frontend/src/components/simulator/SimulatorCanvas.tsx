@@ -115,6 +115,52 @@ const DISPLAY_BODY_METADATA_RE =
 /** Long-press duration for touch context menu (ms). */
 const LONG_PRESS_MS = 500;
 
+/** How far (screen px) beyond a pin's hit box a fingertip may land and still
+ * connect to it while wiring. */
+const PIN_SNAP_RADIUS_PX = 24;
+
+interface SnappedPin {
+  el: HTMLElement;
+  componentId: string;
+  pinName: string;
+  /** World coordinates of the pin (what handlePinClick expects). */
+  x: number;
+  y: number;
+}
+
+/**
+ * The pin overlay closest to a screen point, if any lies within
+ * PIN_SNAP_RADIUS_PX of its hit box. Distance is measured to the box edge, so
+ * a touch inside a box always wins; ties go to the nearer centre.
+ */
+function findPinOverlayNear(root: HTMLElement | null, clientX: number, clientY: number): SnappedPin | null {
+  if (!root) return null;
+  let best: SnappedPin | null = null;
+  let bestEdge = Infinity;
+  let bestCentre = Infinity;
+  root.querySelectorAll<HTMLElement>('[data-pin-overlay][data-pin-name]').forEach((el) => {
+    const r = el.getBoundingClientRect();
+    if (r.width === 0) return;
+    const dx = Math.max(r.left - clientX, 0, clientX - r.right);
+    const dy = Math.max(r.top - clientY, 0, clientY - r.bottom);
+    const edge = Math.hypot(dx, dy);
+    if (edge > PIN_SNAP_RADIUS_PX) return;
+    const centre = Math.hypot(clientX - (r.left + r.right) / 2, clientY - (r.top + r.bottom) / 2);
+    if (edge < bestEdge || (edge === bestEdge && centre < bestCentre)) {
+      bestEdge = edge;
+      bestCentre = centre;
+      best = {
+        el,
+        componentId: el.dataset.pinComponent ?? '',
+        pinName: el.dataset.pinName ?? '',
+        x: Number(el.dataset.pinWx),
+        y: Number(el.dataset.pinWy),
+      };
+    }
+  });
+  return best;
+}
+
 /** Max movement during long-press before it cancels (px). */
 const LONG_PRESS_MOVE_TOLERANCE = 8;
 
@@ -519,6 +565,36 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
   const pinchStartMidRef = useRef({ x: 0, y: 0 });
   const pinchStartPanRef = useRef({ x: 0, y: 0 });
 
+  // Touch wiring: the pin a finger is about to connect to, shown in a label
+  // ABOVE the finger (the fingertip itself hides the pin), and highlighted.
+  const [pinHint, setPinHint] = useState<{ x: number; y: number; label: string } | null>(null);
+  const hotPinRef = useRef<SnappedPin | null>(null);
+  const handlePinClickRef = useRef<
+    ((componentId: string, pinName: string, x: number, y: number) => void) | null
+  >(null);
+  // Called from the native touch handlers (stable: refs and setters only).
+  const updateHotPin = (clientX: number, clientY: number | null) => {
+    const next = clientY === null ? null : findPinOverlayNear(canvasRef.current, clientX, clientY);
+    const prev = hotPinRef.current;
+    if (prev?.el !== next?.el) {
+      prev?.el.classList.remove('pin-overlay--hot');
+      next?.el.classList.add('pin-overlay--hot');
+    }
+    hotPinRef.current = next;
+    if (!next || clientY === null) {
+      setPinHint(null);
+      return;
+    }
+    const comp = componentsRef.current.find((c) => c.id === next.componentId);
+    const board = comp ? null : boardsRef.current.find((b) => b.id === next.componentId);
+    const owner = comp
+      ? (ComponentRegistry.getInstance().getById(comp.metadataId)?.name ?? comp.id)
+      : board
+        ? boardDisplayName(board)
+        : next.componentId;
+    setPinHint({ x: clientX, y: clientY, label: `${owner} · ${next.pinName}` });
+  };
+
   // Refs for touch-based wire creation, selection, and interactive passthrough
   const wireInProgressRef = useRef(wireInProgress);
   wireInProgressRef.current = wireInProgress;
@@ -723,6 +799,7 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
       if (wireInProgressRef.current) {
         const world = toWorld(touch.clientX, touch.clientY);
         useSimulatorStore.getState().updateWireInProgress(world.x, world.y);
+        updateHotPin(touch.clientX, touch.clientY);
         // Don't start pan/drag — let touchmove update wire preview, touchend add waypoint
         return;
       }
@@ -917,6 +994,7 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
       ) {
         const world = toWorld(touch.clientX, touch.clientY);
         useSimulatorStore.getState().updateWireInProgress(world.x, world.y);
+        updateHotPin(touch.clientX, touch.clientY);
         return;
       }
 
@@ -1143,6 +1221,14 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
       // tapping a pin name from a list — far more reliable than poking at a
       // 12px overlay with a fingertip. Empty-canvas taps still drop waypoints.
       if (wireInProgressRef.current) {
+        // Finger lifted next to (or dragged onto) a pin: connect there. This
+        // is what makes "drag the wire to the LED leg" work with a finger.
+        const hot = hotPinRef.current ?? findPinOverlayNear(canvasRef.current, changed.clientX, changed.clientY);
+        updateHotPin(0, null);
+        if (hot && handlePinClickRef.current) {
+          handlePinClickRef.current(hot.componentId, hot.pinName, hot.x, hot.y);
+          return;
+        }
         if (isShortTap) {
           const tapTarget = document.elementFromPoint(changed.clientX, changed.clientY);
           const componentWrapper = tapTarget?.closest('[data-component-id]');
@@ -2335,6 +2421,8 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
       startWireCreation({ componentId, pinName, x, y }, color);
     }
   };
+  // The native touch handlers (set up once) reach the current closure here.
+  handlePinClickRef.current = handlePinClick;
 
   // Keyboard handlers for wires
   useEffect(() => {
@@ -2555,7 +2643,12 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
       // primary way to pick pins, so the tiny overlay squares are hidden —
       // they're hard to hit with a finger anyway. Desktop shows overlays on
       // hover / while wiring only — selection alone doesn't light them up.
-      const showPinsForComponent = !dialogOpen && !isTouchDevice && (!!wireInProgress || isHovered);
+      // Touch: no hover, and a finger would hit the boxes instead of dragging
+      // the part — so pins only exist while a wire is being drawn, where
+      // they serve the snapping (findPinOverlayNear). They stay transparent
+      // there (see `wiring` below); the pin under the finger lights up.
+      const showPinsForComponent =
+        !dialogOpen && (isTouchDevice ? !!wireInProgress : !!wireInProgress || isHovered);
       return (
         <React.Fragment key={component.id}>
           <div
@@ -2601,7 +2694,7 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
                 zoom={zoom}
                 wrapperOffsetX={0}
                 wrapperOffsetY={0}
-                wiring={!!wireInProgress}
+                wiring={!!wireInProgress && !isTouchDevice}
               />
             )}
           </div>
@@ -2624,7 +2717,12 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
     // light them up (a selected breadboard lit 170 squares permanently).
     // Hidden when a dialog is open. Hidden entirely on touch — there the
     // PinPickerDialog (tap component → list of pins) replaces the overlays.
-    const showPinsForComponent = !dialogOpen && !isTouchDevice && (!!wireInProgress || isHovered);
+    // Touch: no hover, and a finger would hit the boxes instead of dragging
+      // the part — so pins only exist while a wire is being drawn, where
+      // they serve the snapping (findPinOverlayNear). They stay transparent
+      // there (see `wiring` below); the pin under the finger lights up.
+      const showPinsForComponent =
+        !dialogOpen && (isTouchDevice ? !!wireInProgress : !!wireInProgress || isHovered);
 
     // Breadboards are the physical base of a circuit — everything plugs into
     // them — so they always sit at the very back: below boards (z 0), other
@@ -2728,7 +2826,7 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
               showPins={showPinsForComponent}
               zoom={zoom}
               rotation={Number(component.properties?.rotation) || 0}
-              wiring={!!wireInProgress}
+              wiring={!!wireInProgress && !isTouchDevice}
             />
           )}
         </div>
@@ -3274,7 +3372,7 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
                   running={running}
                   isActive={isActive}
                   showPins={showPins}
-                  wiring={!!wireInProgress}
+                  wiring={!!wireInProgress && !isTouchDevice}
                   led13={Boolean(boardLedStates[board.id])}
                   onMouseEnter={() => setHoveredBoardId(board.id)}
                   onMouseLeave={() =>
@@ -3377,6 +3475,18 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
               }
               return null;
             })()}
+
+          {/* Which pin the finger is on while wiring — shown above the finger,
+              which hides the pin itself. Fixed: coordinates are viewport. */}
+          {pinHint && (
+            <div
+              className="pin-touch-hint"
+              style={{ left: pinHint.x, top: pinHint.y - 64 }}
+              aria-live="polite"
+            >
+              {pinHint.label}
+            </div>
+          )}
 
           {/* Thumb bar for tablets (bottom-left; zoom sits bottom-right). */}
           {isTouchDevice && <CanvasTouchBar onAddComponent={() => setShowComponentPicker(true)} />}
