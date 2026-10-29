@@ -227,8 +227,10 @@ Pinslim is an independent open-source fork based on **Velxio**, created by **Dav
 
 Special thanks to **David Montero Crespo** for architecting the original simulator engine.
 
-### 2. Antigravity AI Notice
-Sämtliche Anpassungen, Refactorings, UI/UX-Optimierungen, Stücklisten- & PNG-Export-Erweiterungen, Web-Serial-Flasher-Integration sowie Sicherheitshärtungen an dieser Codebasis wurden in kooperativer Entwicklung unter Einsatz des KI-Assistenten **Antigravity** (Google DeepMind) umgesetzt.
+### 2. KI-Hinweis / AI Notice
+Anpassungen, Refactorings, UI/UX-Optimierungen, Stücklisten- & PNG-Export-Erweiterungen, Web-Serial-Flasher-Integration sowie Sicherheitshärtungen an dieser Codebasis wurden in kooperativer Entwicklung unter Einsatz des KI-Assistenten **Antigravity** (Google DeepMind) umgesetzt.
+
+Weitere Entwicklungen – unter anderem die eigene QEMU-Emulation für ESP32 / S3 / C3 / C6, Logikanalysator mit Protokoll-Dekodierung, Wahrheitstabelle und Zeitdiagramm, serieller Plotter, die Schul-Beispiele auf dem ESP32, die Touch-Bedienung für Tablets sowie die Boards ESP32-S3 SuperMini und XIAO ESP32-S3 Sense – entstanden in kooperativer Entwicklung mit dem KI-Assistenten **Claude** (Anthropic, über Claude Code). Die jeweiligen Commits sind mit `Co-Authored-By: Claude …` gekennzeichnet.
 
 ### 3. Trademark Disclaimer
 All product names, trademarks, logos, and brands mentioned in this project (such as *Arduino, ESP32, Espressif, Raspberry Pi, MicroPython, SAMD, RP2040, Seeed Studio XIAO, Apple, iPad, etc.*) are the property of their respective trademark owners. Pinslim is an independent open-source community project and is **not affiliated with, sponsored by, or endorsed by** any of these trademark holders. The touch mode follows Apple's published interface guidelines as a design reference; it uses no Apple assets or fonts.
