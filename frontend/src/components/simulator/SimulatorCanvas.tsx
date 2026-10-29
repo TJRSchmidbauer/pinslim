@@ -3409,7 +3409,7 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
           {/* Wire creation mode banner — visible on both desktop and mobile */}
           {wireInProgress && (
             <WireModeBanner
-              message="Tap a pin to connect — tap canvas for waypoints"
+              message={t('editor.wireBanner.message', 'Tap a pin to connect — tap canvas for waypoints')}
               onCancel={() => cancelWireCreation()}
             />
           )}

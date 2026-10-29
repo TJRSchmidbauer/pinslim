@@ -13,6 +13,7 @@
  */
 
 import React, { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface WireModeBannerProps {
   message: string;
@@ -20,6 +21,7 @@ interface WireModeBannerProps {
 }
 
 export const WireModeBanner: React.FC<WireModeBannerProps> = ({ message, onCancel }) => {
+  const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
 
@@ -58,7 +60,7 @@ export const WireModeBanner: React.FC<WireModeBannerProps> = ({ message, onCance
     <div ref={containerRef} className="wire-mode-banner" style={{ touchAction: 'none' }}>
       <span>{message}</span>
       <button ref={buttonRef} type="button" onClick={onCancel}>
-        Cancel
+        {t('editor.wireBanner.cancel', 'Cancel')}
       </button>
     </div>
   );

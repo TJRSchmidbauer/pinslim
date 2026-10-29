@@ -481,6 +481,10 @@
       "redo": "Redo",
       "serial": "Serial monitor",
       "addPart": "Add part"
+    },
+    "wireBanner": {
+      "message": "Tap a pin to connect — tap canvas for waypoints",
+      "cancel": "Cancel"
     }
   },
   "about": {

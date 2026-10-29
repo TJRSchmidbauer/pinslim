@@ -21,10 +21,22 @@ export interface ParsedValue {
 const NUMBER = /^[+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?$/;
 
 /** Values on one line, in order. Empty array for lines without numbers. */
+/** Lines of the ESP32 / ESP8266 ROM boot banner, never sketch output. */
+const BOOT_BANNER =
+  /^(ets [A-Z][a-z]{2} |rst:0x|configsip:|clk_drv:|mode:(DIO|QIO|DOUT|QOUT)\b|load:0x|entry 0x|ESP-ROM:|Build:|SPIWP:|chip revision|boot:0x)/;
+
+/** ESP-IDF log lines: "W (846) eFuse: …", "I (27) boot: …" (level, ms, tag). */
+const IDF_LOG = /^[EWIDV] \(\d+\) [\w.-]+:/;
+
 export function parsePlotLine(raw: string): ParsedValue[] {
   // eslint-disable-next-line no-control-regex
   const line = raw.replace(/\x1b\[[0-9;?]*[A-Za-z]/g, '').replace(/[\x00-\x08\x0b-\x1f\x7f]/g, ' ').trim();
   if (!line) return [];
+  // The ESP32 boot ROM prints a banner on every reset ("ets Jul 29 2019
+  // 12:21:46", "rst:0x1 (POWERON_RESET),boot:0x13", "mode:DIO, clock div:2",
+  // "load:0x3fff0030,len:1396", "entry 0x400805e4"). Plotted, it became
+  // curves named "Wert 1", "Wert 2" and "div" in front of the sketch's data.
+  if (BOOT_BANNER.test(line) || IDF_LOG.test(line)) return [];
   const tokens = line.split(/[,;\t ]+/).filter(Boolean);
   const out: ParsedValue[] = [];
   let pendingLabel: string | null = null;

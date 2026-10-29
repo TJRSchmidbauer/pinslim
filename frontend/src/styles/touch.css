@@ -388,3 +388,32 @@ html[data-touch='on'] .board-selector {
   min-width: 150px;
   max-width: 220px;
 }
+
+/* Wire-mode hint: at the top in touch mode — at the bottom it covered the
+   thumb bar (Run / Undo), and the selection bar is hidden while wiring. */
+html[data-touch='on'] .wire-mode-banner {
+  top: 14px;
+  bottom: auto;
+  padding: 6px 6px 6px 16px;
+  border-radius: 16px;
+  background: var(--hig-tint) !important;
+  font: 500 15px var(--hig-font);
+}
+html[data-touch='on'] .wire-mode-banner button {
+  min-height: 40px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.22);
+  color: #fff;
+  font: 600 15px var(--hig-font);
+}
+html[data-touch='on'] .wire-mode-banner {
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  width: fit-content;
+  max-width: calc(100% - 24px);
+  transform: none;
+  white-space: normal;
+}

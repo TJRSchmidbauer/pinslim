@@ -103,4 +103,23 @@ describe('plotExtent / niceTicks / csv', () => {
     p.feed('a:1,b:2\na:3\n');
     expect(plotToCsv(p.curves)).toBe('Messung,a,b\n0,1,2\n1,3,');
   });
+
+  it('ignores the ESP32 boot banner', () => {
+    for (const l of [
+      'ets Jul 29 2019 12:21:46',
+      'rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)',
+      'configsip: 0, SPIWP:0xee',
+      'clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00',
+      'mode:DIO, clock div:2',
+      'load:0x3fff0030,len:1396',
+      'entry 0x400805e4',
+      'ESP-ROM:esp32s3-20210327',
+      'W (846) eFuse: calibration efuse version does not match, set default version to 0',
+      'I (27) boot: ESP-IDF v5.5.6 2nd stage bootloader',
+    ]) {
+      expect(parsePlotLine(l)).toEqual([]);
+    }
+    // ordinary data still parses
+    expect(parsePlotLine('Rohwert:2049 Volt:1.651')).toHaveLength(2);
+  });
 });

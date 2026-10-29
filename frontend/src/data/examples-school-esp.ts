@@ -733,6 +733,9 @@ export function toEsp32(
     boardType: variant.boardKind ?? SCHOOL_ESP_BOARD,
     boardFilter: 'esp32',
     boards: [{ boardKind: variant.boardKind ?? SCHOOL_ESP_BOARD, x: 100, y: 100, code: variant.code }],
+    // Own screenshot (examples-thumbs/<id>.webp): the base example's picture
+    // shows the Uno circuit.
+    thumbnail: undefined,
     code: '',
     components,
     wires,
