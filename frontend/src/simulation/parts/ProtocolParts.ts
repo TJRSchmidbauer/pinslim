@@ -22,6 +22,7 @@ import { PartSimulationRegistry } from './PartSimulationRegistry';
 import { VirtualDS1307, VirtualBMP280, VirtualDS3231, VirtualPCF8574 } from '../I2CBusManager';
 import type { I2CDevice } from '../I2CBusManager';
 import { HD44780Decoder } from '../HD44780Decoder';
+import { fontWithCgram } from './lcdCgram';
 import { registerSensorUpdate, unregisterSensorUpdate } from '../SensorUpdateRegistry';
 import { useSimulatorStore } from '../../store/useSimulatorStore';
 
@@ -1480,6 +1481,10 @@ function makeI2cLcdAttach(cols: number, rows: number) {
     };
     decoder.onBacklightChange = (on) => {
       el.backlight = on;
+    };
+    // createChar(): codes 0-15 draw the CGRAM patterns (velxio/velxio-prod#162).
+    decoder.onCgramChange = (cgram) => {
+      el.font = fontWithCgram(cgram, el.font);
     };
     decoder.onCursorChange = (snap) => {
       el.cursorX = snap.cursorCol;
