@@ -103,7 +103,9 @@ function isDigitalPrimitive(t: string): boolean {
   return isGate(t) || isFlipFlop(t) || isSwitch(t) || isLed(t) || isResistor(t) || isPower(t);
 }
 
-/** Opt-in flag, mirrors chipBusEnabled / mixedmode. Default OFF until verified. */
+/** The engine's switch, read like chipBusEnabled / mixedmode: `?digitalgates=`
+ *  or localStorage `velxio.digitalgates` set to on / off. ON by default since
+ *  4f4ee0bf (2026-06-05); `off` sends all-digital circuits back to ngspice. */
 export function digitalGatesEnabled(): boolean {
   try {
     if (typeof window !== 'undefined' && window.location) {
