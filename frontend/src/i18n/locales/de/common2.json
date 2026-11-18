@@ -274,7 +274,11 @@
       "showExplorer": "Dateiexplorer anzeigen",
       "hideExplorer": "Dateiexplorer ausblenden",
       "viewMode": "Ansichtsmodus",
-      "dragResize": "Ziehen zum Größenändern"
+      "dragResize": "Ziehen zum Größenändern",
+      "dockSerial": "Seriell",
+      "dockScope": "Oszilloskop",
+      "dockLogic": "Wahrheitstabelle",
+      "dockClose": "Schließen"
     },
     "oscilloscope": {
       "title": "Oszilloskop",
@@ -298,7 +302,10 @@
       "roleNone": "— keiner —",
       "copyDecoded": "Ablauf kopieren",
       "copied": "Kopiert ✓",
-      "nothingDecoded": "Noch nichts dekodiert – starte die Simulation und lass das Board Daten senden."
+      "nothingDecoded": "Noch nichts dekodiert – starte die Simulation und lass das Board Daten senden.",
+      "suggestFound": "Der Sketch nutzt:",
+      "suggestShow": "Kanäle anlegen und dekodieren",
+      "suggestAction": "anzeigen"
     },
     "componentProps": {
       "close": "Schließen",

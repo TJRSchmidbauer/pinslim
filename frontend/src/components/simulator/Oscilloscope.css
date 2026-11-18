@@ -373,3 +373,28 @@
   word-break: break-word;
   user-select: text;
 }
+
+/* One-click bus analyzer suggestion (Primary-ish but quiet: Pfirsich bar). */
+.osc-suggest {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 12px;
+  background: var(--color-accent-soft-strong);
+  color: var(--color-fg-default);
+  font-size: 12px;
+  border-bottom: 1px solid var(--color-border-default);
+}
+.osc-suggest-btn {
+  height: 24px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 5px;
+  background: var(--color-action-primary);
+  color: var(--color-action-primary-fg);
+  font: 700 12px/1 var(--font-sans);
+  cursor: pointer;
+}
+.osc-suggest-btn:hover {
+  background: var(--color-action-primary-hover);
+}

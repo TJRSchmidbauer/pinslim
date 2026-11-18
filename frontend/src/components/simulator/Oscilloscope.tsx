@@ -11,7 +11,7 @@
  *  - Click Clear to wipe all captured samples.
  */
 
-import React, { useRef, useEffect, useState, useCallback, useLayoutEffect } from 'react';
+import React, { useRef, useEffect, useState, useCallback, useLayoutEffect, useMemo } from 'react';
 import { cssVar } from '../../lib/theme';
 import { useResolvedTheme } from '../../hooks/useTheme';
 import ReactDOM from 'react-dom';
@@ -24,6 +24,8 @@ import {
   type TriggerEdge,
 } from '../../store/useOscilloscopeStore';
 import { useSimulatorStore } from '../../store/useSimulatorStore';
+import { useEditorStore } from '../../store/useEditorStore';
+import { suggestBuses, describeSuggestion, type BusSuggestion } from '../../simulation/busSuggest';
 import { boardDisplayName } from '../../types/board';
 import {
   STANDARD_BAUDS,
@@ -542,6 +544,31 @@ export const Oscilloscope: React.FC = () => {
   const [spiMode, setSpiMode] = useState<SpiMode>(0);
   const [transcriptCopied, setTranscriptCopied] = useState(false);
 
+  // ── One-click bus analyzer ───────────────────────────────────────────────
+  // The sketch says `Wire.begin()`, the board has fixed default pins: offer
+  // the decoder with those pins instead of making the student look them up.
+  const scopeBoardId = useSimulatorStore((s) => s.activeBoardId);
+  const scopeBoardKind = useSimulatorStore(
+    (s) => s.boards.find((b) => b.id === s.activeBoardId)?.boardKind,
+  );
+  const sketchSource = useEditorStore((s) => s.files.map((f) => f.content).join('\n'));
+  const suggestions = useMemo(
+    () => (scopeBoardKind ? suggestBuses(sketchSource, scopeBoardKind) : []),
+    [sketchSource, scopeBoardKind],
+  );
+  const applySuggestion = (sg: BusSuggestion) => {
+    if (!scopeBoardId) return;
+    const picked: Record<string, string> = {};
+    for (const p of sg.pins) {
+      addChannel(scopeBoardId, p.pin, p.label);
+      picked[`${sg.protocol}.${p.role}`] = `osc-ch-${scopeBoardId}-${p.pin}`;
+    }
+    setRoles((r) => ({ ...r, ...picked }));
+    setProtocol(sg.protocol);
+    // A frame lasts ~0.1 ms (UART 115200, I²C 100 kHz) or ~2 µs per SPI byte.
+    setTimeDivMs(sg.protocol === 'spi' ? 0.02 : 0.1);
+  };
+
   const [showPicker, setShowPicker] = useState(false);
   const [pickerAnchor, setPickerAnchor] = useState<DOMRect | null>(null);
   const addBtnRef = useRef<HTMLButtonElement>(null);
@@ -914,6 +941,36 @@ export const Oscilloscope: React.FC = () => {
           </button>
         )}
       </div>
+
+      {/* ── One-click suggestions (hidden once applied): one row, one button per bus ── */}
+      {scopeBoardId &&
+        (() => {
+          const pending = suggestions.filter(
+            (sg) =>
+              !(
+                protocol === sg.protocol &&
+                sg.pins.every((p) =>
+                  channels.some((c) => c.boardId === scopeBoardId && c.pin === p.pin),
+                )
+              ),
+          );
+          if (pending.length === 0) return null;
+          return (
+            <div className="osc-suggest">
+              <span>{t('editor.oscilloscope.suggestFound', 'Der Sketch nutzt:')}</span>
+              {pending.map((sg) => (
+                <button
+                  key={sg.protocol}
+                  className="osc-suggest-btn"
+                  title={t('editor.oscilloscope.suggestShow', 'Kanäle anlegen und dekodieren')}
+                  onClick={() => applySuggestion(sg)}
+                >
+                  {describeSuggestion(sg)} {t('editor.oscilloscope.suggestAction', 'anzeigen')}
+                </button>
+              ))}
+            </div>
+          );
+        })()}
 
       {/* ── Waveforms ── */}
       {channels.length === 0 ? (

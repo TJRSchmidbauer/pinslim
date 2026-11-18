@@ -799,3 +799,58 @@ html.layout-tabs .header-hamburger {
   background: var(--color-wash-hover);
   color: var(--color-fg-default);
 }
+
+/* ── Bottom dock: serial / oscilloscope / truth table share one panel ───── */
+.bottom-dock {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--wb-2);
+}
+.bottom-dock-tabs {
+  display: flex;
+  gap: 2px;
+  padding: 4px 8px 0;
+  background: var(--wb-3);
+  border-top: 1px solid var(--wb-6);
+  flex-shrink: 0;
+}
+.bottom-dock-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 28px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 6px 6px 0 0;
+  background: transparent;
+  color: var(--wb-11);
+  font: 700 12px/1 var(--font-sans);
+  cursor: pointer;
+}
+.bottom-dock-tab:hover { background: var(--wb-4); }
+.bottom-dock-tab.is-active {
+  background: var(--wb-2);
+  color: var(--wb-13);
+  box-shadow: inset 0 -2px 0 var(--brand-ziegel);
+}
+.bottom-dock-tab-close {
+  font-size: 15px;
+  line-height: 1;
+  opacity: 0.6;
+}
+.bottom-dock-tab-close:hover { opacity: 1; }
+.bottom-dock-body {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+}
+.bottom-dock-pane {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.bottom-dock-pane[hidden] { display: none; }
+.bottom-dock-pane > * { flex: 1; min-height: 0; }

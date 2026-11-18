@@ -59,6 +59,11 @@ function useMediaQuery(query: string): boolean {
 const BOTTOM_PANEL_MIN = 80;
 const BOTTOM_PANEL_MAX = 600;
 const BOTTOM_PANEL_DEFAULT = 200;
+/** Roomier start height for the bottom panels on tall screens (a scope needs its traces). */
+const bottomPanelStart = () =>
+  typeof window === 'undefined'
+    ? BOTTOM_PANEL_DEFAULT
+    : Math.round(Math.min(340, Math.max(BOTTOM_PANEL_DEFAULT, window.innerHeight * 0.32)));
 
 const EXPLORER_MIN = 100;
 const EXPLORER_MAX = 500;
@@ -109,6 +114,40 @@ export const EditorPage: React.FC = () => {
   const serialMonitorOpen = useSimulatorStore((s) => s.serialMonitorOpen);
   const oscilloscopeOpen = useOscilloscopeStore((s) => s.open);
   const logicTableOpen = useLogicTableStore((s) => s.open);
+
+  // ── Bottom dock ───────────────────────────────────────────────────────────
+  // Serial monitor, oscilloscope and truth table used to stack under the
+  // circuit, each with its own height, so opening two squeezed the circuit
+  // and cut the lower one off. They now share ONE dock with tabs; the tab
+  // that was opened last is the one shown. All open panes stay mounted (data
+  // keeps flowing into the scope while the serial tab is in front).
+  type DockKey = 'serial' | 'scope' | 'logic';
+  const [dockActive, setDockActive] = useState<DockKey | null>(null);
+  const toggleSerial = useSimulatorStore((s) => s.toggleSerialMonitor);
+  const toggleScope = useOscilloscopeStore((s) => s.toggleOscilloscope);
+  const setLogicOpen = useLogicTableStore((s) => s.setOpen);
+  const dockOpen: Record<DockKey, boolean> = {
+    serial: serialMonitorOpen,
+    scope: oscilloscopeOpen,
+    logic: logicTableOpen,
+  };
+  const dockKeys = (['serial', 'scope', 'logic'] as DockKey[]).filter((k) => dockOpen[k]);
+  // Newest-opened wins. Done while rendering (compare with the previous
+  // flags) instead of in an effect, so there is no extra render pass.
+  const [prevDockOpen, setPrevDockOpen] = useState(dockOpen);
+  if (
+    prevDockOpen.serial !== dockOpen.serial ||
+    prevDockOpen.scope !== dockOpen.scope ||
+    prevDockOpen.logic !== dockOpen.logic
+  ) {
+    setPrevDockOpen(dockOpen);
+    const justOpened = (['serial', 'scope', 'logic'] as DockKey[]).find(
+      (k) => dockOpen[k] && !prevDockOpen[k],
+    );
+    if (justOpened) setDockActive(justOpened);
+  }
+  const shownDock: DockKey | null =
+    dockActive && dockOpen[dockActive] ? dockActive : (dockKeys[0] ?? null);
   const [consoleOpen, setConsoleOpen] = useState(false);
   // compileLogs live in a Zustand store so the velxio-pro agent overlay
   // (mounted in a separate React tree via slotMounter) can subscribe and
@@ -116,6 +155,8 @@ export const EditorPage: React.FC = () => {
   const compileLogs = useCompileLogsStore((s) => s.logs);
   const setCompileLogs = useCompileLogsStore((s) => s.setLogs);
   const [bottomPanelHeight, setBottomPanelHeight] = useState(BOTTOM_PANEL_DEFAULT);
+  // The dock (serial / scope / truth table) starts taller than the compile console.
+  const [dockHeight, setDockHeight] = useState(bottomPanelStart);
 
   // ── Electrical simulation (one-time mount) ────────────────────────────────
   // `startSimulation()` is the single entry point: it constructs the
@@ -313,16 +354,15 @@ export const EditorPage: React.FC = () => {
   }, []);
 
   const handleBottomPanelResizeMouseDown = useCallback(
-    (e: React.MouseEvent) => {
+    (e: React.MouseEvent, which: 'console' | 'dock' = 'console') => {
       e.preventDefault();
       const startY = e.clientY;
-      const startHeight = bottomPanelHeight;
+      const startHeight = which === 'dock' ? dockHeight : bottomPanelHeight;
+      const setHeight = which === 'dock' ? setDockHeight : setBottomPanelHeight;
 
       const onMove = (ev: MouseEvent) => {
         const delta = startY - ev.clientY;
-        setBottomPanelHeight(
-          Math.max(BOTTOM_PANEL_MIN, Math.min(BOTTOM_PANEL_MAX, startHeight + delta)),
-        );
+        setHeight(Math.max(BOTTOM_PANEL_MIN, Math.min(BOTTOM_PANEL_MAX, startHeight + delta)));
       };
       const onUp = () => {
         document.body.style.cursor = '';
@@ -335,7 +375,7 @@ export const EditorPage: React.FC = () => {
       document.addEventListener('mousemove', onMove);
       document.addEventListener('mouseup', onUp);
     },
-    [bottomPanelHeight],
+    [bottomPanelHeight, dockHeight],
   );
 
   const handleExplorerResizeMouseDown = useCallback(
@@ -695,39 +735,63 @@ export const EditorPage: React.FC = () => {
           <div style={{ flex: 1, overflow: 'hidden', position: 'relative', minHeight: 0 }}>
             <SimulatorCanvas headerSlot={!isMobile ? canvasHeaderSlot : null} />
           </div>
-          {serialMonitorOpen && (
+          {dockKeys.length > 0 && (
             <>
               <div
-                onMouseDown={handleBottomPanelResizeMouseDown}
+                onMouseDown={(e) => handleBottomPanelResizeMouseDown(e, 'dock')}
                 style={resizeHandleStyle}
                 title={t('editor.shell.dragResize')}
               />
-              <div style={{ height: bottomPanelHeight, flexShrink: 0 }}>
-                <SerialMonitor />
-              </div>
-            </>
-          )}
-          {oscilloscopeOpen && (
-            <>
-              <div
-                onMouseDown={handleBottomPanelResizeMouseDown}
-                style={resizeHandleStyle}
-                title={t('editor.shell.dragResize')}
-              />
-              <div style={{ height: bottomPanelHeight, flexShrink: 0 }}>
-                <Oscilloscope />
-              </div>
-            </>
-          )}
-          {logicTableOpen && (
-            <>
-              <div
-                onMouseDown={handleBottomPanelResizeMouseDown}
-                style={resizeHandleStyle}
-                title={t('editor.shell.dragResize')}
-              />
-              <div style={{ height: bottomPanelHeight, flexShrink: 0 }}>
-                <LogicTablePanel />
+              <div className="bottom-dock" style={{ height: dockHeight, flexShrink: 0 }}>
+                {dockKeys.length > 1 && (
+                  <div className="bottom-dock-tabs" role="tablist">
+                    {dockKeys.map((k) => (
+                      <button
+                        key={k}
+                        role="tab"
+                        aria-selected={shownDock === k}
+                        className={`bottom-dock-tab${shownDock === k ? ' is-active' : ''}`}
+                        onClick={() => setDockActive(k)}
+                      >
+                        {k === 'serial'
+                          ? t('editor.shell.dockSerial', 'Seriell')
+                          : k === 'scope'
+                            ? t('editor.shell.dockScope', 'Oszilloskop')
+                            : t('editor.shell.dockLogic', 'Wahrheitstabelle')}
+                        <span
+                          className="bottom-dock-tab-close"
+                          role="button"
+                          aria-label={t('editor.shell.dockClose', 'Schließen')}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (k === 'serial') toggleSerial();
+                            else if (k === 'scope') toggleScope();
+                            else setLogicOpen(false);
+                          }}
+                        >
+                          ×
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+                <div className="bottom-dock-body">
+                  {serialMonitorOpen && (
+                    <div className="bottom-dock-pane" hidden={shownDock !== 'serial'}>
+                      <SerialMonitor />
+                    </div>
+                  )}
+                  {oscilloscopeOpen && (
+                    <div className="bottom-dock-pane" hidden={shownDock !== 'scope'}>
+                      <Oscilloscope />
+                    </div>
+                  )}
+                  {logicTableOpen && (
+                    <div className="bottom-dock-pane" hidden={shownDock !== 'logic'}>
+                      <LogicTablePanel />
+                    </div>
+                  )}
+                </div>
               </div>
             </>
           )}

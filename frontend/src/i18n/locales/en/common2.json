@@ -238,7 +238,11 @@
       "showExplorer": "Show file explorer",
       "hideExplorer": "Hide file explorer",
       "viewMode": "View mode",
-      "dragResize": "Drag to resize"
+      "dragResize": "Drag to resize",
+      "dockSerial": "Serial",
+      "dockScope": "Oscilloscope",
+      "dockLogic": "Truth table",
+      "dockClose": "Close"
     },
     "oscilloscope": {
       "title": "Oscilloscope",
@@ -253,7 +257,10 @@
       "clear": "Clear",
       "noChannels": "No channels added.",
       "noChannelsHint": "Click \"+ Add Channel\" to monitor a pin.",
-      "removeChannel": "Remove {{label}}"
+      "removeChannel": "Remove {{label}}",
+      "suggestFound": "The sketch uses:",
+      "suggestShow": "Add channels and decode",
+      "suggestAction": "show"
     },
     "componentProps": {
       "close": "Close",
