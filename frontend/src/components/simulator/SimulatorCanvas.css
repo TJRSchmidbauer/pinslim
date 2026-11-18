@@ -201,19 +201,21 @@
   gap: 5px;
   padding: 0 10px;
   height: 28px;
-  background: var(--color-action-primary);
-  color: var(--color-fg-on-action);
+  /* Secondary: only Start (editor toolbar) is a filled primary button. */
+  background: var(--color-accent-soft-strong);
+  color: var(--color-fg-default);
   border: none;
   border-radius: 5px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   transition: background 0.15s;
   white-space: nowrap;
 }
 
 .add-component-btn:hover:not(:disabled) {
-  background: var(--color-action-primary-hover);
+  background: var(--color-action-primary);
+  color: var(--color-action-primary-fg);
 }
 
 .add-component-btn:disabled {

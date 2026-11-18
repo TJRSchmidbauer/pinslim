@@ -192,7 +192,7 @@ body {
   display: flex;
 }
 
-@container unified-toolbar (max-width: 1140px) {
+@container unified-toolbar (max-width: 880px) {
   .view-mode-toggle .vm-label {
     display: none;
   }

@@ -514,7 +514,11 @@ export const EditorMenuBar: React.FC = () => {
         {menu('file', t('editor.menu.file', 'File'), fileItems)}
         {menu('edit', t('editor.menu.edit', 'Edit'), editItems)}
         {menu('view', t('editor.menu.view', 'View'), viewItems)}
-        {menu('account', t('editor.menu.account', 'Account'), [])}
+        {/* Account only exists when something registers into it (the pro
+            overlay). A self-hosted Pinslim has no accounts, so the menu would
+            open onto nothing. */}
+        {accountItems.some((item) => item.kind === 'command' && hasEditorCommand(item.id)) &&
+          menu('account', t('editor.menu.account', 'Account'), [])}
         {menu('help', t('editor.menu.help', 'Help'), [])}
       </div>
       {showAboutModal && <AboutPinslimModal onClose={() => setShowAboutModal(false)} />}

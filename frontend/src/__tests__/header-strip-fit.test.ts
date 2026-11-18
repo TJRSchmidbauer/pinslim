@@ -56,27 +56,31 @@ describe('header strip layout', () => {
     expect(decideStripLayout({ ...base, ...uno })).toEqual({ below: false, compact: false });
   });
 
-  it('goes icon-only on the brand row before dropping below', () => {
+  it('keeps the labels on their own bar before going icon-only on the brand row', () => {
     // 1300px window with the chat: 904 content, 532 for the strip.
     const i = { ...base, contentWidth: 904, ...uno };
     expect(stripAvailableInline(i)).toBe(532);
-    // labelled 656 does not fit, compact 596 does not either -> below
+    // labelled 656 does not fit inline, but 808 fits the 936px own bar:
+    // words beat icons, so the strip drops below WITH its labels.
     expect(decideStripLayout(i)).toEqual({ below: true, compact: false });
-    // a slightly narrower compact strip fits inline -> one row, icons
-    expect(decideStripLayout({ ...i, inlineCompactZoneWidths: [0, 300, 220] })).toEqual({
+    // Only when the own bar cannot hold the labels either do icons win, and
+    // then one row is preferred: a compact strip that fits inline stays there.
+    const tight = { ...i, belowZoneWidths: [139, 700, 268] };
+    expect(decideStripLayout({ ...tight, inlineCompactZoneWidths: [0, 300, 220] })).toEqual({
       below: false,
       compact: true,
     });
   });
 
-  it('drops a XIAO-sized strip below AND compacts it when the full bar cannot hold the labels', () => {
-    // 1440 with the chat: 1076px bar, 1315px labelled on that bar -> compact.
+  it('compacts a XIAO-sized strip only when no layout can hold the labels', () => {
+    // 1440 with the chat: 1076px bar, 1315px labelled on that bar -> icons;
+    // 770 compact does not fit the 672px brand row -> below, compact.
     expect(decideStripLayout({ ...base, ...xiao })).toEqual({ below: true, compact: true });
-    // The same board on a 1920 window with the chat: 1524 content ->
-    // 1152 inline (labels 1176 no, compact 770 yes) -> one row, icons.
+    // The same board on a 1920 window with the chat: 1524 content -> the
+    // 1492px own bar holds the 1315px labelled strip -> below, with labels.
     expect(decideStripLayout({ ...base, contentWidth: 1524, ...xiao })).toEqual({
-      below: false,
-      compact: true,
+      below: true,
+      compact: false,
     });
   });
 

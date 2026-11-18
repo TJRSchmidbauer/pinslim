@@ -103,13 +103,21 @@
   background: var(--color-accent-soft-strong);
 }
 
-/* Run — semantic success green (token) */
+/* Start — THE primary action of the editor. Apricot fill with Kohle text,
+   the same treatment as "Exportieren" in Plotoria, so every Pinslim screen
+   has exactly one filled button. Always labelled: students find the word
+   faster than the icon. */
 .tb-btn-run {
-  color: var(--color-feedback-success);
+  width: auto;
+  gap: 6px;
+  padding: 0 14px 0 11px;
+  background: var(--brand-apricot);
+  color: var(--brand-kohle);
+  font: 700 13px/1 var(--font-sans);
 }
 .tb-btn-run:hover:not(:disabled) {
-  background: var(--color-feedback-success-soft);
-  color: var(--color-feedback-success);
+  background: var(--brand-ziegel);
+  color: var(--brand-kohle);
 }
 
 /* Stop — semantic error red (token) */
@@ -137,10 +145,10 @@
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  background: var(--color-action-primary);
-  color: var(--color-fg-on-action);
-  font-size: 11px;
-  font-weight: 500;
+  background: var(--color-accent-soft-strong);
+  color: var(--color-fg-default);
+  font-size: 12px;
+  font-weight: 700;
   font-family: inherit;
   white-space: nowrap;
   transition:
@@ -150,8 +158,8 @@
   align-self: center;
 }
 .tb-btn-libraries:hover {
-  background: var(--color-action-primary-hover);
-  color: var(--color-fg-on-action);
+  background: var(--color-action-primary);
+  color: var(--color-action-primary-fg);
 }
 .tb-libraries-label {
   line-height: 1;

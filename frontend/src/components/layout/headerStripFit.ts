@@ -74,16 +74,19 @@ export function stripAvailableBelow(i: StripFitInput): number {
 }
 
 /**
- * One row beats two: stay on the brand row with labels if they fit, else
- * icon-only if that fits; only then drop below — with labels if the full
- * bar holds them, icon-only otherwise (past that the bar wraps, which is
- * the phone regime).
+ * Words beat icons. A student finds "Oszilloskop" faster than a waveform
+ * glyph, so the labelled strip is kept whenever any layout can hold it:
+ * on the brand row if it fits, else on its own full-width bar. Only when
+ * even that bar cannot hold the labels does the strip go icon-only —
+ * preferably still on one row, else below (past that the bar wraps, which
+ * is the phone regime).
  */
 export function decideStripLayout(i: StripFitInput): StripLayout {
   const inline = stripAvailableInline(i);
   if (stripNeededWidth(i, 'inline') <= inline) return { below: false, compact: false };
+  if (stripNeededWidth(i, 'below') <= stripAvailableBelow(i)) return { below: true, compact: false };
   if (stripNeededWidth(i, 'inline-compact') <= inline) return { below: false, compact: true };
-  return { below: true, compact: stripNeededWidth(i, 'below') > stripAvailableBelow(i) };
+  return { below: true, compact: true };
 }
 
 export const STRIP_BELOW_CLASS = 'app-header--strip-below';

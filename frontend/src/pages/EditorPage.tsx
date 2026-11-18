@@ -439,7 +439,7 @@ export const EditorPage: React.FC = () => {
               [
                 { key: 'code', label: t('editor.shell.code'), path: 'M16 18l6-6-6-6M8 6l-6 6 6 6' },
                 { key: 'both', label: t('editor.shell.both'), path: 'M3 3h7v18H3zM14 3h7v18h-7z' },
-                { key: 'circuit', label: t('editor.shell.circuit'), path: 'M5 12h14M12 5v14' },
+                { key: 'circuit', label: t('editor.shell.circuit'), path: 'M9 9h6v6H9zM9 3v3M15 3v3M9 18v3M15 18v3M3 9h3M3 15h3M18 9h3M18 15h3' },
               ] as const
             ).map((m) => (
               <button
@@ -448,7 +448,7 @@ export const EditorPage: React.FC = () => {
                 aria-pressed={viewMode === m.key}
                 style={{
                   background: viewMode === m.key ? 'var(--color-action-primary)' : 'transparent',
-                  color: viewMode === m.key ? 'white' : 'var(--wb-11)',
+                  color: viewMode === m.key ? 'var(--color-action-primary-fg)' : 'var(--wb-11)',
                   border: 'none',
                   height: 28,
                   padding: '0 10px',

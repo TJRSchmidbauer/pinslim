@@ -1495,52 +1495,9 @@ export const EditorToolbar = ({
           )}
 
           <div className="toolbar-group">
-            {/* Compile */}
-            <button
-              onClick={handleCompile}
-              disabled={compiling || !activeBoard}
-              className="tb-btn tb-btn-compile"
-              title={
-                !activeBoard
-                  ? t('editor.toolbar.compile.addBoard')
-                  : compiling
-                    ? t('editor.toolbar.compile.loading')
-                    : activeBoard?.languageMode === 'micropython'
-                      ? t('editor.toolbar.compile.loadMicropython')
-                      : t('editor.toolbar.compile.compile')
-              }
-            >
-              {compiling ? (
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="spin"
-                >
-                  <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-                </svg>
-              ) : (
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
-                </svg>
-              )}
-            </button>
-
-            <div className="tb-divider" />
+            {/* Compile has no button of its own: Start compiles first, and the
+                shortcut (Ctrl+B) and the View menu still reach it. One primary
+                action is what a classroom can follow. */}
 
             {/* Run — in a multi-board project this runs ALL boards (the wired
                 boards are one system; running a subset is almost never
@@ -1588,10 +1545,11 @@ export const EditorToolbar = ({
                     <path d="M21 12a9 9 0 1 1-6.219-8.56" />
                   </svg>
                 ) : (
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none">
                     <polygon points="5,3 19,12 5,21" />
                   </svg>
                 )}
+                <span className="tb-btn-run-label">{t('editor.toolbar.run.label', 'Start')}</span>
               </button>
               {isMultiBoard && (
                 <button
