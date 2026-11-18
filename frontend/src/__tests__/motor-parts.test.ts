@@ -95,7 +95,7 @@ describe('ky-040 — attachEvents', () => {
     expect(events).toContain('button-release');
   });
 
-  it('starts a clockwise detent with CLK falling first (CLK leads DT)', () => {
+  it('pulses CLK with DT LOW on rotate-cw (clockwise)', () => {
     const logic = PartSimulationRegistry.get('ky-040')!;
     const sim = makeSimulator();
     const element = makeElement();
@@ -112,12 +112,13 @@ describe('ky-040 — attachEvents', () => {
 
     listeners['rotate-cw']?.();
 
-    // Quadrature (velxio/velxio-prod#156): CLK falls first; DT follows, then
-    // both rise again, each KY040_STEP_MS later (the timers, stubbed here).
-    expect(sim.setPinState.mock.calls).toEqual([[2, false]]);
+    // DT should be set LOW for CW direction
+    expect(sim.setPinState).toHaveBeenCalledWith(3, false); // DT LOW
+    // CLK should be set LOW first then HIGH (via setTimeout)
+    expect(sim.setPinState).toHaveBeenCalledWith(2, false); // CLK pulse starts LOW
   });
 
-  it('starts a counter-clockwise detent with DT falling first (DT leads CLK)', () => {
+  it('pulses CLK with DT HIGH on rotate-ccw (counter-clockwise)', () => {
     const logic = PartSimulationRegistry.get('ky-040')!;
     const sim = makeSimulator();
     const element = makeElement();
@@ -134,7 +135,9 @@ describe('ky-040 — attachEvents', () => {
 
     listeners['rotate-ccw']?.();
 
-    expect(sim.setPinState.mock.calls).toEqual([[3, false]]);
+    // DT should be set HIGH for CCW direction
+    expect(sim.setPinState).toHaveBeenCalledWith(3, true); // DT HIGH
+    expect(sim.setPinState).toHaveBeenCalledWith(2, false); // CLK LOW
   });
 
   it('drives SW pin LOW on button-press and HIGH on button-release', () => {
