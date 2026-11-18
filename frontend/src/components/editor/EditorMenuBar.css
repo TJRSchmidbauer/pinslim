@@ -71,7 +71,7 @@
 
 .emb-shortcut {
   color: var(--wb-10);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .emb-item:hover:not(:disabled) .emb-shortcut {
@@ -88,10 +88,8 @@
    the pro items and the Language list under one trigger). */
 .emb-section-label {
   padding: 6px 12px 2px;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
   color: var(--wb-10);
   user-select: none;
 }
@@ -100,7 +98,7 @@
    should know an item is premium BEFORE clicking, not via a surprise
    upgrade prompt. */
 .emb-pro {
-  font-size: 9.5px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.5px;
   padding: 2px 6px;

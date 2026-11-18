@@ -22,7 +22,7 @@
   gap: 3px;
   padding: 6px 6px 6px 8px;
   color: var(--wb-11);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.3px;
   border-bottom: 1px solid var(--wb-6);
@@ -128,7 +128,7 @@
   color: var(--wb-12);
   border-radius: 3px;
   margin: 0 2px;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 16px;
   white-space: nowrap;
   overflow: hidden;
@@ -179,7 +179,7 @@
   background: var(--wb-7);
   border: 1px solid var(--color-action-primary);
   color: var(--wb-13);
-  font-size: 11px;
+  font-size: 12px;
   padding: 1px 4px;
   border-radius: 2px;
   outline: none;
@@ -299,13 +299,13 @@
 }
 
 .fe-board-icon {
-  font-size: 10px;
+  font-size: 12px;
   flex-shrink: 0;
   line-height: 1;
 }
 
 .fe-board-label {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.3px;
   flex: 1;
@@ -319,7 +319,7 @@
 .fe-section-rename-input {
   flex: 1;
   min-width: 0;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
 }
 

@@ -13,7 +13,11 @@
         "runMicropython": "Run MicroPython",
         "run": "Run (auto-compiles if needed)",
         "runActiveOnly": "Run only {{name}}",
-        "options": "Run options"
+        "options": "Run options",
+        "checking": "Checking …",
+        "compiling": "Compiling …",
+        "pause": "Pause",
+        "resume": "Resume"
       },
       "stop": "Stop",
       "reset": "Reset",
@@ -26,7 +30,7 @@
       "import": "Import project (.vlx or .zip Wokwi)",
       "export": "Export the current project as a .zip file",
       "uploadFirmware": "Upload firmware (.hex, .bin, .elf, .ihex) to bypass compilation",
-      "toggleConsole": "Toggle Output Console",
+      "toggleConsole": "Show / hide messages",
       "libHint": {
         "message": "Missing library? Install it from the",
         "cta": "Library Manager",
@@ -45,10 +49,15 @@
       "themeToLight": "Switch to light theme",
       "themeToDark": "Switch to dark theme",
       "touchOn": "Switch to touch mode",
-      "touchOff": "Touch mode is on — switch to mouse mode"
+      "touchOff": "Touch mode is on — switch to mouse mode",
+      "status": {
+        "running": "Running",
+        "live": "Live",
+        "paused": "Paused"
+      }
     },
     "fileExplorer": {
-      "workspace": "WORKSPACE",
+      "workspace": "Files",
       "newWorkspace": "New workspace (choose a starter template)",
       "confirmNew": {
         "title": "Start a new workspace?",
@@ -160,8 +169,8 @@
       "resetView": "Reset view (click to reset)",
       "componentCount_one": "{{count}} component",
       "componentCount_other": "{{count}} components",
-      "addComponentTitle": "Add Component",
-      "add": "Add",
+      "addComponentTitle": "Add part",
+      "add": "Part",
       "dismiss": "Dismiss",
       "removeBoard": "Remove board",
       "wireCount_one": "{{count}} wire",
@@ -239,7 +248,7 @@
       "hideExplorer": "Hide file explorer",
       "viewMode": "View mode",
       "dragResize": "Drag to resize",
-      "dockSerial": "Serial",
+      "dockSerial": "Serial monitor",
       "dockScope": "Oscilloscope",
       "dockLogic": "Truth table",
       "dockClose": "Close"
@@ -298,7 +307,7 @@
       "properties": "Properties"
     },
     "console": {
-      "title": "Output",
+      "title": "Messages",
       "errorCount_one": "{{count}} error",
       "errorCount_other": "{{count}} errors",
       "warningCount_one": "{{count}} warning",
@@ -307,7 +316,7 @@
       "filterErrors": "Errors",
       "filterWarnings": "Warnings",
       "auto": "Auto",
-      "clear": "Clear output",
+      "clear": "Clear messages",
       "close": "Close",
       "empty": "No compilation output yet. Click Compile to start."
     },

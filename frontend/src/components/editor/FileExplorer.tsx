@@ -1300,7 +1300,7 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ onSaveClick, onNewCl
 
         {/* Fallback: nothing on the canvas yet */}
         {boards.length === 0 && programmableChips.length === 0 && (
-          <div style={{ color: 'var(--wb-9)', fontSize: 11, padding: '12px 12px', lineHeight: 1.5 }}>
+          <div style={{ color: 'var(--wb-10)', fontSize: 12, padding: '12px 12px', lineHeight: 1.5 }}>
             {t('editor.fileExplorer.emptyState')}
           </div>
         )}

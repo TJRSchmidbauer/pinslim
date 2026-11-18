@@ -105,8 +105,8 @@
 
 /* Start — THE primary action of the editor. Apricot fill with Kohle text,
    the same treatment as "Exportieren" in Plotoria, so every Pinslim screen
-   has exactly one filled button. Always labelled: students find the word
-   faster than the icon. */
+   has exactly one filled button. While running the same button turns into
+   Stopp: inverted (ink fill), so the state reads at a glance. */
 .tb-btn-run {
   width: auto;
   gap: 6px;
@@ -119,6 +119,30 @@
   background: var(--brand-ziegel);
   color: var(--brand-kohle);
 }
+.tb-btn-run.is-running {
+  background: var(--wb-13);
+  color: var(--wb-1);
+}
+.tb-btn-run.is-running:hover:not(:disabled) {
+  background: var(--wb-12);
+  color: var(--wb-1);
+}
+.tb-btn-run:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+/* Run state in words, right of the button. */
+.tb-run-status {
+  align-self: center;
+  min-width: 0;
+  padding: 0 8px 0 10px;
+  font: 700 12px/1 var(--font-sans);
+  color: var(--color-fg-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.tb-run-status:empty { display: none; }
 
 /* Stop — semantic error red (token) */
 .tb-btn-stop {
@@ -145,7 +169,8 @@
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  background: var(--color-accent-soft-strong);
+  background: transparent;
+  border: 1px solid var(--wb-8);
   color: var(--color-fg-default);
   font-size: 12px;
   font-weight: 700;
@@ -158,8 +183,8 @@
   align-self: center;
 }
 .tb-btn-libraries:hover {
-  background: var(--color-action-primary);
-  color: var(--color-action-primary-fg);
+  background: var(--wb-4);
+  color: var(--wb-13);
 }
 .tb-libraries-label {
   line-height: 1;
@@ -302,12 +327,13 @@
   color: var(--wb-12);
 }
 .tb-btn-output-active {
-  color: var(--color-action-primary);
-  background: var(--color-accent-soft);
+  background: var(--wb-2);
+  color: var(--wb-13);
+  box-shadow: inset 0 -2px 0 var(--brand-ziegel);
 }
 .tb-btn-output-active:hover {
-  background: var(--color-accent-soft-strong);
-  color: var(--color-action-primary-hover);
+  background: var(--wb-2);
+  color: var(--wb-13);
 }
 
 /* ── Spin animation (compiling) ─────────────────── */
@@ -375,7 +401,7 @@
   padding: 3px 9px 3px 7px;
   border-radius: 20px;
   border: 1px solid;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   white-space: nowrap;
   opacity: 0.85;
@@ -386,7 +412,7 @@
 }
 
 .tb-board-pill-icon {
-  font-size: 9px;
+  font-size: 12px;
   flex-shrink: 0;
 }
 
@@ -487,11 +513,29 @@
   background: var(--color-feedback-error-soft);
   border-bottom: 1px solid var(--color-feedback-error-border);
   color: var(--color-feedback-error);
-  font-size: 11px;
+  font-size: 12px;
   font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
   padding: 4px 12px;
   max-height: 80px;
   overflow-y: auto;
   white-space: pre-wrap;
   line-height: 1.4;
+}
+
+/* Reset carries its word next to the arrow; the compact strip drops it. */
+.tb-btn-reset {
+  width: auto;
+  gap: 6px;
+  padding: 0 10px 0 8px;
+  font: 600 12px/1 var(--font-sans);
+}
+.unified-toolbar.unified-toolbar--compact .tb-btn-reset-label {
+  display: none;
+}
+
+/* Below ~1400px the word would cost the tool labels (Seriell, Oszilloskop …)
+   their place on the bar: icon + tooltip + aria-label there. */
+@media (max-width: 1399px) {
+  .tb-btn-reset-label { display: none; }
+  .tb-btn-reset { width: 28px; padding: 0; gap: 0; }
 }

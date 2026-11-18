@@ -471,7 +471,7 @@ const styles: Record<string, React.CSSProperties> = {
     color: 'var(--wb-10)',
     padding: '5px 12px',
     cursor: 'pointer',
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: 600,
     fontFamily: 'inherit',
     display: 'flex',
@@ -506,7 +506,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   baudRate: {
     color: 'var(--color-accent-fg)',
-    fontSize: 11,
+    fontSize: 12,
     fontFamily: 'monospace',
     background: 'var(--wb-2)',
     border: '1px solid var(--wb-6)',
@@ -515,7 +515,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   autoscrollLabel: {
     color: 'var(--wb-10)',
-    fontSize: 11,
+    fontSize: 12,
     display: 'flex',
     alignItems: 'center',
     gap: 4,
@@ -532,7 +532,7 @@ const styles: Record<string, React.CSSProperties> = {
     padding: '2px 8px',
     borderRadius: 3,
     cursor: 'pointer',
-    fontSize: 11,
+    fontSize: 12,
   },
   output: {
     flex: 1,
@@ -572,7 +572,7 @@ const styles: Record<string, React.CSSProperties> = {
     color: 'var(--wb-12)',
     padding: '4px',
     borderRadius: 3,
-    fontSize: 11,
+    fontSize: 12,
     outline: 'none',
   },
   sendBtn: {

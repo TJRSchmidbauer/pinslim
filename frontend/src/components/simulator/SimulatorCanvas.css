@@ -79,12 +79,12 @@
 /* ── Board Selector ──────────────────────────────── */
 .board-selector {
   padding: 4px 8px;
-  background: var(--color-accent-soft);
-  color: var(--wb-12);
-  border: 1px solid var(--color-accent-border);
+  background-color: transparent;
+  color: var(--wb-13);
+  border: 1px solid var(--wb-8);
   border-radius: 5px;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   transition: border-color 0.15s;
   height: 28px;
@@ -131,9 +131,9 @@
   padding: 0 10px;
   height: 28px;
   background: transparent;
-  border: 1px solid var(--color-accent-border);
+  border: 1px solid var(--wb-8);
   border-radius: 5px;
-  color: var(--wb-11);
+  color: var(--wb-12);
   font-size: 12px;
   font-weight: 500;
   cursor: pointer;
@@ -150,9 +150,12 @@
 }
 
 .canvas-serial-btn-active {
-  background: var(--color-accent-soft);
-  border-color: var(--color-action-primary);
-  color: var(--color-action-primary);
+  /* The shared "on" look: light bed, ink text, Ziegel underline. */
+  background: var(--wb-2);
+  border-color: var(--wb-8);
+  color: var(--wb-13);
+  font-weight: 700;
+  box-shadow: inset 0 -2px 0 var(--brand-ziegel);
 }
 
 /* ── Canvas icon-only buttons (undo/redo, …) ─────── */
@@ -202,9 +205,9 @@
   padding: 0 10px;
   height: 28px;
   /* Secondary: only Start (editor toolbar) is a filled primary button. */
-  background: var(--color-accent-soft-strong);
+  background: transparent;
   color: var(--color-fg-default);
-  border: none;
+  border: 1px solid var(--wb-8);
   border-radius: 5px;
   font-size: 12px;
   font-weight: 700;
@@ -214,8 +217,8 @@
 }
 
 .add-component-btn:hover:not(:disabled) {
-  background: var(--color-action-primary);
-  color: var(--color-action-primary-fg);
+  background: var(--wb-4);
+  border-color: var(--wb-9);
 }
 
 .add-component-btn:disabled {
@@ -321,7 +324,7 @@
   background: transparent;
   border: none;
   color: var(--wb-11);
-  font-size: 11px;
+  font-size: 12px;
   font-family: monospace;
   cursor: pointer;
   padding: 0 2px;
@@ -334,7 +337,7 @@
 }
 
 .component-label {
-  font-size: 11px;
+  font-size: 12px;
   background-color: var(--wb-3);
   padding: 3px 8px;
   border-radius: 3px;
@@ -420,7 +423,7 @@
   }
 
   .board-selector {
-    font-size: 11px;
+    font-size: 12px;
     max-width: 90px;
     padding: 4px 20px 4px 6px;
   }
@@ -472,7 +475,7 @@ html.layout-tabs .add-component-btn svg {
     height: 18px;
   }
 html.layout-tabs .board-selector {
-    font-size: 11px;
+    font-size: 12px;
     max-width: 90px;
     padding: 4px 20px 4px 6px;
   }

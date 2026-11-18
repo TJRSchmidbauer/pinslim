@@ -451,8 +451,9 @@ export const EditorPage: React.FC = () => {
               aria-pressed={explorerOpen}
               title={explorerOpen ? t('editor.menu.hideExplorer', 'Hide file explorer') : t('editor.menu.showExplorer', 'Show file explorer')}
               style={{
-                background: explorerOpen ? 'var(--color-action-primary)' : 'transparent',
-                color: explorerOpen ? 'white' : 'var(--wb-11)',
+                background: explorerOpen ? 'var(--wb-2)' : 'transparent',
+                color: explorerOpen ? 'var(--wb-13)' : 'var(--wb-11)',
+                boxShadow: explorerOpen ? 'inset 0 -2px 0 var(--brand-ziegel)' : 'none',
                 border: 'none',
                 height: 28,
                 padding: '0 10px',
@@ -487,8 +488,12 @@ export const EditorPage: React.FC = () => {
                 onClick={() => setViewMode(m.key)}
                 aria-pressed={viewMode === m.key}
                 style={{
-                  background: viewMode === m.key ? 'var(--color-action-primary)' : 'transparent',
-                  color: viewMode === m.key ? 'var(--color-action-primary-fg)' : 'var(--wb-11)',
+                  // Selected = the shared "on" look (light bed, ink text, Ziegel
+                  // underline); only Start is a filled colour button.
+                  background: viewMode === m.key ? 'var(--wb-2)' : 'transparent',
+                  color: viewMode === m.key ? 'var(--wb-13)' : 'var(--wb-11)',
+                  fontWeight: viewMode === m.key ? 700 : 400,
+                  boxShadow: viewMode === m.key ? 'inset 0 -2px 0 var(--brand-ziegel)' : 'none',
                   border: 'none',
                   height: 28,
                   padding: '0 10px',

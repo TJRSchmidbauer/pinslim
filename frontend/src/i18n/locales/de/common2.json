@@ -14,7 +14,11 @@
         "run": "Ausführen (automatisch kompilieren falls nötig)",
         "runActiveOnly": "Nur {{name}} ausführen",
         "options": "Ausführungsoptionen",
-        "verifying": "Schaltung wird geprüft …"
+        "verifying": "Schaltung wird geprüft …",
+        "checking": "Prüfe …",
+        "compiling": "Kompiliere …",
+        "pause": "Pause",
+        "resume": "Weiter"
       },
       "stop": "Stopp",
       "reset": "Zurücksetzen",
@@ -27,7 +31,7 @@
       "import": "Projekt importieren (.vlx oder .zip Wokwi)",
       "export": "Aktuelles Projekt als .zip-Datei exportieren",
       "uploadFirmware": "Firmware hochladen (.hex, .bin, .elf, .ihex) zur Umgehung der Kompilierung",
-      "toggleConsole": "Ausgabekonsole umschalten",
+      "toggleConsole": "Meldungen ein-/ausblenden",
       "libHint": {
         "message": "Bibliothek fehlt? Installieren Sie sie über den",
         "cta": "Bibliotheksmanager",
@@ -67,10 +71,15 @@
         "p4NoEmulation": "Der ESP32-P4 lässt sich nicht emulieren – Sketch kompilieren und auf ein echtes Board flashen."
       },
       "touchOn": "Touch-Bedienung einschalten",
-      "touchOff": "Touch-Bedienung ist an – zur Maus-Bedienung wechseln"
+      "touchOff": "Touch-Bedienung ist an – zur Maus-Bedienung wechseln",
+      "status": {
+        "running": "Läuft",
+        "live": "Läuft",
+        "paused": "Pausiert"
+      }
     },
     "fileExplorer": {
-      "workspace": "ARBEITSBEREICH",
+      "workspace": "Dateien",
       "newWorkspace": "Neuer Arbeitsbereich (löscht Boards, Komponenten, Leitungen und Dateien)",
       "confirmNew": {
         "title": "Neuen Arbeitsbereich starten?",
@@ -183,17 +192,17 @@
         "title": "Wiederholen: {{description}} (Strg+Y)",
         "empty": "Nichts zu wiederholen"
       },
-      "toggleSerialMonitor": "Seriellen Monitor umschalten",
+      "toggleSerialMonitor": "Serieller Monitor ein-/ausblenden",
       "serial": "Seriell",
       "toggleScope": "Oszilloskop / Logikanalysator umschalten",
       "scope": "Oszilloskop",
       "zoomIn": "Vergrößern",
       "zoomOut": "Verkleinern",
       "resetView": "Ansicht zurücksetzen (zum Zurücksetzen klicken)",
-      "componentCount_one": "{{count}} Komponente",
-      "componentCount_other": "{{count}} Komponenten",
-      "addComponentTitle": "Komponente hinzufügen",
-      "add": "Hinzufügen",
+      "componentCount_one": "{{count}} Bauteil",
+      "componentCount_other": "{{count}} Bauteile",
+      "addComponentTitle": "Bauteil hinzufügen",
+      "add": "Bauteil",
       "dismiss": "Schließen",
       "removeBoard": "Board entfernen",
       "wireCount_one": "{{count}} Leitung",
@@ -275,7 +284,7 @@
       "hideExplorer": "Dateiexplorer ausblenden",
       "viewMode": "Ansichtsmodus",
       "dragResize": "Ziehen zum Größenändern",
-      "dockSerial": "Seriell",
+      "dockSerial": "Serieller Monitor",
       "dockScope": "Oszilloskop",
       "dockLogic": "Wahrheitstabelle",
       "dockClose": "Schließen"
@@ -343,7 +352,7 @@
       "properties": "Eigenschaften"
     },
     "console": {
-      "title": "Ausgabe",
+      "title": "Meldungen",
       "errorCount_one": "{{count}} Fehler",
       "errorCount_other": "{{count}} Fehler",
       "warningCount_one": "{{count}} Warnung",
@@ -352,7 +361,7 @@
       "filterErrors": "Fehler",
       "filterWarnings": "Warnungen",
       "auto": "Auto",
-      "clear": "Ausgabe löschen",
+      "clear": "Meldungen löschen",
       "close": "Schließen",
       "empty": "Noch keine Kompilierungsausgabe. Klicken Sie auf „Kompilieren“, um zu beginnen."
     },
@@ -469,7 +478,7 @@
       "redo": "Wiederholen",
       "centerView": "Canvas-Ansicht zentrieren",
       "toggleExplorer": "Datei-Explorer",
-      "toggleConsole": "Ausgabekonsole",
+      "toggleConsole": "Meldungen",
       "toggleScope": "Oszilloskop / Logikanalysator",
       "home": "Pinslim-Startseite",
       "about": "Über Pinslim",

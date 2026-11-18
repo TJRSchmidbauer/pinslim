@@ -169,6 +169,24 @@ export const EditorToolbar = ({
   // split-menu to still run just the active board. Single-board is unchanged.
   const isMultiBoard = boards.length > 1;
 
+  // One button, two states: Start while stopped, Stopp while running (the
+  // board-less circuit is "live" from the start, so there it reads Pause /
+  // Weiter). Having a second, greyed-out Stop next to Start hid the state.
+  // An empty workspace is not "running": nothing to pause, nothing to start.
+  const hasParts = useSimulatorStore((st) => st.components.length > 0);
+  const isRunning = isBoardless ? digitalRunning && hasParts : anyBoardRunning;
+  const [runSeconds, setRunSeconds] = useState(0);
+  useEffect(() => {
+    if (isBoardless || !anyBoardRunning) return;
+    const startedAt = Date.now();
+    const id = window.setInterval(() => setRunSeconds(Math.floor((Date.now() - startedAt) / 1000)), 1000);
+    return () => {
+      window.clearInterval(id);
+      setRunSeconds(0);
+    };
+  }, [isBoardless, anyBoardRunning]);
+  const runClock = `${Math.floor(runSeconds / 60)}:${String(runSeconds % 60).padStart(2, '0')}`;
+
   // A "run target" is a board OR a programmable custom-chip (a CPU that runs a
   // ROM). When there is more than one target — two boards, a board + a chip, or
   // several chips — the unified Compile-All / Run-All buttons appear and act on
@@ -1505,35 +1523,40 @@ export const EditorToolbar = ({
                 Single-board / board-less behaviour is unchanged. */}
             <div className="tb-run-split" ref={runMenuRef}>
               <button
-                onClick={() => (isMultiBoard ? handleRunAll() : handleRun())}
+                onClick={() => (isRunning ? handleStop() : isMultiBoard ? handleRunAll() : handleRun())}
                 disabled={
-                  isBoardless
-                    ? digitalRunning || verifying
-                    : isMultiBoard
-                      ? compileAllRunning || anyBoardRunning || verifying
-                      : running || compiling || verifying || !activeBoard
-                }
-                className="tb-btn tb-btn-run"
-                title={
-                  verifying
-                    ? t('editor.toolbar.run.verifying', 'Checking circuit...')
+                  isRunning
+                    ? false
                     : isBoardless
-                      ? digitalRunning
-                        ? t('editor.toolbar.digitalRunning', 'Digital simulation running')
-                        : t('editor.toolbar.digitalResume', 'Resume digital simulation')
+                      ? verifying || !hasParts
                       : isMultiBoard
-                        ? t('editor.toolbar.runAll')
-                        : !activeBoard
-                          ? t('editor.toolbar.run.addBoard')
-                          : activeBoard?.languageMode === 'micropython'
-                            ? t('editor.toolbar.run.runMicropython')
-                            : t('editor.toolbar.run.run')
+                        ? compileAllRunning || verifying
+                        : compiling || verifying || !activeBoard
+                }
+                className={`tb-btn tb-btn-run${isRunning ? ' is-running' : ''}`}
+                aria-pressed={isRunning}
+                title={
+                  isRunning
+                    ? isBoardless
+                      ? t('editor.toolbar.digitalFreeze', 'Freeze digital simulation')
+                      : t('editor.toolbar.stop')
+                    : verifying
+                      ? t('editor.toolbar.run.verifying', 'Checking circuit...')
+                      : isBoardless
+                        ? t('editor.toolbar.digitalResume', 'Resume digital simulation')
+                        : isMultiBoard
+                          ? t('editor.toolbar.runAll')
+                          : !activeBoard
+                            ? t('editor.toolbar.run.addBoard')
+                            : activeBoard?.languageMode === 'micropython'
+                              ? t('editor.toolbar.run.runMicropython')
+                              : t('editor.toolbar.run.run')
                 }
               >
                 {verifying || compiling ? (
                   <svg
-                    width="18"
-                    height="18"
+                    width="16"
+                    height="16"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
@@ -1544,12 +1567,33 @@ export const EditorToolbar = ({
                   >
                     <path d="M21 12a9 9 0 1 1-6.219-8.56" />
                   </svg>
+                ) : isRunning && !isBoardless ? (
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                    <rect x="4" y="4" width="16" height="16" rx="2" />
+                  </svg>
+                ) : isRunning ? (
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                    <rect x="5" y="4" width="5" height="16" rx="1" />
+                    <rect x="14" y="4" width="5" height="16" rx="1" />
+                  </svg>
                 ) : (
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none">
                     <polygon points="5,3 19,12 5,21" />
                   </svg>
                 )}
-                <span className="tb-btn-run-label">{t('editor.toolbar.run.label', 'Start')}</span>
+                <span className="tb-btn-run-label">
+                  {verifying
+                    ? t('editor.toolbar.run.checking', 'Prüfe …')
+                    : compiling
+                      ? t('editor.toolbar.run.compiling', 'Kompiliere …')
+                      : isRunning
+                        ? isBoardless
+                          ? t('editor.toolbar.run.pause', 'Pause')
+                          : t('editor.toolbar.stop')
+                        : isBoardless && hasParts
+                          ? t('editor.toolbar.run.resume', 'Weiter')
+                          : t('editor.toolbar.run.label', 'Start')}
+                </span>
               </button>
               {isMultiBoard && (
                 <button
@@ -1604,17 +1648,19 @@ export const EditorToolbar = ({
               )}
             </div>
 
-            {/* Stop */}
-            <button
-              onClick={handleStop}
-              disabled={isBoardless ? !digitalRunning : !anyBoardRunning}
-              className="tb-btn tb-btn-stop"
-              title={isBoardless ? t('editor.toolbar.digitalFreeze', 'Freeze digital simulation') : t('editor.toolbar.stop')}
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-                <rect x="3" y="3" width="18" height="18" rx="2" />
-              </svg>
-            </button>
+            {/* Run state in words: the dot next to the board menu is too small to
+                be the only signal (visibility of system status). */}
+            <span className="tb-run-status" role="status" aria-live="polite">
+              {isBoardless
+                ? !hasParts
+                  ? ''
+                  : isRunning
+                    ? t('editor.toolbar.status.live', 'Läuft')
+                    : t('editor.toolbar.status.paused', 'Pausiert')
+                : isRunning
+                  ? `${t('editor.toolbar.status.running', 'Läuft')} · ${runClock}`
+                  : ''}
+            </span>
 
             {/* Reset — for a booted QEMU-Linux guest this re-uploads the
                 edited files and re-runs the script without rebooting. */}
@@ -1626,6 +1672,7 @@ export const EditorToolbar = ({
                   : !compiledHex && !activeBoard?.compiledProgram
               }
               className="tb-btn tb-btn-reset"
+              aria-label={t('editor.toolbar.reset')}
               title={
                 isPiBoardKind(activeBoard?.boardKind ?? '')
                   ? t(
@@ -1648,6 +1695,7 @@ export const EditorToolbar = ({
                 <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
                 <path d="M3 3v5h5" />
               </svg>
+              <span className="tb-btn-reset-label">{t('editor.toolbar.reset')}</span>
             </button>
 
             {targetCount > 1 && (
