@@ -108,9 +108,9 @@ export const ExampleDetailPage: React.FC = () => {
           <Link
             to="/examples"
             style={{
-              color: '#4fc3f7',
+              color: 'var(--color-accent-fg)',
               textDecoration: 'none',
-              border: '1px solid #4fc3f7',
+              border: '1px solid var(--color-accent-fg)',
               borderRadius: 4,
               padding: '8px 20px',
               fontSize: 14,
@@ -202,7 +202,7 @@ export const ExampleDetailPage: React.FC = () => {
                 padding: '3px 10px',
                 borderRadius: 4,
                 background: 'var(--color-accent-soft)',
-                color: '#4fc3f7',
+                color: 'var(--color-accent-fg)',
               }}
             >
               {categoryLabel}
@@ -288,7 +288,7 @@ export const ExampleDetailPage: React.FC = () => {
                   fontSize: 14,
                 }}
               >
-                <span style={{ color: '#4fc3f7', fontWeight: 700 }}>✓</span>
+                <span style={{ color: 'var(--color-accent-fg)', fontWeight: 700 }}>✓</span>
                 Real {boardLabel} emulation — cycle-accurate, no hardware needed
               </li>
               <li
@@ -300,7 +300,7 @@ export const ExampleDetailPage: React.FC = () => {
                   fontSize: 14,
                 }}
               >
-                <span style={{ color: '#4fc3f7', fontWeight: 700 }}>✓</span>
+                <span style={{ color: 'var(--color-accent-fg)', fontWeight: 700 }}>✓</span>
                 {example.components.length > 0
                   ? `${example.components.length} interactive component${example.components.length > 1 ? 's' : ''} on the canvas`
                   : 'Interactive simulation canvas'}
@@ -315,7 +315,7 @@ export const ExampleDetailPage: React.FC = () => {
                     fontSize: 14,
                   }}
                 >
-                  <span style={{ color: '#4fc3f7', fontWeight: 700 }}>✓</span>
+                  <span style={{ color: 'var(--color-accent-fg)', fontWeight: 700 }}>✓</span>
                   Auto-installs: {example.libraries.join(', ')}
                 </li>
               )}
@@ -328,7 +328,7 @@ export const ExampleDetailPage: React.FC = () => {
                   fontSize: 14,
                 }}
               >
-                <span style={{ color: '#4fc3f7', fontWeight: 700 }}>✓</span>
+                <span style={{ color: 'var(--color-accent-fg)', fontWeight: 700 }}>✓</span>
                 Serial Monitor included — see output in real time
               </li>
             </ul>

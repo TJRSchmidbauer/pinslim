@@ -271,7 +271,7 @@ function logColor(type: CompilationLog['type']): string {
     case 'success':
       return '#66bb6a';
     case 'core-install':
-      return '#4fc3f7';
+      return 'var(--color-accent-fg)';
     default:
       return 'var(--wb-12)';
   }
@@ -432,7 +432,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   coreTag: {
     background: 'rgba(79, 195, 247, 0.15)',
-    color: '#4fc3f7',
+    color: 'var(--color-accent-fg)',
     padding: '0 4px',
     borderRadius: 2,
     marginRight: 4,

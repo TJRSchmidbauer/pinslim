@@ -36,8 +36,8 @@
 
 <table>
   <tr>
-    <td width="50%"><img src="docs/img/readme/plotter.webp" alt="Serial plotter showing a potentiometer measured by an ESP32-S3 SuperMini"><br><sub><b>Serial plotter</b> — an ESP32-S3 SuperMini measures a potentiometer; <code>Rohwert:… Volt:…</code> becomes two curves.</sub></td>
-    <td width="50%"><img src="docs/img/site/esp32-i2c.webp" alt="Logic analyzer decoding I2C traffic of an ESP32 driving an OLED"><br><sub><b>Logic analyzer</b> — I²C of an ESP32 talking to an SSD1306 OLED, decoded byte by byte.</sub></td>
+    <td width="50%"><img src="docs/img/readme/plotter.webp" alt="Serial plotter showing a potentiometer and a sine wave measured by an Arduino Uno"><br><sub><b>Serial plotter</b> — an Arduino Uno measures a potentiometer; <code>Poti:… Sinus:…</code> becomes two curves.</sub></td>
+    <td width="50%"><img src="docs/img/site/uno-i2c.webp" alt="Logic analyzer decoding I2C traffic of an Arduino Uno driving an OLED"><br><sub><b>Logic analyzer</b> — I²C of an Arduino Uno talking to an SSD1306 OLED, decoded byte by byte.</sub></td>
   </tr>
   <tr>
     <td width="50%"><img src="docs/img/site/truth.webp" alt="Truth table of a full adder"><br><sub><b>Truth table</b> — a full adder, with the simplified expression for each output.</sub></td>

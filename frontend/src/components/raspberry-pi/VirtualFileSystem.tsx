@@ -40,7 +40,7 @@ const IcoFolder = ({ open }: { open: boolean }) => (
 
 const IcoFile = ({ name }: { name: string }) => {
   const ext = name.split('.').pop()?.toLowerCase() ?? '';
-  const color = ext === 'py' ? '#4fc3f7' : ext === 'sh' ? 'var(--color-feedback-success)' : 'var(--wb-11)';
+  const color = ext === 'py' ? 'var(--color-accent-fg)' : ext === 'sh' ? 'var(--color-feedback-success)' : 'var(--wb-11)';
   return (
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
       <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
@@ -405,7 +405,7 @@ export const VirtualFileSystem: React.FC<VirtualFileSystemProps> = ({ boardId, o
                     ? '#ef5350'
                     : uploadStatus === 'uploading'
                       ? '#f59e0b'
-                      : '#4fc3f7',
+                      : 'var(--color-accent-fg)',
               opacity: uploadStatus === 'uploading' ? 0.7 : 1,
             }}
             onClick={handleUpload}
@@ -510,7 +510,7 @@ export const VirtualFileSystem: React.FC<VirtualFileSystemProps> = ({ boardId, o
         .vfs-rename-input {
           flex: 1;
           background: #3c3c3c;
-          border: 1px solid #4fc3f7;
+          border: 1px solid var(--color-accent-fg);
           color: #fff;
           font-size: 12px;
           padding: 1px 4px;

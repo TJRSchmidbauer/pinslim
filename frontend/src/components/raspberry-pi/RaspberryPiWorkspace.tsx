@@ -212,7 +212,7 @@ export const RaspberryPiWorkspace: React.FC<RaspberryPiWorkspaceProps> = ({ boar
             ) : (
               <>
                 <button
-                  style={{ ...styles.toolbarBtn, color: bridgeConnected ? 'var(--wb-10)' : '#4fc3f7' }}
+                  style={{ ...styles.toolbarBtn, color: bridgeConnected ? 'var(--wb-10)' : 'var(--color-accent-fg)' }}
                   onClick={handleConnect}
                   title={t('editor.pi.connectTitle')}
                   disabled={bridgeConnected}

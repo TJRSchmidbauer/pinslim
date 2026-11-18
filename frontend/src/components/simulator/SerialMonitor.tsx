@@ -382,7 +382,7 @@ export const SerialMonitor: React.FC = () => {
                           : undefined
                       }
                       style={{
-                        color: '#4fc3f7',
+                        color: 'var(--color-accent-fg)',
                         textDecoration: 'underline',
                         fontWeight: 'bold',
                         cursor: 'pointer',
@@ -495,7 +495,7 @@ const styles: Record<string, React.CSSProperties> = {
     width: 6,
     height: 6,
     borderRadius: '50%',
-    background: '#4fc3f7',
+    background: 'var(--color-accent-fg)',
     flexShrink: 0,
     marginLeft: 3,
   },

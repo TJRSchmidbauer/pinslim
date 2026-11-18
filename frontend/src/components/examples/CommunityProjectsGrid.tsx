@@ -137,7 +137,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: 12,
   },
   cardOwner: {
-    color: '#4fc3f7',
+    color: 'var(--color-accent-fg)',
     fontSize: 12,
     marginTop: 6,
   },

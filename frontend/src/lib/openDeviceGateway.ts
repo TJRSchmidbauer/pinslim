@@ -49,7 +49,7 @@ export function openDeviceGateway(url: string): void {
   const reload = document.createElement('button');
   reload.type = 'button';
   reload.textContent = 'Reload';
-  reload.style.cssText = 'background:none;border:none;color:#4fc3f7;cursor:pointer;font-size:12px;padding:0;';
+  reload.style.cssText = 'background:none;border:none;color:var(--color-accent-fg);cursor:pointer;font-size:12px;padding:0;';
 
   // No "open in a new tab" affordance: a background tab pauses the chip's
   // rAF loop, freezing the emulated server (502). The in-tab iframe is the

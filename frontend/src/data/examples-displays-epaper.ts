@@ -46,7 +46,7 @@ void setup() {
   display.firstPage();
   do {
     display.fillScreen(GxEPD_WHITE);
-    display.setCursor(20, 60);  display.print(F("Velxio"));
+    display.setCursor(20, 60);  display.print(F("Pinslim"));
     display.setCursor(20, 100); display.print(F("ePaper"));
     display.setCursor(20, 140); display.print(F("OK!"));
   } while (display.nextPage());
@@ -104,7 +104,7 @@ void drawClock() {
   display.fillScreen(GxEPD_WHITE);
   display.setTextColor(GxEPD_BLACK);
   display.setFont(&FreeMonoBold12pt7b);
-  display.setCursor(8, 28);  display.print("Velxio Clock");
+  display.setCursor(8, 28);  display.print("Pinslim Clock");
   display.setCursor(8, 64);
   display.print("uptime: "); display.print(minutes); display.print("m");
 }
@@ -180,7 +180,7 @@ void setup() {
     display.fillScreen(GxEPD_WHITE);
     display.setTextColor(GxEPD_BLACK);
     display.setFont(&FreeMonoBold12pt7b);
-    display.setCursor(8, 28);  display.print("Velxio Weather");
+    display.setCursor(8, 28);  display.print("Pinslim Weather");
     display.setCursor(8, 64);  display.print("Temp:  22.5 C");
     display.setCursor(8, 96);  display.print("RH:    48 %");
   } while (display.nextPage());
@@ -237,7 +237,7 @@ void drawLayout() {
   display.fillScreen(GxEPD_WHITE);
   display.setTextColor(GxEPD_BLACK);
   display.setFont(&FreeMonoBold18pt7b);
-  display.setCursor(20, 60);  display.print("Velxio Logbook");
+  display.setCursor(20, 60);  display.print("Pinslim Logbook");
   display.drawLine(20, 80, 380, 80, GxEPD_BLACK);
 
   display.setFont(&FreeMonoBold9pt7b);
@@ -314,7 +314,7 @@ void drawDashboard() {
 
   // Title
   display.setFont(&FreeMonoBold24pt7b);
-  display.setCursor(40, 60);  display.print("Velxio Dashboard");
+  display.setCursor(40, 60);  display.print("Pinslim Dashboard");
   display.drawLine(40, 80, 760, 80, GxEPD_BLACK);
 
   // Tiles
@@ -487,7 +487,7 @@ void drawRainbow() {
   display.setTextColor(GxEPD_BLACK);
   display.setFont(&FreeMonoBold18pt7b);
   display.setCursor(120, 240);
-  display.print("Velxio ACeP 7c");
+  display.print("Pinslim ACeP 7c");
 }
 
 void setup() {

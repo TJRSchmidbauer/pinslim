@@ -16,7 +16,7 @@ import {
 } from '../../simulation/serialPlot';
 
 /** Distinguishable on white and on dark panels alike. */
-const PALETTE = ['#2563eb', '#dc2626', '#16a34a', '#d97706', '#9333ea', '#0891b2', '#db2777', '#65a30d'];
+const PALETTE = ['#C4552D', '#2F6B8F', '#3F8F5A', '#C98A00', '#7A5C99', '#0F7C86', '#C2477A', '#7A8F2E'];
 
 const WINDOWS = [100, 300, 1000, 0]; // samples; 0 = everything collected
 

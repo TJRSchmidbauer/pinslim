@@ -247,7 +247,7 @@ const styles: Record<string, React.CSSProperties> = {
   linkRow: { display: 'flex', gap: 6 },
   linkInput: {
     flex: 1, background: 'var(--wb-2)', border: '1px solid var(--wb-7)', borderRadius: 4,
-    padding: '8px 10px', color: '#4fc3f7', fontSize: 13,
+    padding: '8px 10px', color: 'var(--color-accent-fg)', fontSize: 13,
     fontFamily: 'monospace', outline: 'none',
   },
   copyBtn: {

@@ -151,9 +151,9 @@ export const ExampleEditorPage: React.FC = () => {
           <a
             href="/examples"
             style={{
-              color: '#4fc3f7',
+              color: 'var(--color-accent-fg)',
               textDecoration: 'none',
-              border: '1px solid #4fc3f7',
+              border: '1px solid var(--color-accent-fg)',
               borderRadius: 4,
               padding: '8px 20px',
               fontSize: 14,

@@ -156,7 +156,7 @@ void loop() {
   display.setTextColor(SSD1306_WHITE);
   display.setCursor(0, 0);
   display.println("Hello");
-  display.println("Velxio!");
+  display.println("Pinslim!");
   display.setTextSize(1);
   display.setCursor(0, 48);
   display.print("Count: ");
@@ -236,7 +236,7 @@ void loop() {
   display.setTextColor(SSD1306_WHITE);
   display.setCursor(0, 0);
   display.println("Hello");
-  display.println("Velxio!");
+  display.println("Pinslim!");
   display.setTextSize(1);
   display.setCursor(0, 48);
   display.printf("Count: %d", n);
@@ -623,7 +623,7 @@ void loop() {
   display.setTextColor(SSD1306_WHITE);
   display.setCursor(0, 0);
   display.println("Hello");
-  display.println("Velxio!");
+  display.println("Pinslim!");
   display.setTextSize(1);
   display.setCursor(0, 48);
   display.print("Count: ");
@@ -703,7 +703,7 @@ void loop() {
   display.setTextColor(SSD1306_WHITE);
   display.setCursor(0, 0);
   display.println("Hello");
-  display.println("Velxio!");
+  display.println("Pinslim!");
   display.setTextSize(1);
   display.setCursor(0, 48);
   display.print("Count: ");
@@ -1543,7 +1543,7 @@ void setup() {
   display.setTextColor(SSD1306_WHITE);
   display.setCursor(0, 0);
   display.println("Hello");
-  display.println("Velxio!");
+  display.println("Pinslim!");
   display.display();
   Serial.println("OLED ready");
 }
@@ -1555,7 +1555,7 @@ void loop() {
   display.setTextColor(SSD1306_WHITE);
   display.setCursor(0, 0);
   display.println("Hello");
-  display.println("Velxio!");
+  display.println("Pinslim!");
   display.setTextSize(1);
   display.setCursor(0, 48);
   display.print("Count: ");
@@ -1872,7 +1872,7 @@ void loop() {
   float p = bmp.readPressure() / 100.0F;   // hPa
   display.clearDisplay();
   display.setTextSize(1); display.setCursor(0, 0);
-  display.println("Velxio Weather");
+  display.println("Pinslim Weather");
   display.setTextSize(2); display.setCursor(0, 16);
   display.print(t, 1); display.println(" C");
   display.setTextSize(1); display.setCursor(0, 52);
@@ -3871,7 +3871,7 @@ void setup() {
   // Print a message to the LCD.
   lcd.print("Hello, Arduino!");
   lcd.setCursor(0, 1);
-  lcd.print("Velxio Emulator");
+  lcd.print("Pinslim Emulator");
   lcd.setCursor(0, 2);
   lcd.print("LCD 2004 Test");
 }
@@ -10392,7 +10392,7 @@ void setup() {
   display.setTextColor(SSD1306_WHITE);
   display.setCursor(0, 0);
   display.println("Hello");
-  display.println("Velxio!");
+  display.println("Pinslim!");
   display.display();
   Serial.println("OLED ready!");
 }
@@ -10404,7 +10404,7 @@ void loop() {
   display.setTextColor(SSD1306_WHITE);
   display.setCursor(0, 0);
   display.println("Hello");
-  display.println("Velxio!");
+  display.println("Pinslim!");
   display.setTextSize(1);
   display.setCursor(0, 48);
   display.printf("Count: %d", counter);
