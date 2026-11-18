@@ -5,6 +5,7 @@ import { useEditorStore } from '../../store/useEditorStore';
 import { useSimulatorStore } from '../../store/useSimulatorStore';
 import { registerRetroAsm, LANGUAGE_ID as RETRO_ASM_ID } from './retroAsmLanguage';
 import { attachIntellisenseMonaco } from '../../lib/intellisenseRegistry';
+import { registerEditor } from '../../lib/editorBridge';
 import { defineVelxioThemes, monacoThemeFor } from './monacoThemes';
 import { useResolvedTheme } from '../../hooks/useTheme';
 import { useIsCoarsePointer } from '../../utils/useTouchDevice';
@@ -88,8 +89,10 @@ export const CodeEditor = () => {
           // (idempotent per monaco instance, so per-file remounts are fine).
           attachIntellisenseMonaco(monaco);
         }}
-        onMount={(ed) => {
+        onMount={(ed, monaco) => {
           editorRef.current = ed;
+          // Lets the messages panel jump to a line and underline errors.
+          ed.onDidDispose(registerEditor(ed, monaco));
           ed.onDidFocusEditorText(() => setEditorFocused(true));
           ed.onDidBlurEditorText(() => setEditorFocused(false));
         }}

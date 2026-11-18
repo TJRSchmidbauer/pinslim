@@ -3,9 +3,11 @@
  * Rendered below the code editor when open. Similar to VS Code's output panel.
  */
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { compileErrorCount, type CompilationLog, type CompileTarget } from '../../utils/compilationLogger';
+import { parseCompileErrors, cleanCompilerPaths } from '../../utils/compileErrorHelp';
+import { goToSource, setCompileMarkers } from '../../lib/editorBridge';
 
 /** One contiguous run of log lines for the same target (or none). */
 interface LogGroup {
@@ -58,6 +60,14 @@ export const CompilationConsole: React.FC<CompilationConsoleProps> = React.memo(
   const [autoscroll, setAutoscroll] = useState(true);
   const [filter, setFilter] = useState<'all' | 'errors' | 'warnings'>('all');
   const prevLogsLenRef = useRef(0);
+  // The first compiler error, in plain words, with a jump to its line. The
+  // raw gcc lines stay available behind "Technische Details".
+  const [showRaw, setShowRaw] = useState(false);
+  const parsedErrors = useMemo(() => parseCompileErrors(logs), [logs]);
+  const firstError = parsedErrors[0] ?? null;
+  useEffect(() => {
+    setCompileMarkers(parsedErrors.map((e) => ({ file: e.file, line: e.line, col: e.col, message: e.message })));
+  }, [parsedErrors]);
 
   useEffect(() => {
     if (autoscroll && outputRef.current) {
@@ -78,6 +88,7 @@ export const CompilationConsole: React.FC<CompilationConsoleProps> = React.memo(
       // compile and drop any sticky filter so the next batch is visible.
       prevLogsLenRef.current = logs.length;
       setFilter('all');
+      setShowRaw(false);
       return;
     }
     if (logs.length === prevLogsLenRef.current) return;
@@ -136,6 +147,7 @@ export const CompilationConsole: React.FC<CompilationConsoleProps> = React.memo(
         <div style={styles.headerRight}>
           {/* Filter */}
           <select
+            className="console-filter"
             value={filter}
             onChange={(e) => setFilter(e.target.value as typeof filter)}
             style={styles.filterSelect}
@@ -146,7 +158,7 @@ export const CompilationConsole: React.FC<CompilationConsoleProps> = React.memo(
           </select>
 
           {/* Autoscroll */}
-          <label style={styles.checkboxLabel}>
+          <label className="console-auto" style={styles.checkboxLabel}>
             <input
               type="checkbox"
               checked={autoscroll}
@@ -157,7 +169,7 @@ export const CompilationConsole: React.FC<CompilationConsoleProps> = React.memo(
           </label>
 
           {/* Clear */}
-          <button onClick={onClear} style={styles.iconBtn} title={t('editor.console.clear')}>
+          <button onClick={onClear} className="console-btn" style={styles.iconBtn} title={t('editor.console.clear')}>
             <svg
               width="14"
               height="14"
@@ -173,7 +185,7 @@ export const CompilationConsole: React.FC<CompilationConsoleProps> = React.memo(
           </button>
 
           {/* Close */}
-          <button onClick={onClose} style={styles.iconBtn} title={t('editor.console.close')}>
+          <button onClick={onClose} className="console-btn" style={styles.iconBtn} title={t('editor.console.close')}>
             <svg
               width="14"
               height="14"
@@ -193,7 +205,42 @@ export const CompilationConsole: React.FC<CompilationConsoleProps> = React.memo(
 
       {/* Output content — grouped into a section per board/chip target. */}
       <div ref={outputRef} style={styles.output}>
-        {filteredLogs.length === 0 ? (
+        {firstError && (
+          <div style={styles.errorCard} role="alert">
+            <div style={styles.errorCardHead}>
+              <span style={styles.errorCardLoc}>
+                {firstError.line > 0
+                  ? t('editor.console.errorAt', { line: firstError.line, file: firstError.file })
+                  : t('editor.console.errorBuild')}
+              </span>
+              {firstError.line > 0 && (
+                <button
+                  style={styles.errorCardBtn}
+                  onClick={() => goToSource(firstError.file, firstError.line, firstError.col)}
+                >
+                  {t('editor.console.goToLine')}
+                </button>
+              )}
+            </div>
+            <div style={styles.errorCardMain}>
+              {firstError.help
+                ? t(`editor.console.help.${firstError.help.key}`, firstError.help.params)
+                : firstError.message}
+            </div>
+            {firstError.help && <code style={styles.errorCardRaw}>{firstError.message}</code>}
+            <div style={styles.errorCardFoot}>
+              <span>
+                {parsedErrors.length > 1
+                  ? t('editor.console.moreErrors', { count: parsedErrors.length - 1 })
+                  : t('editor.console.fixFirst')}
+              </span>
+              <button style={styles.errorCardLink} onClick={() => setShowRaw((v) => !v)}>
+                {showRaw ? t('editor.console.hideDetails') : t('editor.console.showDetails')}
+              </button>
+            </div>
+          </div>
+        )}
+        {firstError && !showRaw ? null : filteredLogs.length === 0 ? (
           <div style={styles.emptyState}>{t('editor.console.empty')}</div>
         ) : (
           groupLogs(filteredLogs).map((group, gi) =>
@@ -244,7 +291,7 @@ const LogLine = React.memo<{ log: CompilationLog }>(({ log }) => (
     <span style={styles.timestamp}>{TIME_FORMAT.format(log.timestamp)}</span>
     <span style={{ ...styles.logMessage, color: logColor(log.type) }}>
       {log.type === 'core-install' && <span style={styles.coreTag}>CORE </span>}
-      {log.message}
+      {cleanCompilerPaths(log.message)}
     </span>
   </div>
 ));
@@ -316,6 +363,60 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: 12,
     fontFamily: 'system-ui, sans-serif',
   },
+  errorCard: {
+    margin: '8px 10px',
+    padding: '10px 12px',
+    background: 'var(--color-feedback-error-soft)',
+    border: '1px solid var(--color-feedback-error-border)',
+    borderRadius: 6,
+    fontFamily: 'var(--font-sans)',
+    color: 'var(--wb-13)',
+  },
+  errorCardHead: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 8,
+    marginBottom: 4,
+  },
+  errorCardLoc: { fontWeight: 700, fontSize: 13, color: 'var(--color-feedback-error)' },
+  errorCardBtn: {
+    height: 26,
+    padding: '0 12px',
+    border: 'none',
+    borderRadius: 5,
+    background: 'var(--brand-apricot)',
+    color: 'var(--brand-kohle)',
+    font: '700 12px/1 var(--font-sans)',
+    cursor: 'pointer',
+  },
+  errorCardMain: { fontSize: 14, lineHeight: 1.45, fontWeight: 600 },
+  errorCardRaw: {
+    display: 'block',
+    marginTop: 6,
+    fontFamily: "'Cascadia Code', 'Fira Code', Consolas, monospace",
+    fontSize: 12,
+    color: 'var(--wb-11)',
+    wordBreak: 'break-word',
+  },
+  errorCardFoot: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 8,
+    fontSize: 12,
+    color: 'var(--wb-11)',
+  },
+  errorCardLink: {
+    border: 'none',
+    background: 'transparent',
+    color: 'var(--color-accent-fg)',
+    font: '700 12px/1 var(--font-sans)',
+    textDecoration: 'underline',
+    cursor: 'pointer',
+    padding: 0,
+  },
   badges: {
     display: 'flex',
     gap: 6,
@@ -349,13 +450,17 @@ const styles: Record<string, React.CSSProperties> = {
   checkboxLabel: {
     display: 'flex',
     alignItems: 'center',
-    gap: 3,
-    color: 'var(--wb-10)',
+    gap: 6,
+    minHeight: 28,
+    padding: '0 4px',
+    color: 'var(--wb-11)',
     fontSize: 12,
     cursor: 'pointer',
     fontFamily: 'system-ui, sans-serif',
   },
   checkbox: {
+    width: 16,
+    height: 16,
     accentColor: 'var(--color-action-primary)',
   },
   iconBtn: {
@@ -363,10 +468,13 @@ const styles: Record<string, React.CSSProperties> = {
     border: 'none',
     color: 'var(--wb-10)',
     cursor: 'pointer',
-    padding: '3px 4px',
-    borderRadius: 3,
+    padding: 0,
+    width: 28,
+    height: 28,
+    borderRadius: 4,
     display: 'flex',
     alignItems: 'center',
+    justifyContent: 'center',
   },
   output: {
     flex: 1,

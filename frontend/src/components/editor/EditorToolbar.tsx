@@ -1679,7 +1679,9 @@ export const EditorToolbar = ({
                       'editor.toolbar.rerunScript',
                       'Re-run script with your latest edits (no reboot)',
                     )
-                  : t('editor.toolbar.reset')
+                  : !compiledHex && !activeBoard?.compiledProgram
+                    ? t('editor.toolbar.resetDisabled', 'Zurücksetzen geht erst nach dem ersten Start')
+                    : t('editor.toolbar.reset')
               }
             >
               <svg

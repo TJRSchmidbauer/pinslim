@@ -136,7 +136,7 @@ html[data-touch='on'] .view-mode-toggle {
   background: var(--hig-fill) !important;
 }
 html[data-touch='on'] .view-mode-toggle button {
-  height: 40px !important;
+  height: 44px !important;
   min-width: 48px;
   border-radius: 8px !important;
   background: transparent !important;
@@ -417,3 +417,23 @@ html[data-touch='on'] .wire-mode-banner {
   transform: none;
   white-space: normal;
 }
+
+/* ── Dock, scope, explorer and messages: 44px targets on a tablet ──────── */
+html[data-touch='on'] .bottom-dock-tab,
+html[data-touch='on'] .bottom-dock-tab-label { min-height: 44px; }
+html[data-touch='on'] .bottom-dock-tab-close { width: 44px; height: 44px; margin-right: 0; }
+html[data-touch='on'] .osc-btn,
+html[data-touch='on'] .osc-select,
+html[data-touch='on'] .osc-suggest-btn { min-height: 44px; }
+html[data-touch='on'] .file-explorer-new-btn,
+html[data-touch='on'] .file-explorer-save-btn,
+html[data-touch='on'] .fe-board-new-btn,
+html[data-touch='on'] .fe-collapse-btn { width: 44px; height: 44px; }
+html[data-touch='on'] .fe-board-new-btn { opacity: 1; }
+html[data-touch='on'] .zoom-level { min-height: 44px; min-width: 56px; }
+
+/* Messages panel (inline styles, hence !important). */
+html[data-touch='on'] .console-btn { width: 44px !important; height: 44px !important; }
+html[data-touch='on'] .console-filter { min-height: 44px; }
+html[data-touch='on'] .console-auto { min-height: 44px !important; }
+html[data-touch='on'] .console-auto input { width: 22px !important; height: 22px !important; }

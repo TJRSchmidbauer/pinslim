@@ -76,7 +76,8 @@
         "running": "Läuft",
         "live": "Läuft",
         "paused": "Pausiert"
-      }
+      },
+      "resetDisabled": "Zurücksetzen geht erst nach dem ersten Start"
     },
     "fileExplorer": {
       "workspace": "Dateien",
@@ -227,7 +228,8 @@
       "spiceWarning": "Warnung",
       "spiceNoConverge": "Warnung: Lösung konvergiert nicht",
       "toggleLogicTable": "Wahrheitstabelle / Zeitdiagramm umschalten",
-      "logicTable": "Wahrheitstabelle"
+      "logicTable": "Wahrheitstabelle",
+      "addDisabledRunning": "Beim Lauf nicht möglich – erst Stopp drücken"
     },
     "componentPicker": {
       "title": "Komponente hinzufügen",
@@ -363,7 +365,30 @@
       "auto": "Auto",
       "clear": "Meldungen löschen",
       "close": "Schließen",
-      "empty": "Noch keine Kompilierungsausgabe. Klicken Sie auf „Kompilieren“, um zu beginnen."
+      "empty": "Noch keine Meldungen. Klicke auf „Start“, um dein Programm zu übersetzen.",
+      "errorAt": "Zeile {{line}} in {{file}}",
+      "errorBuild": "Fehler beim Zusammenbauen",
+      "goToLine": "Zur Zeile",
+      "moreErrors_one": "und {{count}} weiterer Fehler – oft folgen sie aus diesem",
+      "moreErrors_other": "und {{count}} weitere Fehler – oft folgen sie aus diesem",
+      "fixFirst": "Behebe zuerst diesen Fehler.",
+      "showDetails": "Technische Details",
+      "hideDetails": "Details ausblenden",
+      "help": {
+        "missingSemicolon": "Hier fehlt ein Semikolon „;“ – meist am Ende dieser oder der Zeile davor.",
+        "missingParen": "Hier fehlt eine schließende Klammer „)“.",
+        "missingBraceEnd": "Am Ende fehlt eine schließende geschweifte Klammer „}“.",
+        "extraBrace": "Eine „}“ ist zu viel, oder davor fehlt eine „{“.",
+        "undeclared": "„{{name}}“ ist nicht bekannt – falsch geschrieben, oder noch nicht deklariert?",
+        "noType": "„{{name}}“ ist kein bekannter Typ – fehlt ein #include oder die Bibliothek?",
+        "noHeader": "Die Bibliothek „{{name}}“ fehlt. Installiere sie über „Bibliotheken“.",
+        "strayChar": "Ein ungültiges Zeichen steckt im Code, oft ein typografisches Anführungszeichen aus Word oder dem Web.",
+        "primaryExpr": "Hier fehlt ein Wert oder ein Ausdruck.",
+        "noMatchingFunction": "„{{name}}“ wird mit falschen Argumenten aufgerufen (Anzahl oder Typ).",
+        "redefinition": "Das wurde schon einmal definiert – ein Name darf nur einmal vorkommen.",
+        "noSetupLoop": "Es fehlt die Funktion setup() oder loop().",
+        "undefinedRef": "„{{name}}“ ist angekündigt, aber nirgends geschrieben."
+      }
     },
     "boardPicker": {
       "title": "Board hinzufügen"

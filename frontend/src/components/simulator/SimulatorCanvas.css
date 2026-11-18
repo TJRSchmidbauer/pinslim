@@ -101,7 +101,7 @@
 }
 
 .board-selector:disabled {
-  opacity: 0.4;
+  opacity: 0.55;
   cursor: not-allowed;
 }
 
@@ -184,7 +184,7 @@
 }
 
 .canvas-icon-btn:disabled {
-  opacity: 0.4;
+  opacity: 0.55;
   cursor: not-allowed;
 }
 
@@ -222,7 +222,7 @@
 }
 
 .add-component-btn:disabled {
-  opacity: 0.35;
+  opacity: 0.55;
   cursor: not-allowed;
 }
 
@@ -319,7 +319,8 @@
 }
 
 .zoom-level {
-  min-width: 42px;
+  min-width: 48px;
+  min-height: 28px;
   text-align: center;
   background: transparent;
   border: none;

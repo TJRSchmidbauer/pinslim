@@ -750,34 +750,41 @@ export const EditorPage: React.FC = () => {
               <div className="bottom-dock" style={{ height: dockHeight, flexShrink: 0 }}>
                 {dockKeys.length > 1 && (
                   <div className="bottom-dock-tabs" role="tablist">
-                    {dockKeys.map((k) => (
-                      <button
-                        key={k}
-                        role="tab"
-                        aria-selected={shownDock === k}
-                        className={`bottom-dock-tab${shownDock === k ? ' is-active' : ''}`}
-                        onClick={() => setDockActive(k)}
-                      >
-                        {k === 'serial'
-                          ? t('editor.shell.dockSerial', 'Seriell')
+                    {dockKeys.map((k) => {
+                      const label =
+                        k === 'serial'
+                          ? t('editor.shell.dockSerial', 'Serieller Monitor')
                           : k === 'scope'
                             ? t('editor.shell.dockScope', 'Oszilloskop')
-                            : t('editor.shell.dockLogic', 'Wahrheitstabelle')}
-                        <span
-                          className="bottom-dock-tab-close"
-                          role="button"
-                          aria-label={t('editor.shell.dockClose', 'Schließen')}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (k === 'serial') toggleSerial();
-                            else if (k === 'scope') toggleScope();
-                            else setLogicOpen(false);
-                          }}
+                            : t('editor.shell.dockLogic', 'Wahrheitstabelle');
+                      return (
+                        <div
+                          key={k}
+                          className={`bottom-dock-tab${shownDock === k ? ' is-active' : ''}`}
                         >
-                          ×
-                        </span>
-                      </button>
-                    ))}
+                          <button
+                            role="tab"
+                            aria-selected={shownDock === k}
+                            className="bottom-dock-tab-label"
+                            onClick={() => setDockActive(k)}
+                          >
+                            {label}
+                          </button>
+                          <button
+                            className="bottom-dock-tab-close"
+                            aria-label={`${label}: ${t('editor.shell.dockClose', 'Schließen')}`}
+                            title={t('editor.shell.dockClose', 'Schließen')}
+                            onClick={() => {
+                              if (k === 'serial') toggleSerial();
+                              else if (k === 'scope') toggleScope();
+                              else setLogicOpen(false);
+                            }}
+                          >
+                            ×
+                          </button>
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
                 <div className="bottom-dock-body">

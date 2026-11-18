@@ -54,7 +54,8 @@
         "running": "Running",
         "live": "Live",
         "paused": "Paused"
-      }
+      },
+      "resetDisabled": "Reset is available after the first start"
     },
     "fileExplorer": {
       "workspace": "Files",
@@ -191,7 +192,8 @@
         "mpyUnavailable": "MicroPython projects cannot be flashed from here — Arduino sketches only",
         "ready": "Flash the compiled sketch to a real USB-attached board",
         "willCompile": "Compile the sketch and flash it to a real USB-attached board"
-      }
+      },
+      "addDisabledRunning": "Not possible while running – press Stop first"
     },
     "componentPicker": {
       "title": "Add Component",
@@ -318,7 +320,30 @@
       "auto": "Auto",
       "clear": "Clear messages",
       "close": "Close",
-      "empty": "No compilation output yet. Click Compile to start."
+      "empty": "No messages yet. Press “Start” to build your program.",
+      "errorAt": "Line {{line}} in {{file}}",
+      "errorBuild": "Error while building",
+      "goToLine": "Go to line",
+      "moreErrors_one": "and {{count}} more error – they often follow from this one",
+      "moreErrors_other": "and {{count}} more errors – they often follow from this one",
+      "fixFirst": "Fix this error first.",
+      "showDetails": "Technical details",
+      "hideDetails": "Hide details",
+      "help": {
+        "missingSemicolon": "A semicolon “;” is missing – usually at the end of this line or the one before.",
+        "missingParen": "A closing parenthesis “)” is missing here.",
+        "missingBraceEnd": "A closing brace “}” is missing at the end.",
+        "extraBrace": "There is one “}” too many, or a “{” is missing before it.",
+        "undeclared": "“{{name}}” is not known – misspelled, or not declared yet?",
+        "noType": "“{{name}}” is not a known type – is a #include or the library missing?",
+        "noHeader": "The library “{{name}}” is missing. Install it via “Libraries”.",
+        "strayChar": "An invalid character is in the code, often a typographic quote from Word or the web.",
+        "primaryExpr": "A value or expression is missing here.",
+        "noMatchingFunction": "“{{name}}” is called with the wrong arguments (count or type).",
+        "redefinition": "This was already defined – a name may only appear once.",
+        "noSetupLoop": "The function setup() or loop() is missing.",
+        "undefinedRef": "“{{name}}” is declared but never written."
+      }
     },
     "newProject": {
       "title": "Start a new project",

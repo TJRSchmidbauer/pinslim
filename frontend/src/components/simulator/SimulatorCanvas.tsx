@@ -3187,7 +3187,12 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
                 <button
                   className="add-component-btn"
                   onClick={() => setShowComponentPicker(true)}
-                  title={t('editor.canvas.addComponentTitle')}
+                  title={
+                    running
+                      ? t('editor.canvas.addDisabledRunning', 'Beim Lauf nicht möglich – erst Stopp drücken')
+                      : t('editor.canvas.addComponentTitle')
+                  }
+                  aria-label={t('editor.canvas.addComponentTitle')}
                   disabled={running}
                 >
                   <svg
