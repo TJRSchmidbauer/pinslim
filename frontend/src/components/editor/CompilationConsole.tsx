@@ -40,6 +40,8 @@ function groupStatus(entries: LogGroup['entries']): 'error' | 'success' | 'runni
 }
 
 interface CompilationConsoleProps {
+  /** Inside the bottom dock: its tab already carries the title, count and close. */
+  embedded?: boolean;
   isOpen: boolean;
   onClose: () => void;
   logs: CompilationLog[];
@@ -50,6 +52,7 @@ interface CompilationConsoleProps {
 // simulator-store change (component drags, pin updates, etc.). Without memo,
 // each of those re-rendered every log line even though `logs` was untouched.
 export const CompilationConsole: React.FC<CompilationConsoleProps> = React.memo(({
+  embedded = false,
   isOpen,
   onClose,
   logs,
@@ -117,9 +120,9 @@ export const CompilationConsole: React.FC<CompilationConsoleProps> = React.memo(
       {/* Header */}
       <div style={styles.header}>
         <div style={styles.headerLeft}>
-          <span style={styles.title}>{t('editor.console.title')}</span>
+          {!embedded && <span style={styles.title}>{t('editor.console.title')}</span>}
           <div style={styles.badges}>
-            {errorCount > 0 && (
+            {!embedded && errorCount > 0 && (
               <span
                 style={styles.errorBadge}
                 title={t('editor.console.errorCount', { count: errorCount })}
@@ -184,7 +187,8 @@ export const CompilationConsole: React.FC<CompilationConsoleProps> = React.memo(
             </svg>
           </button>
 
-          {/* Close */}
+          {/* Close (the dock tab has its own) */}
+          {!embedded && (
           <button onClick={onClose} className="console-btn" style={styles.iconBtn} title={t('editor.console.close')}>
             <svg
               width="14"
@@ -200,6 +204,7 @@ export const CompilationConsole: React.FC<CompilationConsoleProps> = React.memo(
               <line x1="6" y1="6" x2="18" y2="18" />
             </svg>
           </button>
+          )}
         </div>
       </div>
 

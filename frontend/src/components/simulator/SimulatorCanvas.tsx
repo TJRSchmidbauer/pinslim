@@ -10,6 +10,9 @@ import { useElectricalStore } from '../../store/useElectricalStore';
 import { openDeviceGateway } from '../../lib/openDeviceGateway';
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
+import { useDockStore } from '../../store/useDockStore';
+import { ThemeToggle } from '../layout/ThemeToggle';
+import { TouchToggle } from '../layout/TouchToggle';
 import { useTranslation } from 'react-i18next';
 import { adcPinMapFor } from '../velxio-components/Esp32Element';
 import { ComponentPickerModal } from '../ComponentPickerModal';
@@ -287,6 +290,8 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
 
   // Oscilloscope
   const oscilloscopeOpen = useOscilloscopeStore((s) => s.open);
+  const messagesOpen = useDockStore((s) => s.messagesOpen);
+  const toggleMessages = useDockStore((s) => s.setMessagesOpen);
   const logicTableOpen = useLogicTableStore((s) => s.open);
   const toggleLogicTable = useLogicTableStore((s) => s.toggle);
   const toggleOscilloscope = useOscilloscopeStore((s) => s.toggleOscilloscope);
@@ -2919,6 +2924,20 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
                     (Ctrl+Z / Ctrl+Y still work) — two fewer buttons in a
                     row that measurably overlapped at laptop widths. */}
 
+                {/* Messages (compiler output) — first of the four panel toggles */}
+                <button
+                  onClick={() => toggleMessages((v) => !v)}
+                  className={`canvas-serial-btn${messagesOpen ? ' canvas-serial-btn-active' : ''}`}
+                  title={t('editor.toolbar.toggleConsole')}
+                  aria-pressed={messagesOpen}
+                >
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="4 17 10 11 4 5" />
+                    <line x1="12" y1="19" x2="20" y2="19" />
+                  </svg>
+                  {t('editor.console.title', 'Meldungen')}
+                </button>
+
                 {/* Serial Monitor toggle */}
                 <button
                   onClick={() => {
@@ -3162,27 +3181,6 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
                     bottom-right corner — the header gets too tight when the
                     AI chat panel is docked. */}
 
-                {/* Component count */}
-                <span
-                  className="component-count"
-                  title={t('editor.canvas.componentCount', { count: components.length })}
-                >
-                  <svg
-                    width="15"
-                    height="15"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <rect x="2" y="7" width="20" height="14" rx="2" />
-                    <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
-                  </svg>
-                  {components.length}
-                </span>
-
                 {/* Add Component */}
                 <button
                   className="add-component-btn"
@@ -3210,6 +3208,12 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
                   </svg>
                   {t('editor.canvas.add')}
                 </button>
+                {headerSlot && (
+                  <span className="canvas-header-settings">
+                    <ThemeToggle />
+                    <TouchToggle />
+                  </span>
+                )}
               </div>
             </div>
           );

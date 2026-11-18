@@ -43,8 +43,6 @@ import {
 import { exportSchematicPng } from '../../utils/exportSchematicPng';
 import { BomModal } from './BomModal';
 import './EditorToolbar.css';
-import { ThemeToggle } from '../layout/ThemeToggle';
-import { TouchToggle } from '../layout/TouchToggle';
 
 /**
  * Output-console group for circuit pre-flight + runtime faults. Routing these
@@ -1651,15 +1649,23 @@ export const EditorToolbar = ({
             {/* Run state in words: the dot next to the board menu is too small to
                 be the only signal (visibility of system status). */}
             <span className="tb-run-status" role="status" aria-live="polite">
-              {isBoardless
-                ? !hasParts
-                  ? ''
-                  : isRunning
-                    ? t('editor.toolbar.status.live', 'Läuft')
-                    : t('editor.toolbar.status.paused', 'Pausiert')
-                : isRunning
-                  ? `${t('editor.toolbar.status.running', 'Läuft')} · ${runClock}`
-                  : ''}
+              {isBoardless ? (
+                !hasParts ? (
+                  ''
+                ) : isRunning ? (
+                  t('editor.toolbar.status.live', 'Läuft')
+                ) : (
+                  t('editor.toolbar.status.paused', 'Pausiert')
+                )
+              ) : isRunning ? (
+                <>
+                  <span className="tb-run-dot" aria-hidden="true" />
+                  <span className="tb-run-word">{t('editor.toolbar.status.running', 'Läuft')} · </span>
+                  {runClock}
+                </>
+              ) : (
+                ''
+              )}
             </span>
 
             {/* Reset — for a booted QEMU-Linux guest this re-uploads the
@@ -1808,30 +1814,8 @@ export const EditorToolbar = ({
                 upgrade prompt. */}
             {/* The "..." menu is gone: every item it held now lives in the
                 File menu (with PRO pills where they apply). */}
-            <div className="tb-divider" />
-
-            {/* Output Console toggle */}
-            <button
-              onClick={() => setConsoleOpen((v) => !v)}
-              className={`tb-btn tb-btn-output${consoleOpen ? ' tb-btn-output-active' : ''}`}
-              title={t('editor.toolbar.toggleConsole')}
-            >
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <polyline points="4 17 10 11 4 5" />
-                <line x1="12" y1="19" x2="20" y2="19" />
-              </svg>
-            </button>
-            <ThemeToggle />
-            <TouchToggle />
+            {/* Messages toggle lives with the other panel toggles in the canvas
+                header; Design and Touch sit at the far right of that bar. */}
             {rightSlot}
           </div>
         </div>

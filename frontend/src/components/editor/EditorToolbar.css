@@ -533,9 +533,23 @@
   display: none;
 }
 
-/* Below ~1400px the word would cost the tool labels (Seriell, Oszilloskop …)
+/* Below ~1500px the word would cost the tool labels (Seriell, Oszilloskop …)
    their place on the bar: icon + tooltip + aria-label there. */
-@media (max-width: 1399px) {
+@media (max-width: 1499px) {
   .tb-btn-reset-label { display: none; }
   .tb-btn-reset { width: 28px; padding: 0; gap: 0; }
+}
+
+/* Running: a dot + the clock; the word "Läuft" only where there is room. */
+.tb-run-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 6px;
+  border-radius: 50%;
+  background: var(--color-feedback-success);
+  vertical-align: 0;
+}
+@media (max-width: 1499px) {
+  .tb-run-word { display: none; }
 }

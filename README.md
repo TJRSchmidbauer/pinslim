@@ -28,7 +28,7 @@
 | **Real CPU emulation** | AVR8 (Arduino Uno / Nano / Mega / ATtiny85) and RP2040 (Raspberry Pi Pico) run in the browser; ESP32, ESP32-S3, ESP32-C3 and ESP32-C6 run on Pinslim's own QEMU build on the server. The ESP32-P4 compiles and flashes, but is not simulated. |
 | **150+ parts and a circuit solver** | LEDs, buttons, potentiometers, sensors (NTC, LDR, HC-SR04, DHT22 …), displays, logic gates, resistors, capacitors, diodes, transistors — with an analog SPICE solver behind the wires. |
 | **Errors a student can read** | The first compiler error becomes a card: the line, the usual cause in plain German (“a semicolon is missing here”), a jump to the line and a red underline in the editor. The raw compiler log stays one click away. |
-| **Serial monitor and plotter** | Text view, and a plotter that draws `name:value` pairs as curves (copy as CSV for the spreadsheet). Serial monitor, oscilloscope and truth table share one tabbed panel under the circuit. |
+| **Serial monitor and plotter** | Text view, and a plotter that draws `name:value` pairs as curves (copy as CSV for the spreadsheet). Messages, serial monitor, oscilloscope and truth table share one tabbed panel under the circuit. |
 | **Logic analyzer** | UART, I²C and SPI decoded from the pins (`S 0x3C W ✓ 0x00 ✓ P`) on Arduino, Pico and every ESP32 chip. One click: Pinslim reads the sketch (`Wire.begin()`, `SPI.begin()`, `Serial.begin()`) and sets up the channels and the decoder for you. |
 | **Truth table & timing diagram** | For gate circuits: truth table, simplified Boolean expression, timing diagram, clocked timing for flip-flops. |
 | **Flash to a real board** | Web Serial from Chrome / Edge: ESP32 family, Arduino Uno and Nano. Checks that the chip matches and explains errors in plain words. |
@@ -54,7 +54,7 @@
   </tr>
   <tr>
     <td width="50%"><img src="docs/img/readme/analyzer-oneclick.webp" alt="Oscilloscope with the suggestion 'The sketch uses: I²C (SDA A4, SCL A5), UART (TX D1)' and one button per bus"><br><sub><b>One-click analyzer</b> — the sketch says <code>Wire.begin()</code>, so Pinslim offers I²C on A4/A5; one click adds the channels and decodes.</sub></td>
-    <td width="50%"><img src="docs/img/readme/dock-dark.webp" alt="Dark mode with the tabbed bottom panel: Serial and Oscilloscope, I2C decoded"><br><sub><b>One panel, tabs</b> — serial monitor, oscilloscope and truth table share a single dock instead of squeezing the circuit.</sub></td>
+    <td width="50%"><img src="docs/img/readme/dock-dark.webp" alt="Dark mode with the tabbed bottom panel: Serial and Oscilloscope, I2C decoded"><br><sub><b>One panel, tabs</b> — messages, serial monitor, oscilloscope and truth table share a single dock; the editor keeps the full height.</sub></td>
   </tr>
 </table>
 

@@ -136,7 +136,7 @@ export const LogicTablePanel: React.FC = () => {
           </button>
         )}
         <button
-          className="lt-btn"
+          className="lt-btn lt-close"
           onClick={() => setOpen(false)}
           aria-label={t('logicTable.close', 'Close')}
         >

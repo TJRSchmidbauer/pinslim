@@ -543,6 +543,8 @@ export const Oscilloscope: React.FC = () => {
   const [baud, setBaud] = useState<'auto' | number>('auto');
   const [spiMode, setSpiMode] = useState<SpiMode>(0);
   const [transcriptCopied, setTranscriptCopied] = useState(false);
+  // Trigger knobs are for people who know what a trigger is: tucked away until asked for.
+  const [showTrigger, setShowTrigger] = useState(false);
 
   // ── One-click bus analyzer ───────────────────────────────────────────────
   // The sketch says `Wire.begin()`, the board has fixed default pins: offer
@@ -736,8 +738,7 @@ export const Oscilloscope: React.FC = () => {
     <div className="osc-container">
       {/* ── Header ── */}
       <div className="osc-header">
-        <span className="osc-title">{t('editor.oscilloscope.title')}</span>
-
+        {/* No title here: the dock tab above already says "Oszilloskop". */}
         {/* Add Channel button + portal picker */}
         <button
           ref={addBtnRef}
@@ -789,7 +790,16 @@ export const Oscilloscope: React.FC = () => {
             Auto = free-running (current default).  Normal = window pins
             on every triggering edge.  Single = arm once, freeze on first
             edge — click again to re-arm. */}
-        <span className="osc-label" title={t('ui.scope.triggerConfig', 'Trigger configuration')}>Trigger</span>
+        <button
+          className={`osc-btn${showTrigger || triggerMode !== 'auto' ? ' osc-btn-active' : ''}`}
+          aria-expanded={showTrigger || triggerMode !== 'auto'}
+          onClick={() => setShowTrigger((v) => !v)}
+          title={t('ui.scope.triggerConfig', 'Trigger configuration')}
+        >
+          Trigger {showTrigger || triggerMode !== 'auto' ? '▾' : '▸'}
+        </button>
+        {(showTrigger || triggerMode !== 'auto') && (
+          <>
         <select
           className="osc-select"
           value={triggerMode}
@@ -847,6 +857,8 @@ export const Oscilloscope: React.FC = () => {
                 Re-arm
               </button>
             )}
+          </>
+        )}
           </>
         )}
 

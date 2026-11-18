@@ -698,3 +698,23 @@ html.layout-tabs .wire-mode-banner {
     animation: none;
   }
 }
+
+/* Design + Touch: settings, not tools — apart from the panel toggles. */
+.canvas-header-settings {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: 4px;
+  padding-left: 8px;
+  border-left: 1px solid var(--wb-7);
+}
+.unified-toolbar.unified-toolbar--compact .canvas-header-settings {
+  margin-left: 0;
+  padding-left: 4px;
+}
+
+/* Tighter panel toggles so the labelled bar still fits a 1366px laptop. */
+.canvas-serial-btn { padding: 0 8px; gap: 5px; }
+.canvas-serial-btn svg,
+.add-component-btn svg { width: 18px; height: 18px; }
+.add-component-btn { padding: 0 8px; }
