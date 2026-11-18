@@ -118,7 +118,7 @@
   font-weight: 800;
   letter-spacing: 0.5px;
   color: #1a1205;
-  background: linear-gradient(180deg, #ffd566, #f5a623);
+  background: var(--brand-apricot);
   padding: 1px 6px;
   border-radius: 4px;
 }

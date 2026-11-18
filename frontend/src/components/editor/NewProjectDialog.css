@@ -159,7 +159,7 @@
   font-weight: 700;
   letter-spacing: 0.6px;
   color: #1a1205;
-  background: linear-gradient(180deg, #ffd566, #f5a623);
+  background: var(--brand-apricot);
   box-shadow: var(--shadow-1);
 }
 
@@ -185,3 +185,18 @@
   color: var(--wb-12);
   border-color: var(--wb-9);
 }
+
+/* Quiet link-style toggle under the recommended boards. */
+.new-project-more {
+  display: block;
+  margin: 20px auto 4px;
+  padding: 8px 18px;
+  background: var(--brand-pfirsich);
+  color: var(--brand-kohle);
+  border: 0;
+  border-radius: 999px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.new-project-more:hover { background: var(--brand-apricot); }

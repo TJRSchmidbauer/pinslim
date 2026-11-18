@@ -130,7 +130,7 @@ export const WireLayer: React.FC<WireLayerProps> = ({
           cy={handle.my}
           r={isTouchDevice ? 14 : 7}
           fill="white"
-          stroke="#007acc"
+          stroke="#E8836B"
           strokeWidth={2}
           style={{
             pointerEvents: 'all',
@@ -150,7 +150,7 @@ export const WireLayer: React.FC<WireLayerProps> = ({
           cx={handle.x}
           cy={handle.y}
           r={isTouchDevice ? 12 : 6}
-          fill="#007acc"
+          fill="#E8836B"
           stroke="white"
           strokeWidth={2}
           style={{

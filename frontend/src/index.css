@@ -254,3 +254,19 @@ body {
 .ap-link:hover {
   text-decoration: underline;
 }
+
+/* ── schmidbauer.io brand: headings, selection, flat surfaces ───────────── */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  letter-spacing: -0.01em;
+}
+
+::selection {
+  background: var(--brand-apricot);
+  color: var(--brand-kohle);
+}
+
+:focus-visible {
+  outline: 2px solid var(--brand-ziegel);
+  outline-offset: 2px;
+}

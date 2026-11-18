@@ -101,7 +101,7 @@ export const ProjectByIdPage: React.FC = () => {
             onClick={() => navigate('/')}
             style={{
               marginTop: 12,
-              background: '#0e639c',
+              background: 'var(--color-action-primary)',
               border: 'none',
               color: 'var(--color-fg-on-action)',
               padding: '8px 16px',

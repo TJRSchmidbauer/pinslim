@@ -137,7 +137,7 @@ const styles: Record<string, React.CSSProperties> = {
     marginTop: 4,
   },
   primaryBtn: {
-    background: '#0e639c',
+    background: 'var(--color-action-primary)',
     color: 'var(--color-fg-on-action)',
     border: 'none',
     padding: '8px 16px',

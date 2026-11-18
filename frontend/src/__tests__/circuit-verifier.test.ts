@@ -31,7 +31,7 @@ function led(id: string, color = 'red'): BuildNetlistInput['components'][number]
 
 /** An ESP32 DevKit as storeAdapter builds it, its pins as `pins` says. */
 function esp32(pins: BoardForSpice['pins'] = {}): BoardForSpice {
-  const g = BOARD_PIN_GROUPS.esp32;
+  const g = BOARD_PIN_GROUPS.esp32!;
   return {
     id: 'esp32',
     boardKind: 'esp32',

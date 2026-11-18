@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/img/readme/hero.webp" alt="Pinslim: an ESP32 traffic light running as a state machine, with code, circuit and serial monitor" width="100%">
+  <img src="docs/img/readme/hero.webp" alt="Pinslim in the schmidbauer.io colours: a 4-bit ripple counter running in the browser, with code and circuit side by side" width="100%">
 </p>
 
 <p align="center">
@@ -41,11 +41,15 @@
   </tr>
   <tr>
     <td width="50%"><img src="docs/img/site/truth.webp" alt="Truth table of a full adder"><br><sub><b>Truth table</b> — a full adder, with the simplified expression for each output.</sub></td>
-    <td width="50%"><img src="docs/img/site/timing.webp" alt="Timing diagram of a 4-bit ripple counter"><br><sub><b>Timing diagram</b> — a 4-bit ripple counter built from flip-flops.</sub></td>
+    <td width="50%"><img src="docs/img/readme/timing.webp" alt="Timing diagram of a 4-bit ripple counter, shown below the running circuit"><br><sub><b>Timing diagram</b> — a 4-bit ripple counter built from flip-flops.</sub></td>
   </tr>
   <tr>
     <td width="50%"><img src="docs/img/site/flash.webp" alt="Dialog for flashing a sketch to a real board"><br><sub><b>Flash to a real board</b> — step-by-step over Web Serial (needs HTTPS).</sub></td>
-    <td width="50%"><img src="docs/img/site/hero-dark.webp" alt="Pinslim in dark mode"><br><sub><b>Light and dark</b> — light by default for the classroom projector.</sub></td>
+    <td width="50%"><img src="docs/img/readme/hero-dark.webp" alt="Pinslim in dark mode with the Kohle palette"><br><sub><b>Light and dark</b> — Creme and Kohle, light by default for the classroom projector.</sub></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/img/readme/start.webp" alt="Start dialog with three recommended boards: Arduino Uno, ESP32 DevKit V1 and Raspberry Pi Pico"><br><sub><b>Simple start</b> — three recommended boards; the rest is one click away under “Alle Boards anzeigen”.</sub></td>
+    <td width="50%"><img src="docs/img/readme/gallery.webp" alt="The examples gallery in the new colours"><br><sub><b>Examples gallery</b> — runnable circuits sorted by topic.</sub></td>
   </tr>
 </table>
 

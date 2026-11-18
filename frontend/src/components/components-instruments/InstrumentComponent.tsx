@@ -57,7 +57,7 @@ export const InstrumentComponent: React.FC<InstrumentComponentProps> = ({
         left: `${x}px`,
         top: `${y}px`,
         cursor: 'move',
-        border: isSelected ? '2px dashed #007acc' : '2px solid transparent',
+        border: isSelected ? '2px dashed var(--color-action-primary)' : '2px solid transparent',
         borderRadius: '4px',
         padding: '4px',
         userSelect: 'none',

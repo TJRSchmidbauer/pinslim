@@ -218,7 +218,7 @@ export const PinPickerDialog: React.FC<PinPickerDialogProps> = ({
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.background = 'var(--wb-8)';
-                  e.currentTarget.style.borderColor = '#007acc';
+                  e.currentTarget.style.borderColor = 'var(--color-action-primary)';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.background = 'var(--wb-7)';
@@ -235,7 +235,7 @@ export const PinPickerDialog: React.FC<PinPickerDialogProps> = ({
                 )}
                 <span
                   aria-hidden="true"
-                  style={{ marginLeft: 'auto', color: '#007acc', fontSize: 16, fontWeight: 700 }}
+                  style={{ marginLeft: 'auto', color: 'var(--color-action-primary)', fontSize: 16, fontWeight: 700 }}
                 >
                   →
                 </span>

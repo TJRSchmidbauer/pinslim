@@ -339,7 +339,7 @@ export const ExampleDetailPage: React.FC = () => {
             <button
               onClick={handleOpen}
               style={{
-                background: '#0e639c',
+                background: 'var(--color-action-primary)',
                 border: 'none',
                 borderRadius: 6,
                 color: 'var(--color-fg-on-action)',

@@ -36,7 +36,7 @@ html[data-touch='on'] {
     'Segoe UI', Roboto, sans-serif;
 }
 html[data-touch='on'][data-theme='dark'] {
-  --hig-tint: #0a84ff;
+  --hig-tint: var(--color-action-primary);
   --hig-green: #30d158;
   --hig-red: #ff453a;
   --hig-label: #ffffff;

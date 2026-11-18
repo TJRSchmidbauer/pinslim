@@ -63,7 +63,7 @@
 }
 
 .vlx-desktop-welcome-primary {
-  background: linear-gradient(135deg, var(--color-action-primary) 0%, var(--color-action-primary-hover) 100%);
+  background: var(--color-action-primary);
   color: var(--color-fg-on-action);
   border: 1px solid var(--color-action-primary-hover);
   font-weight: 600;
@@ -155,12 +155,12 @@
 }
 
 .vlx-desktop-grace-warn {
-  background: linear-gradient(180deg, #b58800 0%, #8c6800 100%);
+  background: #9a5c00;
   border-bottom: 1px solid #5c4500;
 }
 
 .vlx-desktop-grace-error {
-  background: linear-gradient(180deg, #b03333 0%, #8c2222 100%);
+  background: #b3261e;
   border-bottom: 1px solid #5c1818;
 }
 
@@ -307,7 +307,7 @@ body.vlx-desktop-readonly [data-velxio-action="save"] {
   width: 28px;
   height: 28px;
   border-radius: 14px;
-  background: linear-gradient(135deg, var(--color-action-primary) 0%, var(--color-action-primary-hover) 100%);
+  background: var(--color-action-primary);
   color: var(--color-fg-on-action);
   font-size: 14px;
   font-weight: 700;
@@ -350,7 +350,7 @@ body.vlx-desktop-readonly [data-velxio-action="save"] {
   font-size: 13px;
   font-weight: 600;
   color: var(--color-fg-on-action);
-  background: linear-gradient(135deg, var(--color-action-primary) 0%, var(--color-action-primary-hover) 100%);
+  background: var(--color-action-primary);
   border: 1px solid var(--color-action-primary-hover);
   border-radius: 5px;
   cursor: pointer;
@@ -387,7 +387,7 @@ body.vlx-desktop-readonly [data-velxio-action="save"] {
 
 .vlx-desktop-update-toast-progress-bar {
   height: 100%;
-  background: linear-gradient(90deg, var(--color-action-primary) 0%, #00a4ff 100%);
+  background: var(--color-action-primary);
   transition: width 0.2s ease;
 }
 

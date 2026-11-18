@@ -268,7 +268,7 @@ export const BoardOnCanvas = ({
             top: y - 3,
             width: size.w + 6,
             height: size.h + 6,
-            border: '2px solid #007acc',
+            border: '2px solid var(--color-action-primary)',
             borderRadius: 6,
             pointerEvents: 'none',
             zIndex: 2,

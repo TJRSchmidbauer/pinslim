@@ -50,7 +50,7 @@ interface BoardTab {
 const BOARD_TABS: BoardTab[] = [
   { id: 'all', label: 'All', color: '#ffffff', bg: '#444444' },
   { id: 'retro', label: 'Retro', color: '#1a1a1a', bg: '#e0a82e' },
-  { id: 'arduino-uno', label: 'Arduino Uno', color: '#ffffff', bg: '#007acc' },
+  { id: 'arduino-uno', label: 'Arduino Uno', color: '#2E2A28', bg: '#F6B48F' },
   { id: 'arduino-nano', label: 'Arduino Nano', color: '#ffffff', bg: '#0055aa' },
   { id: 'arduino-mega', label: 'Arduino Mega', color: '#ffffff', bg: '#003388' },
   { id: 'raspberry-pi-pico', label: 'Pico', color: '#ffffff', bg: '#c11c31' },

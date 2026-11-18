@@ -143,7 +143,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({ onClose }) => {
                 disabled={isSaving}
                 style={{
                   ...styles.visibilityOption,
-                  borderColor: isActive ? '#0e639c' : 'var(--wb-6)',
+                  borderColor: isActive ? 'var(--color-action-primary)' : 'var(--wb-6)',
                   background: isActive ? 'rgba(14,99,156,0.12)' : 'var(--wb-2)',
                   opacity: isSaving ? 0.6 : 1,
                   cursor: isSaving ? 'wait' : 'pointer',
@@ -238,7 +238,7 @@ const styles: Record<string, React.CSSProperties> = {
   optionHint: { fontSize: 11, color: 'var(--wb-10)', lineHeight: 1.4 },
   badge: {
     fontSize: 10,
-    background: '#0e639c',
+    background: 'var(--color-action-primary)',
     color: 'var(--color-fg-on-action)',
     padding: '1px 6px',
     borderRadius: 3,
@@ -251,7 +251,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontFamily: 'monospace', outline: 'none',
   },
   copyBtn: {
-    background: '#0e639c', border: 'none', borderRadius: 4, color: 'var(--color-fg-on-action)',
+    background: 'var(--color-action-primary)', border: 'none', borderRadius: 4, color: 'var(--color-fg-on-action)',
     padding: '8px 16px', fontSize: 13, cursor: 'pointer', fontWeight: 500,
     display: 'flex', alignItems: 'center',
   },

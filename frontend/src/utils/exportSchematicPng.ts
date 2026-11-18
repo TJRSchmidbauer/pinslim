@@ -143,7 +143,7 @@ export async function exportSchematicPng(): Promise<void> {
     ctx.save();
     // Board container card
     ctx.fillStyle = isLight ? '#ffffff' : '#1e2026';
-    ctx.strokeStyle = isLight ? '#0071e3' : '#00e5ff';
+    ctx.strokeStyle = isLight ? '#A0502C' : '#F6B48F';
     ctx.lineWidth = 2;
 
     // Rounded rectangle
@@ -159,7 +159,7 @@ export async function exportSchematicPng(): Promise<void> {
     ctx.stroke();
 
     // Board Header Accent Strip
-    ctx.fillStyle = isLight ? '#0071e3' : '#00e5ff';
+    ctx.fillStyle = isLight ? '#A0502C' : '#F6B48F';
     ctx.beginPath();
     ctx.roundRect(rx, ry, rw, 32, [radius, radius, 0, 0]);
     ctx.fill();
@@ -201,7 +201,7 @@ export async function exportSchematicPng(): Promise<void> {
     ctx.stroke();
 
     // Component Icon / Tag
-    ctx.fillStyle = isLight ? '#0071e3' : '#38bdf8';
+    ctx.fillStyle = isLight ? '#A0502C' : '#F6B48F';
     ctx.font = 'bold 11px system-ui, sans-serif';
     const compTitle = compName;
     ctx.fillText(compTitle.length > 13 ? compTitle.slice(0, 12) + '…' : compTitle, cx + 10, cy + 24);

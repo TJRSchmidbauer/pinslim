@@ -19,34 +19,44 @@
  */
 
 :root {
-  /* Primitives — gray scale */
+  /* Primitives — gray scale (warm Kohle/Creme, schmidbauer.io brand) */
   --gray-0:   #ffffff;
-  --gray-50:  #fafafa;
-  --gray-100: #f5f5f7;
-  --gray-200: #e5e5ea;
-  --gray-300: #d1d1d6;
-  --gray-400: #aeaeb2;
-  --gray-500: #86868b;
-  --gray-600: #6e6e73;
-  --gray-700: #48484a;
-  --gray-800: #2c2c2e;
-  --gray-850: #1c1c1e;
-  --gray-900: #141416;
-  --gray-950: #0a0a0c;
+  --gray-50:  #fffdfa;
+  --gray-100: #fbf4ec;  /* Creme */
+  --gray-200: #f1e1cf;  /* Sand */
+  --gray-300: #e0cdb8;
+  --gray-400: #bba995;
+  --gray-500: #8f8174;
+  --gray-600: #6e625a;
+  --gray-700: #514a46;
+  --gray-800: #3d3836;
+  --gray-850: #2e2a28;  /* Kohle */
+  --gray-900: #272321;
+  --gray-950: #1d1a19;
   --gray-1000: #000000;
 
-  /* Primitives — accents */
-  --blue-400:  #4ea8ff;
-  --blue-500:  #0a84ff;
-  --blue-600:  #0071e3;
-  --blue-700:  #0058b3;
+  /* Brand — Corporate Design schmidbauer.io. Flat fills, no gradients. */
+  --brand-apricot:  #f6b48f;
+  --brand-ziegel:   #e8836b;
+  --brand-kohle:    #2e2a28;
+  --brand-creme:    #fbf4ec;
+  --brand-link:     #a0502c;
+  --brand-pfirsich: #fde3d0;
+  --brand-rose:     #f6cfc6;
+  --brand-sand:     #f1e1cf;
 
-  --red-500:   #ff453a;
-  --red-600:   #d70015;
-  --green-500: #30d158;
-  --green-600: #248a3d;
-  --amber-500: #ff9f0a;
-  --amber-600: #c93400;
+  /* Primitives — accents (the old --blue-* names now carry the brand) */
+  --blue-400:  var(--brand-apricot);
+  --blue-500:  var(--brand-apricot);
+  --blue-600:  var(--brand-ziegel);
+  --blue-700:  var(--brand-link);
+
+  --red-500:   #ff6b5e;
+  --red-600:   #b3261e;
+  --green-500: #6fcf8a;
+  --green-600: #2f7a45;
+  --amber-500: #f2b84b;
+  --amber-600: #9a5c00;
 }
 
 /* Everything below is THEMED. The dual selector is what lets a subtree pin
@@ -71,20 +81,20 @@
    *
    * Dark values are byte-identical to the literals they replaced, so the
    * dark theme is unchanged. */
-  --wb-0:  #111111;  /* deepest ground — console/terminal bed */
-  --wb-1:  #1a1a1a;  /* canvas ground */
-  --wb-2:  #1e1e1e;  /* editor / dialog surface */
-  --wb-3:  #252526;  /* panel: headers, toolbars, sidebars */
-  --wb-4:  #2a2a2a;  /* panel alt: rows, inputs, hover beds */
-  --wb-5:  #2d2d2d;  /* elevated: dropdowns, popovers */
-  --wb-6:  #333333;  /* border, and the hover fill over --wb-4 */
-  --wb-7:  #3d3d3d;  /* strong border, pressed fill */
-  --wb-8:  #555555;  /* disabled fill, divider on elevated surfaces */
-  --wb-9:  #6e6e6e;  /* faint text — placeholders, timestamps */
-  --wb-10: #888888;  /* subtle text — secondary labels */
-  --wb-11: #9d9d9d;  /* muted text — icons, inactive tabs */
-  --wb-12: #cccccc;  /* body text */
-  --wb-13: #f0f0f0;  /* strong text — titles, active tab */
+  --wb-0:  #1d1a19;  /* deepest ground — console/terminal bed */
+  --wb-1:  #232020;  /* canvas ground */
+  --wb-2:  #2e2a28;  /* editor / dialog surface */
+  --wb-3:  #36312f;  /* panel: headers, toolbars, sidebars */
+  --wb-4:  #3d3836;  /* panel alt: rows, inputs, hover beds */
+  --wb-5:  #443e3b;  /* elevated: dropdowns, popovers */
+  --wb-6:  #514a46;  /* border, and the hover fill over --wb-4 */
+  --wb-7:  #5e5651;  /* strong border, pressed fill */
+  --wb-8:  #78706a;  /* disabled fill, divider on elevated surfaces */
+  --wb-9:  #8e857e;  /* faint text — placeholders, timestamps */
+  --wb-10: #a39a92;  /* subtle text — secondary labels */
+  --wb-11: #b8afa6;  /* muted text — icons, inactive tabs */
+  --wb-12: #e3dad0;  /* body text */
+  --wb-13: #fbf4ec;  /* strong text — titles, active tab */
 
   /* Semantic — backgrounds (dark theme baseline) */
   /* Canvas uses gray-950 (#0a0a0c), NOT gray-1000 (#000000). Pure-black
@@ -102,65 +112,65 @@
   /* Frosted chrome: the app header and the mobile nav sheet sit ON TOP of
    * scrolling content with a backdrop-filter behind them, so they need a
    * translucent version of the canvas rather than the modal scrim. */
-  --color-bg-header:    rgba(10, 10, 12, 0.88);
+  --color-bg-header:    rgba(29, 26, 25, 0.94);
 
   /* Semantic — foreground */
   --color-fg-default: var(--gray-100);
   --color-fg-muted:   var(--gray-500);
   --color-fg-subtle:  var(--gray-600);
-  --color-fg-on-action: var(--gray-0);
+  --color-fg-on-action: var(--brand-kohle);
 
   /* Semantic — borders */
-  --color-border-default: rgba(255, 255, 255, 0.09);
-  --color-border-strong:  rgba(255, 255, 255, 0.16);
-  --color-border-subtle:  rgba(255, 255, 255, 0.04);
+  --color-border-default: rgba(251, 244, 236, 0.14);
+  --color-border-strong:  rgba(251, 244, 236, 0.28);
+  --color-border-subtle:  rgba(251, 244, 236, 0.07);
 
   /* Semantic — hover/selection washes.
    * A translucent wash tints whatever surface it sits on, so one token works
    * on every panel depth. In light mode these flip to black at low alpha. */
   --color-wash-hover:    rgba(255, 255, 255, 0.06);
   --color-wash-active:   rgba(255, 255, 255, 0.10);
-  --color-wash-selected: rgba(0, 113, 227, 0.25);
+  --color-wash-selected: rgba(246, 180, 143, 0.22);
 
   /* Semantic — actions */
   /* Solid UI doctrine: interactive surfaces use SOLID fills of these
    * tokens (white text/icon, border:none) — never neon hues or
    * translucent "outline" borders. Green/red are semantic only
    * (success/error). See branding/README.md "Solid UI doctrine". */
-  --color-action-primary:       var(--blue-600);
-  --color-action-primary-hover: var(--blue-500);
-  --color-action-primary-fg:    var(--gray-0);
+  --color-action-primary:       var(--brand-ziegel);
+  --color-action-primary-hover: var(--brand-apricot);
+  --color-action-primary-fg:    var(--brand-kohle);
   --color-action-secondary:     var(--gray-800);
   --color-action-secondary-hover: var(--gray-700);
 
   /* Accent washes — tinted backgrounds for selected/active accents. */
-  --color-accent-soft:        rgba(0, 113, 227, 0.14);
-  --color-accent-soft-strong: rgba(0, 113, 227, 0.30);
-  --color-accent-fg:          var(--blue-400);
+  --color-accent-soft:        rgba(246, 180, 143, 0.14);
+  --color-accent-soft-strong: rgba(246, 180, 143, 0.30);
+  --color-accent-fg:          var(--brand-apricot);
 
   /* Semantic — feedback */
   --color-feedback-error:   var(--red-500);
   --color-feedback-success: var(--green-500);
   --color-feedback-warning: var(--amber-500);
-  --color-feedback-info:    var(--blue-400);
+  --color-feedback-info:    var(--brand-apricot);
 
-  --color-feedback-error-soft:   rgba(255, 69, 58, 0.14);
-  --color-feedback-success-soft: rgba(48, 209, 88, 0.14);
-  --color-feedback-warning-soft: rgba(255, 159, 10, 0.14);
+  --color-feedback-error-soft:   rgba(255, 107, 94, 0.14);
+  --color-feedback-success-soft: rgba(111, 207, 138, 0.14);
+  --color-feedback-warning-soft: rgba(242, 184, 75, 0.14);
 
   /* Borders for those tinted panels. Translucent rather than solid so one
    * value works over any panel depth, and so the hue survives inversion. */
-  --color-feedback-error-border:   rgba(255, 69, 58, 0.32);
-  --color-feedback-success-border: rgba(48, 209, 88, 0.32);
-  --color-feedback-warning-border: rgba(255, 159, 10, 0.32);
-  --color-accent-border:           rgba(0, 113, 227, 0.38);
+  --color-feedback-error-border:   rgba(255, 107, 94, 0.40);
+  --color-feedback-success-border: rgba(111, 207, 138, 0.40);
+  --color-feedback-warning-border: rgba(242, 184, 75, 0.40);
+  --color-accent-border:           rgba(246, 180, 143, 0.45);
 
   /* Focus ring — used by *:focus-visible across all interactives */
   --color-focus-ring: 0 0 0 2px var(--color-action-primary);
 
   /* Tier badges (pro overlay reads these) */
   --color-tier-free:  var(--gray-500);
-  --color-tier-pro:   var(--blue-600);
+  --color-tier-pro:   var(--brand-ziegel);
   --color-tier-team:  var(--amber-500);
 
   /* ── Simulator canvas ─────────────────────────────────────────────────
@@ -169,10 +179,10 @@
    * on any theme), so only the bed they sit on and the chrome drawn over
    * them — grid, selection, probe overlays — take theme colors. */
   --color-canvas-bg:        var(--wb-1);
-  --color-canvas-grid:      rgba(255, 255, 255, 0.025);
+  --color-canvas-grid:      rgba(251, 244, 236, 0.05);
   --color-canvas-panel:     var(--wb-2);
   --color-canvas-panel-fg:  var(--wb-12);
-  --color-canvas-shadow:    rgba(0, 0, 0, 0.45);
+  --color-canvas-shadow:    transparent;
 
   /* SPICE overlay: the measurement pills drawn over the board (net voltages,
    * the AC/DC summary). They are instrument annotations, so the hues carry
@@ -194,10 +204,10 @@
   /* Wire chrome. The wire's own colour is the user's; these two are the
    * contrast outline that keeps crossings readable and the marker used for
    * hover and selection, and both have to flip with the bed they sit on. */
-  --color-wire-outline: #1a1a1a;
-  --color-wire-marker:  #ffffff;
+  --color-wire-outline: #232020;
+  --color-wire-marker:  #fbf4ec;
 
-  --color-canvas-label-bg: rgba(26, 26, 26, 0.85);
+  --color-canvas-label-bg: rgba(35, 32, 32, 0.92);
   --color-probe-dc:        #ffd700;
   --color-probe-dc-dim:    #ffa500;
   --color-probe-ac:        #4dd0e1;
@@ -249,65 +259,65 @@
    * the light themes people compare us against read: white is the content,
    * grey is the chrome around it. An all-white build looks unfinished and
    * loses every edge between panes. */
-  --wb-0:  #fbfbfc;
-  --wb-1:  #e9ebee;
-  --wb-2:  #ffffff;
-  --wb-3:  #eceef1;
-  --wb-4:  #e0e3e8;
-  --wb-5:  #ffffff;
-  --wb-6:  #d5d9df;
-  --wb-7:  #c4c9d1;
-  --wb-8:  #aab0ba;
-  --wb-9:  #8c949e;
-  --wb-10: #6e7781;
-  --wb-11: #57606a;
-  --wb-12: #24292f;
-  --wb-13: #0d1117;
+  --wb-0:  #fffdfa;
+  --wb-1:  #f4e9dc;
+  --wb-2:  #fffdfa;
+  --wb-3:  #f6eadd;
+  --wb-4:  #f1e1cf;
+  --wb-5:  #fffdfa;
+  --wb-6:  #e4d3c0;
+  --wb-7:  #d4c0aa;
+  --wb-8:  #b8a48f;
+  --wb-9:  #8f7f70;
+  --wb-10: #6e625a;
+  --wb-11: #5a4f49;
+  --wb-12: #3a3431;
+  --wb-13: #2e2a28;
 
   /* Backgrounds. Surface-1 is the card white; the canvas behind it is the
    * light-gray ground, mirroring how dark puts the darkest value furthest
    * back. */
-  --color-bg-canvas:    #eef0f3;
-  --color-bg-surface-1: var(--gray-0);
-  --color-bg-surface-2: #f6f7f9;
-  --color-bg-surface-3: var(--gray-200);
-  --color-bg-input:     var(--gray-0);
-  --color-bg-overlay:   rgba(20, 20, 22, 0.40);
-  --color-bg-header:    rgba(252, 252, 253, 0.88);
+  --color-bg-canvas:    var(--brand-creme);
+  --color-bg-surface-1: var(--gray-50);
+  --color-bg-surface-2: var(--brand-pfirsich);
+  --color-bg-surface-3: var(--brand-sand);
+  --color-bg-input:     var(--gray-50);
+  --color-bg-overlay:   rgba(46, 42, 40, 0.45);
+  --color-bg-header:    rgba(251, 244, 236, 0.94);
 
   /* Foreground */
   --color-fg-default: var(--gray-850);
   --color-fg-muted:   var(--gray-600);
   --color-fg-subtle:  var(--gray-500);
-  --color-fg-on-action: var(--gray-0);
+  --color-fg-on-action: var(--brand-kohle);
 
   /* Borders — black at low alpha, the mirror of dark's white-at-low-alpha. */
-  --color-border-default: rgba(0, 0, 0, 0.12);
-  --color-border-strong:  rgba(0, 0, 0, 0.22);
-  --color-border-subtle:  rgba(0, 0, 0, 0.06);
+  --color-border-default: rgba(46, 42, 40, 0.14);
+  --color-border-strong:  rgba(46, 42, 40, 0.55);
+  --color-border-subtle:  rgba(46, 42, 40, 0.07);
 
-  --color-wash-hover:    rgba(0, 0, 0, 0.05);
-  --color-wash-active:   rgba(0, 0, 0, 0.09);
-  --color-wash-selected: rgba(0, 113, 227, 0.16);
+  --color-wash-hover:    rgba(46, 42, 40, 0.06);
+  --color-wash-active:   rgba(46, 42, 40, 0.10);
+  --color-wash-selected: rgba(246, 180, 143, 0.45);
 
   /* Actions. Hover DARKENS on light (blue-700) where dark LIGHTENS it
    * (blue-500) — hover has to move away from the page, not toward it. */
-  --color-action-primary:       var(--blue-600);
-  --color-action-primary-hover: var(--blue-700);
-  --color-action-primary-fg:    var(--gray-0);
+  --color-action-primary:       var(--brand-ziegel);
+  --color-action-primary-hover: var(--brand-apricot);
+  --color-action-primary-fg:    var(--brand-kohle);
   --color-action-secondary:     var(--gray-200);
   --color-action-secondary-hover: var(--gray-300);
 
-  --color-accent-soft:        rgba(0, 113, 227, 0.10);
-  --color-accent-soft-strong: rgba(0, 113, 227, 0.20);
-  --color-accent-fg:          var(--blue-700);
+  --color-accent-soft:        rgba(246, 180, 143, 0.30);
+  --color-accent-soft-strong: rgba(246, 180, 143, 0.55);
+  --color-accent-fg:          var(--brand-link);
 
   /* Feedback — the 500s are tuned for contrast against black and go muddy
    * on white, so light mode drops to the 600s. */
   --color-feedback-error:   var(--red-600);
   --color-feedback-success: var(--green-600);
   --color-feedback-warning: var(--amber-600);
-  --color-feedback-info:    var(--blue-600);
+  --color-feedback-info:    var(--brand-link);
 
   --color-feedback-error-soft:   rgba(215, 0, 21, 0.10);
   --color-feedback-success-soft: rgba(36, 138, 61, 0.12);
@@ -316,28 +326,28 @@
   --color-feedback-error-border:   rgba(215, 0, 21, 0.32);
   --color-feedback-success-border: rgba(36, 138, 61, 0.35);
   --color-feedback-warning-border: rgba(201, 52, 0, 0.30);
-  --color-accent-border:           rgba(0, 113, 227, 0.35);
+  --color-accent-border:           rgba(160, 80, 44, 0.45);
 
   --color-tier-free:  var(--gray-600);
-  --color-tier-pro:   var(--blue-600);
+  --color-tier-pro:   var(--brand-ziegel);
   --color-tier-team:  var(--amber-600);
 
   /* Canvas */
   --color-canvas-bg:        var(--wb-1);
-  --color-canvas-grid:      rgba(23, 32, 48, 0.07);
+  --color-canvas-grid:      rgba(46, 42, 40, 0.08);
   --color-canvas-panel:     var(--wb-2);
   --color-canvas-panel-fg:  var(--wb-12);
-  --color-canvas-shadow:    rgba(15, 15, 20, 0.16);
+  --color-canvas-shadow:    transparent;
 
-  --color-symbol-ink:   #1f2430;
+  --color-symbol-ink:   #2e2a28;
   --color-symbol-lead:  #4a515e;
   --color-symbol-label: #2b303a;
   --color-symbol-body:  #8a909c;
 
-  --color-wire-outline: #ffffff;
-  --color-wire-marker:  #1f2430;
+  --color-wire-outline: #fffdfa;
+  --color-wire-marker:  #2e2a28;
 
-  --color-canvas-label-bg: rgba(255, 255, 255, 0.92);
+  --color-canvas-label-bg: rgba(255, 253, 250, 0.94);
   --color-probe-dc:        #8a6100;
   --color-probe-dc-dim:    #9a5c00;
   --color-probe-ac:        #0b6b78;
@@ -352,12 +362,11 @@
   --color-scrollbar-track:       transparent;
 }
 
-/* ── Pinslim brand ───────────────────────────────────────────────────────
- * The wordmark fades from the strong text colour into the brand cyan. Cyan
- * on white is unreadable, so light mode swaps it for the deeper brand blue. */
+/* ── Pinslim wordmark ────────────────────────────────────────────────────
+ * Like the schmidbauer.io wordmark: Kohle text, the dot stays Ziegelrot. */
 :root {
-  --pinslim-logo-accent: #00e5ff;
+  --pinslim-logo-accent: var(--brand-ziegel);
 }
 :root[data-theme='light'] {
-  --pinslim-logo-accent: #0077ff;
+  --pinslim-logo-accent: var(--brand-ziegel);
 }

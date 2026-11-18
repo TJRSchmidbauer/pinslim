@@ -15,7 +15,7 @@
  * Raspberry Pi) carry the same PRO pill as the component picker and go
  * through the same `boardGateDecision` seam before anything is created.
  */
-import React, { useEffect, useMemo, useSyncExternalStore } from 'react';
+import React, { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import type { BoardKind } from '../../types/board';
@@ -222,6 +222,9 @@ async function applyStarter(kind: string | 'blank'): Promise<void> {
   }
 }
 
+/** The few boards a first-time user (and a classroom) actually starts with. */
+export const RECOMMENDED_KINDS: string[] = ['arduino-uno', 'esp32', 'raspberry-pi-pico'];
+
 export interface StarterSection {
   title: string;
   entries: Array<{ kind: string; blurb: string }>;
@@ -287,6 +290,8 @@ const ProPill: React.FC = () => <VelxioDevExklusivBadge style={{ top: 8, right: 
 
 export const NewProjectDialog: React.FC<NewProjectDialogProps> = ({ isOpen, onClose }) => {
   const { t } = useTranslation();
+  // Simple by default: three good starting points, everything else one click away.
+  const [showAll, setShowAll] = useState(false);
 
   // Late-overlay registrations (the @pro import is dynamic) must re-render an
   // already-mounted dialog — same contract as the component picker.
@@ -357,14 +362,46 @@ export const NewProjectDialog: React.FC<NewProjectDialogProps> = ({ isOpen, onCl
                 </span>
               </span>
             </button>
+            {RECOMMENDED_KINDS.map((kind) => {
+              const entry = sections.flatMap((x) => x.entries).find((e) => e.kind === kind);
+              if (!entry) return null;
+              const { blurb } = entry;
+              const label = BOARD_KIND_LABELS[kind as BoardKind] ?? kind;
+              return (
+                <button
+                  key={kind}
+                  className="new-project-card"
+                  onClick={() => handleSelect(kind)}
+                >
+                  <span className="new-project-card-thumb">
+                    <ExampleThumbnail
+                      example={thumbStubFor(kind, label)}
+                      width={300}
+                      height={180}
+                    />
+                  </span>
+                  {isProBoardKind(kind) && <ProPill />}
+                  <span className="new-project-card-info">
+                    <span className="new-project-card-name">{label}</span>
+                    <span className="new-project-card-desc">{trPart(blurb)}</span>
+                  </span>
+                </button>
+              );
+            })}
           </div>
 
-          {sections.map((section) =>
-            section.entries.length === 0 ? null : (
+          {!showAll && (
+            <button className="new-project-more" onClick={() => setShowAll(true)}>
+              {t('editor.newProject.showAll', 'Alle Boards anzeigen')}
+            </button>
+          )}
+
+          {showAll && sections.map((section) =>
+            section.entries.filter((e) => !RECOMMENDED_KINDS.includes(e.kind)).length === 0 ? null : (
               <React.Fragment key={section.title}>
                 <div className="new-project-section-title">{section.title}</div>
                 <div className="new-project-grid">
-                  {section.entries.map(({ kind, blurb }) => {
+                  {section.entries.filter((e) => !RECOMMENDED_KINDS.includes(e.kind)).map(({ kind, blurb }) => {
                     const label = BOARD_KIND_LABELS[kind as BoardKind] ?? kind;
                     return (
                       <button

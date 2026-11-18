@@ -25,3 +25,8 @@ The `crossorigin` attribute is required — without it the browser fetches twice
 ## Verifying
 
 After deploy, in DevTools Network tab filter by "Font". Should show two requests, both with `(memory cache)` after the first page load. If you see Roboto / Segoe UI / Helvetica fall through, the font failed to load — check the woff2 path and CORS headers from your CDN.
+
+## Brand fonts (schmidbauer.io)
+
+- `SpaceGrotesk.var.woff2` — Space Grotesk (headings), SIL Open Font License 1.1, via `@fontsource-variable/space-grotesk`.
+- `AtkinsonHyperlegible-400/700.woff2` — Atkinson Hyperlegible (body text), SIL Open Font License 1.1, via `@fontsource/atkinson-hyperlegible`.

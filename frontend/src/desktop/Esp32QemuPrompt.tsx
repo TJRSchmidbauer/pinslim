@@ -222,7 +222,7 @@ export const Esp32QemuPrompt = () => {
                 style={{
                   height: '100%',
                   width: pct >= 0 ? `${pct}%` : '40%',
-                  background: '#007acc',
+                  background: 'var(--color-action-primary)',
                   transition: 'width 0.2s ease',
                   animation: pct < 0 ? 'vlx-indeterminate 1.5s linear infinite' : undefined,
                 }}
@@ -262,8 +262,8 @@ export const Esp32QemuPrompt = () => {
               disabled={installing}
               style={{
                 padding: '8px 16px',
-                background: '#007acc',
-                color: 'white',
+                background: 'var(--color-action-primary)',
+                color: 'var(--color-action-primary-fg)',
                 border: 'none',
                 borderRadius: 4,
                 cursor: installing ? 'wait' : 'pointer',
@@ -279,8 +279,8 @@ export const Esp32QemuPrompt = () => {
               onClick={onSignUp}
               style={{
                 padding: '8px 16px',
-                background: '#007acc',
-                color: 'white',
+                background: 'var(--color-action-primary)',
+                color: 'var(--color-action-primary-fg)',
                 border: 'none',
                 borderRadius: 4,
                 cursor: 'pointer',

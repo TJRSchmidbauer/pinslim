@@ -119,7 +119,7 @@ function paint(resolved: ResolvedTheme): void {
 
   // The address-bar tint on mobile. Matches --color-bg-canvas per theme.
   const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.setAttribute('content', resolved === 'light' ? '#f5f5f7' : '#0a0a0c');
+  if (meta) meta.setAttribute('content', resolved === 'light' ? '#FBF4EC' : '#1d1a19');
 }
 
 // ── Subscribable state ──────────────────────────────────────────────────

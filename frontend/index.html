@@ -65,7 +65,7 @@
     <!-- ═══════════════════════════════════════════════
          THEME & APP
     ═══════════════════════════════════════════════ -->
-    <meta name="theme-color" content="#007acc" />
+    <meta name="theme-color" content="#FBF4EC" />
     <meta name="color-scheme" content="dark" />
     <meta name="application-name" content="Pinslim" />
     <meta name="generator" content="Vite + React + FastAPI" />
@@ -143,7 +143,7 @@
         document.documentElement.setAttribute('data-theme', resolved);
         document.documentElement.style.colorScheme = resolved;
         var m = document.querySelector('meta[name="theme-color"]');
-        if (m) m.setAttribute('content', resolved === 'light' ? '#f5f5f7' : '#0a0a0c');
+        if (m) m.setAttribute('content', resolved === 'light' ? '#FBF4EC' : '#1d1a19');
       } catch (e) {
         document.documentElement.setAttribute('data-theme', 'light');
       }
@@ -154,7 +154,7 @@
        Crawlers ignore visibility:hidden and still index the text. */
     #root-seo { visibility: hidden; position: absolute; pointer-events: none; }
   </style>
-  <body style="margin:0;background:var(--color-bg-canvas,#0a0a0c);">
+  <body style="margin:0;background:var(--color-bg-canvas,#1d1a19);">
     <!--
       Desktop-only splash. Sidecar boot + Monaco hydration take 3-8s
       on a cold launch; without this the user stares at a black window.

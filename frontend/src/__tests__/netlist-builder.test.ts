@@ -349,7 +349,7 @@ describe('NetlistBuilder — aux supply rails (off-voltage supply pins, B16)', (
 
 describe('NetlistBuilder — a board names its supply and ground nets (velxio-prod#21)', () => {
   const esp32 = (): BoardForSpice => {
-    const g = BOARD_PIN_GROUPS.esp32;
+    const g = BOARD_PIN_GROUPS.esp32!;
     return {
       id: 'esp32',
       boardKind: 'esp32',

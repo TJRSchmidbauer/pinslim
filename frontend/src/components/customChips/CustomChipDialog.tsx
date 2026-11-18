@@ -335,7 +335,7 @@ const tabBtn: React.CSSProperties = {
   border: 'none', borderBottom: '2px solid transparent',
   cursor: 'pointer', fontSize: 13,
 };
-const tabActive: React.CSSProperties = { color: '#e0e0e0', borderBottom: '2px solid #007acc' };
+const tabActive: React.CSSProperties = { color: '#e0e0e0', borderBottom: '2px solid var(--color-action-primary)' };
 const bodyStyle: React.CSSProperties = { flex: 1, overflow: 'hidden', display: 'flex' };
 const editorLayout: React.CSSProperties = {
   display: 'flex', flex: 1, gap: 8, padding: 8, overflow: 'hidden',
@@ -356,7 +356,7 @@ const footerStyle: React.CSSProperties = {
   borderTop: '1px solid var(--wb-6)', background: 'var(--wb-3)',
 };
 const compileBtn: React.CSSProperties = {
-  padding: '6px 14px', background: '#007acc', color: 'white',
+  padding: '6px 14px', background: 'var(--color-action-primary)', color: 'var(--color-action-primary-fg)',
   border: 'none', borderRadius: 3, cursor: 'pointer', fontSize: 13,
 };
 const cancelBtn: React.CSSProperties = {
