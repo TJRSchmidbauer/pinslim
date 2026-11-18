@@ -6,7 +6,6 @@
 
 import { circuitExamples } from './examples-circuits';
 import { analogExamples } from './examples-analog';
-import { analogProjectExamples } from './examples-analog-projects';
 import { digitalExamples } from './examples-digital';
 import { hundredDaysExamples } from './examples-100-days';
 // Pro overlay examples (the Pico W WiFi showcase) — resolves to the real list
@@ -12066,7 +12065,6 @@ const galleryExamples: ExampleProject[] = [
   ...legacyExamples,
   ...circuitExamples,
   ...analogExamples,
-  ...analogProjectExamples,
   ...digitalExamples,
   ...hundredDaysExamples,
   ...proExamples,
