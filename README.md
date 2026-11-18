@@ -92,8 +92,8 @@ The ultrasonic example measures exactly in the simulator (30 cm → 1740 µs): w
 
 <table>
   <tr>
-    <td width="62%"><img src="docs/img/readme/tablet.webp" alt="Touch mode on an iPad: a wire is dragged with a finger, the target pin is named above the finger"></td>
-    <td width="38%"><img src="docs/img/readme/tablet-portrait.webp" alt="Touch mode in portrait: Code and Circuit tabs"></td>
+    <td width="62%"><img src="docs/img/readme/tablet.webp" alt="Pinslim on an iPad in landscape: code and circuit side by side"></td>
+    <td width="38%"><img src="docs/img/readme/tablet-portrait.webp" alt="Pinslim on a tablet in portrait: the circuit with the same toolbar"></td>
   </tr>
 </table>
 
