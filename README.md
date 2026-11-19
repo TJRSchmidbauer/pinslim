@@ -16,7 +16,8 @@
   <a href="#-for-school">For school</a> ·
   <a href="#-tablets">Tablets</a> ·
   <a href="#-quick-start">Quick start</a> ·
-  <a href="#-legal">Legal</a>
+  <a href="#-legal">Legal</a> ·
+  <a href="docs/VORHER-NACHHER.md">Vorher / Nachher (Deutsch)</a>
 </p>
 
 ---
