@@ -7,6 +7,7 @@ node_modules/
 # build inside the image.
 package-lock.json
 **/package-lock.json
+!frontend/package-lock.json
 
 # Python
 __pycache__/
